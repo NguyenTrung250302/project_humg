@@ -1,25 +1,30 @@
-// src/router/index.js
 import { createRouter, createWebHistory } from "vue-router";
 import HomeView from "../views/HomeView.vue";
-import HelloWorld from "../components/HelloWorld.vue";
+import Login from "../auth/Login.vue";
 
 const routes = [
+  // Redirect '/' to '/Login'
   {
     path: "/",
+    redirect: "/Login",
+  },
+  //--------------------------------------------------------------------------------------------------
+  // path auth
+  {
+    path: "/Login",
+    name: "Login",
+    component: Login,
+  },
+  // path views
+  {
+    path: "/Home",
     name: "Home",
     component: HomeView,
   },
-  {
-    path: "/Hello",
-    name: "Hello",
-    component: HelloWorld,
-  },
-
-  // ... thêm các routes khác
 ];
 
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL), // Vẫn dùng import.meta.env.BASE_URL
+  history: createWebHistory(import.meta.env.BASE_URL),
   routes,
 });
 
