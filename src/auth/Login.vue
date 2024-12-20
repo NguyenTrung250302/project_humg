@@ -1,18 +1,13 @@
 <template>
-  <div id="container_login">
+  <div id="login-page">
+    <!-- Form bên trái -->
     <div id="form_login">
-      <!-- Logo -->
       <img src="/src/assets/imgs/auth_imgs/logo.png" alt="Logo" class="logo" />
-
-      <!-- Tiêu đề -->
       <h2>HỆ THỐNG QUẢN LÝ ĐOÀN VIÊN HUMG</h2>
-
-      <!-- Form -->
       <form @submit.prevent="handleSubmit">
         <div class="input-group">
           <input type="text" placeholder="Tên người dùng" v-model="username" />
         </div>
-
         <div class="input-group">
           <input
             :type="passwordVisible ? 'text' : 'password'"
@@ -20,22 +15,24 @@
             v-model="password"
             id="password-input"
           />
-          <!-- Icon cho việc hiển thị và ẩn mật khẩu -->
           <span class="password-toggle" @click="togglePasswordVisibility">
             {{ passwordVisible ? "🙈" : "👁️" }}
           </span>
         </div>
         <button type="submit">ĐĂNG NHẬP</button>
       </form>
-
-      <!-- Các nút quên mật khẩu và đăng ký -->
       <div class="auth-links">
         <a href="/forgot-password" class="forgot-password">Quên mật khẩu?</a>
         <a href="/register" class="register">Đăng ký</a>
       </div>
     </div>
+
+    <!-- Ảnh bên phải -->
+    <div id="background-section"></div>
   </div>
 </template>
+
+
 
 <script setup>
 import { ref } from "vue";
@@ -59,7 +56,7 @@ function handleSubmit() {
 </script>
 
 <style scoped>
-#container_login {
+/* #container_login {
   margin: 0;
   padding: 0;
   width: 100%;
@@ -68,24 +65,32 @@ function handleSubmit() {
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
+} */
+#login-page {
+  display: flex;
+  height: 100vh;
+  width: 100%;
+
 }
 
+#background-section {
+  flex: 1; /* Chiếm không gian tối đa ở bên trái */
+  background-image: url("/src/assets/imgs/auth_imgs/background-login-humg.png");
+  background-size: cover;
+  background-position: center;
+}
 #form_login {
-  width: 50%;
-  height: 100%;
+  flex: 0 0 480px; /* Cố định chiều rộng của form login */
   background-color: #ffffffc5;
-  position: fixed;
-  top: 50%;
-  left: 0;
-  transform: translateY(-50%);
-  padding: 20px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   text-align: center;
+  padding: 20px;
   border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  /* box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); */
+  margin-bottom: 280px;
 }
 
 .logo {
@@ -94,7 +99,7 @@ function handleSubmit() {
 }
 
 h2 {
-  color: #2d3b8d;
+  color: #1890FF;
   margin-bottom: 20px;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
@@ -137,7 +142,7 @@ form {
 }
 
 button {
-  width: 100%; /* Đảm bảo button chiếm toàn bộ chiều rộng của form */
+  width: 50%; /* Đảm bảo button chiếm toàn bộ chiều rộng của form */
   padding: 12px 15px;
   background-color: rgba(0, 20, 31, 0.44);
   color: white;
@@ -149,7 +154,7 @@ button {
 }
 
 button:hover {
-  background-color: #1e285a;
+  background-color: #1890FF;
 }
 
 /* Thêm style cho các liên kết quên mật khẩu và đăng ký */
