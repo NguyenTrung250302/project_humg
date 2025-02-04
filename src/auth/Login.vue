@@ -31,7 +31,7 @@
       <!-- Các nút quên mật khẩu và đăng ký -->
       <div class="auth-links">
         <a href="/forgot-password" class="forgot-password">Quên mật khẩu?</a>
-        <a href="/register" class="register">Đăng ký</a>
+        <a href="/register" class="register">Đăng ký ahihihi</a>
       </div>
     </div>
   </div>
