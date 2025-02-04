@@ -32,23 +32,23 @@ const routes = [
     component: HomeView,
   },
   {
-    path: "/forgotpassword",
-    name: "forgotpassword",
+    path: "/ForgotPassword",
+    name: "ForgotPassword",
     component: ForgotPassword,
   },
   {
-    path: "/otpforgotpassword",
-    name: "otpforgotpassword",
+    path: "/OtpForgotPassword",
+    name: "OtpForgotPassword",
     component: OtpForgotPassword,
   },
   {
-    path: "/updatepassword",
-    name: "updatepassword",
+    path: "/UpdatePassword",
+    name: "UpdatePassword",
     component: UpdatePassword,
   },
   {
-    path: "/updatepasssuccess",
-    name: "updatepasssuccess",
+    path: "/UpdatePassSuccess",
+    name: "UpdatePassSuccess",
     component: UpdatePassSuccess,
   },
 ];
