@@ -1,8 +1,10 @@
 import { createRouter, createWebHistory } from "vue-router";
 import HomeView from "../views/HomeView.vue";
 import Login from "../auth/Login.vue";
-import Header from "../components/Header.vue";
-import NavHeader from "../components/NavHeader.vue";
+import ForgotPassword from "../auth/ForgotPassword.vue";
+import OtpForgotPassword from "../auth/OtpForgotPassword.vue";
+import UpdatePassword from "../auth/UpdatePassword.vue";
+import UpdatePassSuccess from "../auth/UpdatePassSuccess.vue";
 
 const routes = [
   // Redirect '/' to '/Login'
@@ -24,14 +26,24 @@ const routes = [
     component: HomeView,
   },
   {
-    path: "/header",
-    name: "header",
-    component: Header,
+    path: "/forgotpassword",
+    name: "forgotpassword",
+    component: ForgotPassword,
   },
   {
-    path: "/navheader",
-    name: "navheader",
-    component: NavHeader,
+    path: "/otpforgotpassword",
+    name: "otpforgotpassword",
+    component: OtpForgotPassword,
+  },
+  {
+    path: "/updatepassword",
+    name: "updatepassword",
+    component: UpdatePassword,
+  },
+  {
+    path: "/updatepasssuccess",
+    name: "updatepasssuccess",
+    component: UpdatePassSuccess,
   },
 ];
 
