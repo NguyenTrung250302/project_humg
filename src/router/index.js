@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router";
 import HomeView from "../views/HomeView.vue";
 import Login from "../auth/Login.vue";
+import Register from "../auth/Register.vue";
 import ForgotPassword from "../auth/ForgotPassword.vue";
 import OtpForgotPassword from "../auth/OtpForgotPassword.vue";
 import UpdatePassword from "../auth/UpdatePassword.vue";
@@ -18,6 +19,11 @@ const routes = [
     path: "/Login",
     name: "Login",
     component: Login,
+  },
+  {
+    path: "/Register",
+    name: "Register",
+    component: Register,
   },
   // path views
   {
