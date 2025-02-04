@@ -1,6 +1,8 @@
 import { createRouter, createWebHistory } from "vue-router";
 import HomeView from "../views/HomeView.vue";
 import Login from "../auth/Login.vue";
+import Header from "../components/Header.vue";
+import NavHeader from "../components/NavHeader.vue";
 
 const routes = [
   // Redirect '/' to '/Login'
@@ -20,6 +22,16 @@ const routes = [
     path: "/Home",
     name: "Home",
     component: HomeView,
+  },
+  {
+    path: "/header",
+    name: "header",
+    component: Header,
+  },
+  {
+    path: "/navheader",
+    name: "navheader",
+    component: NavHeader,
   },
 ];
 
