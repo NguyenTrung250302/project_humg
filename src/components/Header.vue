@@ -1,11 +1,7 @@
-<script setup>
-
-</script>
-
 <template>
   <div class="header-container">
     <div class="banner">
-      <img style="width: 100%; height: 150px;" src="../assets/imgs/auth_imgs/banner.png" alt="Logo 1" class="logo" />
+      <img style="width: 100%; height: 20vh;" src="../assets/imgs/auth_imgs/banner.png" alt="Logo 1" class="logo" />
     </div>
     <div class="banner-logo">
       <img style="width: 70px;" src="../assets/imgs/logo.ico" alt="Logo 2" class="logo2" />
@@ -22,8 +18,13 @@
   </div>
 </template>
 
+<script setup>
+
+</script>
+
 <style scoped>
   .banner{
+    background-color: #004feee1;
     position: relative;
   }
   .banner-logo{
@@ -38,7 +39,7 @@
   }
   .title-banner{
     position: absolute;
-    top: 1%;
+    top: 3%;
     left: 37%;
   }
   h1{

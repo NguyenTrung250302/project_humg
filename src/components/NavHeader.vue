@@ -1,7 +1,3 @@
-<script setup>
-
-</script>
-
 <template>
     <div class="nav-header">
         <ul class="nav-header-ul">
@@ -26,6 +22,10 @@
         </div>
     </div>
 </template>
+
+<script setup>
+
+</script>
 
 <style scoped>
     .nav-header{
