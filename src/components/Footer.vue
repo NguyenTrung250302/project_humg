@@ -18,7 +18,7 @@
         <h3>MẠNG XÃ HỘI</h3>
         <div class="social-icons">
           <a v-for="icon in socialIcons" :key="icon.name" :href="icon.link" target="_blank">
-            <img :src="icon.src" :alt="icon.name" class="icon" />
+            <i :class="icon.iconClass" class="icon"></i> <!-- Sử dụng Font Awesome icon -->
           </a>
         </div>
       </div>
@@ -48,11 +48,12 @@
 export default {
   data() {
     return {
+      // Cập nhật socialIcons để sử dụng Font Awesome
       socialIcons: [
-        { name: "Facebook", src: "facebook-icon.png", link: "#" },
-        { name: "Twitter", src: "twitter-icon.png", link: "#" },
-        { name: "LinkedIn", src: "linkedin-icon.png", link: "#" },
-        { name: "Instagram", src: "instagram-icon.png", link: "#" },
+        { name: "Facebook", iconClass: "fab fa-facebook", link: "https://facebook.com" },
+        { name: "Twitter", iconClass: "fab fa-twitter", link: "https://twitter.com" },
+        { name: "LinkedIn", iconClass: "fab fa-linkedin", link: "https://linkedin.com" },
+        { name: "Instagram", iconClass: "fab fa-instagram", link: "https://instagram.com" },
       ],
     };
   },
@@ -95,13 +96,11 @@ export default {
 
 .social-icons {
   display: flex;
-  justify-content: center;
   gap: 10px;
 }
 
 .icon {
-  width: 24px;
-  height: 24px;
+  font-size: 24px;
   transition: transform 0.3s;
 }
 
