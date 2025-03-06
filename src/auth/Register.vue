@@ -3,10 +3,10 @@
     <div id="form_login">
       <!-- Logo -->
       <img src="/src/assets/imgs/auth_imgs/logo.png" alt="Logo" class="logo" />
-  
+
       <!-- Tiêu đề -->
       <h2>HỆ THỐNG QUẢN LÝ ĐOÀN VIÊN HUMG</h2>
-  
+
       <!-- Form -->
       <form @submit.prevent="handleSubmit">
         <!-- Hàng đầu tiên: Tên người dùng và Email -->
@@ -19,35 +19,10 @@
           </div>
         </div>
 
-        <!-- Hàng thứ hai: Số điện thoại và Địa chỉ -->
+        <!-- Hàng thứ hai: Mã Tv và Mật khẩu -->
         <div class="input-group-inline">
           <div class="input-group">
-            <input type="tel" placeholder="Số điện thoại" v-model="phoneNumber" />
-          </div>
-          <div class="input-group">
-            <input type="text" placeholder="Địa chỉ" v-model="address" />
-          </div>
-        </div>
-
-        <!-- Hàng thứ ba: Ngày sinh và Giới tính -->
-        <div class="input-group-inline">
-          <div class="input-group">
-            <input type="date" v-model="dob" />
-          </div>
-          <div class="input-group">
-            <select v-model="gender">
-              <option value="">Chọn giới tính</option>
-              <option value="Male">Nam</option>
-              <option value="Female">Nữ</option>
-              <option value="Other">Khác</option>
-            </select>
-          </div>
-        </div>
-
-        <!-- Hàng thứ tư: Số CMND và Mật khẩu -->
-        <div class="input-group-inline">
-          <div class="input-group">
-            <input type="text" placeholder="Số CMND" v-model="identityNumber" />
+            <input type="text" placeholder="Mã Tv" v-model="maTv" />
           </div>
           <div class="input-group password-group">
             <input
@@ -65,7 +40,7 @@
         <!-- Nút đăng ký -->
         <button type="submit">ĐĂNG KÝ</button>
       </form>
-  
+
       <!-- Các nút quên mật khẩu và đăng ký -->
       <div class="auth-links">
         <a href="/forgot-password" class="forgot-password">Quên mật khẩu? &nbsp;</a>
@@ -75,38 +50,48 @@
   </div>
 </template>
 
-
 <script setup>
 import { ref } from "vue";
+import { useUserStore } from "../store/userStore";
 
-// Thêm state cho các trường mới
+const userStore = useUserStore();
+
 const username = ref("");
 const email = ref("");
-const phoneNumber = ref("");
-const address = ref("");
-const dob = ref("");
-const gender = ref("");
-const identityNumber = ref("");
+const maTv = ref("");
 const password = ref("");
 const passwordVisible = ref(false);
 
-// Hàm chuyển đổi trạng thái hiển thị mật khẩu
 function togglePasswordVisibility() {
   passwordVisible.value = !passwordVisible.value;
 }
 
-// Hàm xử lý form submit
-function handleSubmit() {
-  console.log("Tên người dùng:", username.value);
-  console.log("Email:", email.value);
-  console.log("Số điện thoại:", phoneNumber.value);
-  console.log("Địa chỉ:", address.value);
-  console.log("Ngày sinh:", dob.value);
-  console.log("Giới tính:", gender.value);
-  console.log("Số CMND:", identityNumber.value);
-  console.log("Mật khẩu:", password.value);
+// 🛠 Gọi hàm `register` từ `store`
+async function handleSubmit() {
+  try {
+    const response = await userStore.register(
+      username.value,
+      maTv.value,
+      password.value,
+      email.value
+    );
+
+    console.log("Kết quả từ server:", result); // Kiểm tra dữ liệu trả về
+
+    if (response.result.message) {
+      alert(response.result.message); // Hiển thị thông báo từ BE
+    } else {
+      alert(userStore.error || "Đã có lỗi xảy ra!"); // Hiển thị lỗi nếu có
+    }
+  } catch (error) {
+    alert("Có lỗi xảy ra, vui lòng thử lại!");
+  }
 }
+
 </script>
+
+
+
 
 <style scoped>
 /* Container chính */
@@ -168,9 +153,8 @@ form {
   position: relative;
 }
 
-/* Định dạng input và select */
-.input-group input,
-.input-group select {
+/* Định dạng input */
+.input-group input {
   width: 100%;
   padding: 14px;
   border: 1px solid #ccc;
@@ -180,9 +164,7 @@ form {
   box-sizing: border-box;
 }
 
-/* Hiệu ứng focus */
-.input-group input:focus,
-.input-group select:focus {
+.input-group input:focus {
   border-color: #2d3b8d;
   background-color: #fff;
   box-shadow: 0 0 5px rgba(45, 59, 141, 0.5);
@@ -197,7 +179,7 @@ form {
 }
 
 .password-group input {
-  padding-right: 40px; /* Chừa khoảng trống cho icon */
+  padding-right: 40px;
 }
 
 /* Nút hiển thị mật khẩu */
@@ -244,7 +226,4 @@ button:hover {
 .auth-links a:hover {
   text-decoration: underline;
 }
-
-
 </style>
-

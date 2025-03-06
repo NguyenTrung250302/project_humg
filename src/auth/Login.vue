@@ -8,7 +8,7 @@
       <h2>HỆ THỐNG QUẢN LÝ ĐOÀN VIÊN HUMG</h2>
 
       <!-- Form -->
-      <form @submit.prevent="handleSubmit">
+      <form @submit.prevent="handleLogin">
         <div class="input-group">
           <input type="text" placeholder="Tên người dùng" v-model="username" />
         </div>
@@ -39,7 +39,11 @@
 
 <script setup>
 import { ref } from "vue";
+import { useRouter } from "vue-router";
+import { useUserStore } from "../store/userStore";
 
+const router = useRouter();
+const userStore = useUserStore();
 // State để theo dõi giá trị của mật khẩu và tình trạng hiển thị mật khẩu
 const username = ref("");
 const password = ref("");
@@ -50,12 +54,37 @@ function togglePasswordVisibility() {
   passwordVisible.value = !passwordVisible.value;
 }
 
-// Hàm xử lý form submit
-function handleSubmit() {
-  console.log("Tên người dùng:", username.value);
-  console.log("Mật khẩu:", password.value);
-}
-//----------------------------------------------------------------------
+
+
+
+
+
+// toggle password
+const showPassword = ref(false);
+const togglePassword = () => {
+    showPassword.value = !showPassword.value;
+};
+
+const handleLogin = async () => {
+    if (!username.value.trim() || !password.value.trim()) {
+        alert("Vui lòng nhập đầy đủ thông tin!");
+        return;
+    }
+
+    const result = await userStore.login(username.value, password.value);
+
+    console.log("Kết quả đăng nhập:", result);
+
+    if (!result.success) {
+        alert(result.message);
+        return;
+    }
+
+    alert("Đăng nhập thành công!");
+    setTimeout(() => {
+        router.push("/"); 
+    }, 1000);
+};
 </script>
 
 <style scoped>
