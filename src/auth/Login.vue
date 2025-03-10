@@ -54,11 +54,6 @@ function togglePasswordVisibility() {
   passwordVisible.value = !passwordVisible.value;
 }
 
-
-
-
-
-
 // toggle password
 const showPassword = ref(false);
 const togglePassword = () => {
@@ -71,19 +66,24 @@ const handleLogin = async () => {
         return;
     }
 
-    const result = await userStore.login(username.value, password.value);
+    try {
+        const result = await userStore.login(username.value, password.value);
 
-    console.log("Kết quả đăng nhập:", result);
+        console.log("Kết quả đăng nhập:", result);
 
-    if (!result.success) {
-        alert(result.message);
-        return;
+        if (!result) {
+            alert(userStore.error || "Đăng nhập thất bại!");
+            return;
+        }
+
+        alert("Đăng nhập thành công!");
+        setTimeout(() => {
+            router.push("/"); 
+        }, 1000);
+    } catch (error) {
+        console.error("Chi tiết lỗi:", error.response?.data || error.message);
+        alert("Có lỗi xảy ra, vui lòng thử lại!");
     }
-
-    alert("Đăng nhập thành công!");
-    setTimeout(() => {
-        router.push("/"); 
-    }, 1000);
 };
 </script>
 

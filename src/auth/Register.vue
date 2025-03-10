@@ -43,8 +43,8 @@
 
       <!-- Các nút quên mật khẩu và đăng ký -->
       <div class="auth-links">
-        <a href="/forgot-password" class="forgot-password">Quên mật khẩu? &nbsp;</a>
-        <a href="/register" class="register">Đăng nhập</a>
+        <a href="/ForgotPassword" class="ForgotPassword">Quên mật khẩu? &nbsp;</a>
+        <a href="/Login" class="Register">Đăng nhập</a>
       </div>
     </div>
   </div>
@@ -53,8 +53,10 @@
 <script setup>
 import { ref } from "vue";
 import { useUserStore } from "../store/userStore";
+import { useRouter } from 'vue-router';
 
 const userStore = useUserStore();
+const router = useRouter();
 
 const username = ref("");
 const email = ref("");
@@ -68,8 +70,7 @@ function togglePasswordVisibility() {
 
 // 🛠 Gọi hàm `register` từ `store`
 async function handleSubmit() {
-  try {
-    const response = await userStore.register(
+    const result = await userStore.register(
       username.value,
       maTv.value,
       password.value,
@@ -78,14 +79,16 @@ async function handleSubmit() {
 
     console.log("Kết quả từ server:", result); // Kiểm tra dữ liệu trả về
 
-    if (response.result.message) {
-      alert(response.result.message); // Hiển thị thông báo từ BE
-    } else {
-      alert(userStore.error || "Đã có lỗi xảy ra!"); // Hiển thị lỗi nếu có
-    }
-  } catch (error) {
-    alert("Có lỗi xảy ra, vui lòng thử lại!");
-  }
+    if (!result || !result.success) {
+      window.$dialog.fail(result?.message || "Lỗi không xác định!"); // Hiển thị thông báo từ BE
+      return; 
+    } 
+      window.$dialog.success(result.message); // Hiển thị lỗi nếu có
+      localStorage.removeItem("userEmail", email.value);
+      localStorage.setItem("userEmail", email.value);
+      setTimeout(() => {
+        router.push("/VerifyEmail"); // Chuyển hướng sang trang VerifyEmail
+    }, 1000);
 }
 
 </script>

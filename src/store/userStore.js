@@ -27,11 +27,49 @@ export const useUserStore = defineStore("user", () => {
                 }
             );
 
-            return response.data; // Trả về dữ liệu từ BE nếu thành công
+                console.log(response.data);
+
+            if (response.data.status === 200) {
+                return { success: true, message: response.data.message || "Đăng kí thành công!" };
+            } else {
+                return { success: false, message: response.data.message || "Đăng kí thất bại!" };
+            }
         } catch (err) {
-            console.error("❌ Lỗi đăng ký:", err.response?.data || err.message);
+            console.error("Lỗi API:", err.response?.data);
             error.value = err.response?.data?.message || "Không thể kết nối tới server!";
-            return null; // Trả về null khi có lỗi
+            return { success: false, message: error.value };
+        } finally {
+            loading.value = false;
+        }
+    };
+    // 🛠 Hàm kích hoạt tài khoản
+    const activateAccount = async (otp) => {
+        loading.value = true;
+        error.value = null;
+
+        try {
+            const formData = new FormData();
+            formData.append("Otp", otp);
+
+            const response = await axios.put(
+                "https://localhost:7244/api/Controller_Authenic/Activate_Account",
+                formData,
+                {
+                    headers: { "Content-Type": "multipart/form-data" }
+                }
+            );
+
+            console.log(response.data);
+
+            if (response.data.status === 200) {
+                return { success: true, message: response.data.message || "Kích hoạt tài khoản thành công!" };
+            } else {
+                return { success: false, message: response.data.message || "Kích hoạt tài khoản thất bại!" };
+            }
+        } catch (err) {
+            console.error("❌ Lỗi kích hoạt tài khoản:", err.response?.data || err.message);
+            error.value = err.response?.data?.message || "Kích hoạt tài khoản thất bại!";
+            return { success: false, message: error.value };
         } finally {
             loading.value = false;
         }
@@ -41,6 +79,9 @@ export const useUserStore = defineStore("user", () => {
         loading, 
         error,
         user,
-        register
+        register,
+        forgotPassword,
+        verifyOtp,
+        activateAccount,
     };
 });

@@ -5,7 +5,7 @@ import Register from "../auth/Register.vue";
 import ForgotPassword from "../auth/ForgotPassword.vue";
 import OtpForgotPassword from "../auth/OtpForgotPassword.vue";
 import UpdatePassword from "../auth/UpdatePassword.vue";
-import UpdatePassSuccess from "../auth/UpdatePassSuccess.vue";
+import VerifyEmail from "../auth/VerifyEmail.vue";
 
 const routes = [
   // Redirect '/' to '/Login'
@@ -48,9 +48,9 @@ const routes = [
     component: UpdatePassword,
   },
   {
-    path: "/UpdatePassSuccess",
-    name: "UpdatePassSuccess",
-    component: UpdatePassSuccess,
+    path: "/VerifyEmail",
+    name: "VerifyEmail",
+    component: VerifyEmail,
   },
 ];
 

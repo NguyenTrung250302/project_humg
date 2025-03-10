@@ -5,7 +5,7 @@
       <img src="/src/assets/imgs/auth_imgs/logo.png" alt="Logo" class="logo" />
 
       <!-- Tiêu đề -->
-      <h2>XÁC NHẬN MÃ OTP</h2>
+      <h2>XÁC THỰC EMAIL</h2>
 
       <!-- Email thông báo -->
       <p class="email-info">Mã OTP đã được gửi đến <b>{{ email }}</b></p>
@@ -16,66 +16,27 @@
       </div>
 
       <!-- Nút Xác nhận -->
-      <button class="confirm-btn" @click="handleVerifyOtp">XÁC NHẬN</button>
+      <button class="confirm-btn" >XÁC NHẬN</button>
 
       <!-- Nút Gửi lại mã -->
-      <button class="resend-btn" @click="handleResendOtp">GỬI LẠI MÃ</button>
+      <!-- <button class="resend-btn" >GỬI LẠI MÃ</button> -->
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from "vue";
-import { useRouter } from "vue-router";
-import { useUserStore } from "../store/userStore";
+import { onMounted, ref } from "vue";
 
-const userStore = useUserStore();
 const email = ref(""); 
 const otp = ref(["", "", "", "", "", ""]);
-const router = useRouter();
 
-const handleVerifyOtp = async () => {
-  const otpCode = otp.value.join("");
-  if (!otpCode.trim()) {
-    alert("Vui lòng nhập mã OTP!");
-    return;
-  }
+onMounted(() => {
+  email.value = localStorage.getItem("userEmail") || "";
+  // email.value = localStorage.removeItem("userEmail") ;
+});
 
-  try {
-    const result = await userStore.verifyOtp(otpCode, email.value);
 
-    console.log("Kết quả xác thực OTP:", result);
 
-    if (!result) {
-      alert(userStore.error || "Xác thực OTP thất bại!");
-      return;
-    }
-
-    alert("Xác thực OTP thành công!");
-    router.push("/UpdatePassword"); // Chuyển hướng sang trang UpdatePassword sau khi xác thực thành công
-  } catch (error) {
-    console.error("Chi tiết lỗi:", error.response?.data || error.message);
-    alert("Có lỗi xảy ra, vui lòng thử lại!");
-  }
-};
-
-const handleResendOtp = async () => {
-  try {
-    const result = await userStore.forgotPassword(email.value);
-
-    console.log("Kết quả gửi lại mã OTP:", result);
-
-    if (!result) {
-      alert(userStore.error || "Gửi lại mã OTP thất bại!");
-      return;
-    }
-
-    alert("Mã OTP đã được gửi lại!");
-  } catch (error) {
-    console.error("Chi tiết lỗi:", error.response?.data || error.message);
-    alert("Có lỗi xảy ra, vui lòng thử lại!");
-  }
-};
 </script>
 
 <style scoped>
