@@ -34,7 +34,7 @@
 </template>
 
 <script setup>
-import { onMounted, ref, computed, nextTick } from "vue";
+import { onMounted, ref, computed, nextTick, watch } from "vue";
 import { useRouter } from "vue-router";
 import { useUserStore } from "../store/userStore";
 
@@ -42,7 +42,7 @@ const userStore = useUserStore();
 const router = useRouter();
 
 const email = ref("");
-const otp = ref(["", "", "", "", "", ""]); // Mảng rỗng ban đầu
+const otp = ref(["", "", "", "", "", ""]); // Mảng chứa 6 ô nhập OTP
 const otpRefs = ref([]); // Danh sách ref để điều khiển input
 
 onMounted(() => {
@@ -68,36 +68,36 @@ const handleDelete = (index) => {
   }
 };
 
-// Kiểm tra đủ 6 số để kích hoạt nút XÁC NHẬN
+// Kiểm tra nếu chưa nhập đủ 6 số
 const isOtpComplete = computed(() => otp.value.every((digit) => digit !== ""));
+
+// Theo dõi sự thay đổi của OTP và cảnh báo nếu chưa nhập đủ
+watch(isOtpComplete, (newValue) => {
+  if (!newValue) {
+    window.$dialog.warning("Bạn cần nhập đủ 6 số OTP!");
+  }
+});
 
 // Xác thực OTP
 const handleVerifyOtp = async () => {
-  const otpCode = otp.value.join(""); 
-  console.log("🔍 OTP hiện tại:", otp.value);// Chuyển thành chuỗi số OTP
-  if (otp.value.some((digit) => digit === "")) {
-    console.log("⚠️ OTP chưa đủ 6 số!");
-    window.$dialog.fail("Vui lòng nhập đủ 6 chữ số OTP!");
+  if (!isOtpComplete.value) {
+    window.$dialog.fail("Cần nhập đầy đủ mã OTP!");
     return;
   }
-  
-  
 
-  const result = await userStore.activateAccount(otpCode); 
+  const otpCode = otp.value.join(""); // Chuyển thành chuỗi số OTP
+  const result = await userStore.activateAccount(otpCode);
 
-  
-  if (!result.success) {
-    window.$dialog.fail(result.message);
+  if (!result?.success) {
+    window.$dialog.fail(result?.message || "Xác thực OTP thất bại!");
     return;
   }
+
   window.$dialog.success(result.message);
   setTimeout(() => router.push("/Login"), 1000);
   localStorage.removeItem("userEmail");
 };
 </script>
-
-
-
 
 
 <style scoped>

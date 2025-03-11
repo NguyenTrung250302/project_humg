@@ -25,7 +25,7 @@ export const useUserStore = defineStore("user", () => {
                 }
             );
 
-            console.log(response.data);
+            // console.log(response.data);
 
             if (response.data.status === 200) {
                 return { success: true, message: response.data.message || "Kiểm tra email của bạn để lấy lại mật khẩu!" };
@@ -33,7 +33,7 @@ export const useUserStore = defineStore("user", () => {
                 return { success: false, message: response.data.message || "Quên mật khẩu thất bại!" };
             }
         } catch (err) {
-            console.error("❌ Lỗi quên mật khẩu:", err.response?.data || err.message);
+            // console.error("❌ Lỗi quên mật khẩu:", err.response?.data || err.message);
             error.value = err.response?.data?.message || "Không thể kết nối tới server!";
             return { success: false, message: error.value };
         } finally {
@@ -61,7 +61,7 @@ export const useUserStore = defineStore("user", () => {
                 }
             );
 
-                console.log(response.data);
+                // console.log(response.data);
 
             if (response.data.status === 200) {
                 return { success: true, message: response.data.message || "Đăng kí thành công!" };
@@ -69,7 +69,7 @@ export const useUserStore = defineStore("user", () => {
                 return { success: false, message: response.data.message || "Đăng kí thất bại!" };
             }
         } catch (err) {
-            console.error("Lỗi API:", err.response?.data);
+            // console.error("Lỗi API:", err.response?.data);
             error.value = err.response?.data?.message || "Không thể kết nối tới server!";
             return { success: false, message: error.value };
         } finally {
@@ -91,7 +91,7 @@ export const useUserStore = defineStore("user", () => {
         const formData = new FormData();
         formData.append("Opt", otp);
 
-        console.log("🔹 Gửi OTP:", formData); // Kiểm tra request
+        // console.log("🔹 Gửi OTP:", formData); // Kiểm tra request
 
         const response = await axios.put(
             "https://localhost:7244/api/Controller_Authenic/Active_Account",
@@ -99,7 +99,7 @@ export const useUserStore = defineStore("user", () => {
             { headers: { "Content-Type": "multipart/form-data" } } // 🔥 Gửi đúng định dạng FormData
         );
 
-        console.log("✅ Phản hồi từ API:", response.data);
+        // console.log("✅ Phản hồi từ API:", response.data);
 
         if (response.data.status === 200) {
             return { success: true, message: response.data.message || "Kích hoạt tài khoản thành công!" };
@@ -107,7 +107,7 @@ export const useUserStore = defineStore("user", () => {
             return { success: false, message: response.data.message || "Kích hoạt tài khoản thất bại!" };
         }
     } catch (err) {
-        console.error("❌ Lỗi kích hoạt tài khoản:", err.response?.data || err.message);
+        // console.error("❌ Lỗi kích hoạt tài khoản:", err.response?.data || err.message);
         error.value = err.response?.data?.message || "Kích hoạt tài khoản thất bại!";
         return { success: false, message: error.value };
     } finally {
@@ -138,7 +138,7 @@ export const useUserStore = defineStore("user", () => {
                 }
             );
 
-            console.log(response.data);
+            // console.log(response.data);
 
             if (response.data.status === 200 && response.data.data) {
                 localStorage.setItem("accessToken", response.data.data.accessToken);
@@ -149,18 +149,13 @@ export const useUserStore = defineStore("user", () => {
                 return { success: false, message: response.data.message || "Đăng nhập thất bại!" };
             }
         } catch (err) {
-            console.error("❌ Lỗi đăng nhập:", err.response?.data || err.message);
+            // console.error("❌ Lỗi đăng nhập:", err.response?.data || err.message);
             error.value = err.response?.data?.message || "Đăng nhập thất bại!";
             return { success: false, message: error.value };
         } finally {
             loading.value = false;
         }
     };
-
-
-
-    
-
     return { 
         loading, 
         error,

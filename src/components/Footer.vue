@@ -2,7 +2,7 @@
   <footer class="footer">
     <div class="footer-container">
       <!-- Bản đồ chỉ dẫn -->
-      <div class="footer-section">
+      <div class="footer-section map-section">
         <h3>BẢN ĐỒ CHỈ DẪN</h3>
         <iframe
           class="map-frame"
@@ -14,122 +14,177 @@
       </div>
 
       <!-- Mạng xã hội -->
-      <div class="footer-section">
+      <div class="footer-section social-section">
         <h3>MẠNG XÃ HỘI</h3>
         <div class="social-icons">
-          <a v-for="icon in socialIcons" :key="icon.name" :href="icon.link" target="_blank">
-            <i :class="icon.iconClass" class="icon"></i> <!-- Sử dụng Font Awesome icon -->
+          <a v-for="icon in socialIcons" :key="icon.name" :href="icon.link" target="_blank" class="social-link">
+            <i :class="icon.iconClass"></i>
+            <span>{{ icon.name }}</span>
           </a>
         </div>
       </div>
 
       <!-- Đơn vị trực thuộc -->
-      <div class="footer-section">
+      <div class="footer-section units-section">
         <h3>ĐƠN VỊ TRỰC THUỘC</h3>
-        <p>BAN CHUYÊN MÔN</p>
-        <p>LIÊN CHI ĐOÀN - LIÊN CHI HỘI</p>
-      </div>
-
-      <!-- Đoàn TNCS -->
-      <div class="footer-section">
-        <h3>ĐOÀN TNCS HỒ CHÍ MINH ĐẠI HỌC MỎ ĐỊA CHẤT HÀ NỘI</h3>
-        <p>📍 Văn phòng Đoàn Thanh niên Đại học Mỏ Địa Chất</p>
-        <p>P205 - Nhà C, Số 58, Lê Văn Hiến, Đức Thắng, Quận Bắc Từ Liêm, Hà Nội.</p>
-        <p>✉️ <a href="mailto:doanthanhnien@humg.edu.vn" class="email">doanthanhnien@humg.edu.vn</a></p>
+        <ul class="units-list">
+          <li>Ban Tổ chức</li>
+          <li>Ban Kiểm tra</li>
+          <li>Ban Tuyên giáo</li>
+          <li>Ban Phong trào</li>
+          <li>Văn phòng Đoàn trường</li>
+        </ul>
       </div>
     </div>
     <div class="footer-bottom">
-      Copyright © 2024 Hanoi University of Mining and Geology.
+      <p>&copy; 2024 Đoàn Thanh niên - Trường Đại học Mỏ - Địa chất. All rights reserved.</p>
     </div>
   </footer>
 </template>
 
-<script>
-export default {
-  data() {
-    return {
-      // Cập nhật socialIcons để sử dụng Font Awesome
-      socialIcons: [
-        { name: "Facebook", iconClass: "fab fa-facebook", link: "https://facebook.com" },
-        { name: "Twitter", iconClass: "fab fa-twitter", link: "https://twitter.com" },
-        { name: "LinkedIn", iconClass: "fab fa-linkedin", link: "https://linkedin.com" },
-        { name: "Instagram", iconClass: "fab fa-instagram", link: "https://instagram.com" },
-      ],
-    };
-  },
-};
+<script setup>
+const socialIcons = [
+  { name: 'Facebook', link: 'https://facebook.com', iconClass: 'fab fa-facebook' },
+  { name: 'Youtube', link: 'https://youtube.com', iconClass: 'fab fa-youtube' },
+  { name: 'Instagram', link: 'https://instagram.com', iconClass: 'fab fa-instagram' },
+  { name: 'Twitter', link: 'https://twitter.com', iconClass: 'fab fa-twitter' }
+];
 </script>
 
 <style scoped>
 .footer {
-  background-color: #2196f3;
-  color: white;
-  padding: 20px 0;
-  text-align: center;
+  background-color: #2d3b8d;
+  color: #ffffff;
+  padding: 40px 0 0;
+  font-family: 'Segoe UI', sans-serif;
 }
 
 .footer-container {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-around;
-  align-items: start;
-  padding: 10px 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 40px;
+  padding: 0 20px;
 }
 
 .footer-section {
-  width: 22%;
-  text-align: left;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
 }
 
 .footer-section h3 {
-  font-size: 16px;
-  font-weight: bold;
-  margin-bottom: 10px;
+  color: #ffffff;
+  font-size: 1.2rem;
+  margin-bottom: 20px;
+  position: relative;
+  padding-bottom: 10px;
 }
 
-.map-frame {
+.footer-section h3::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 50px;
+  height: 2px;
+  background-color: #ff9800;
+}
+
+/* Map Section */
+.map-section .map-frame {
   width: 100%;
   height: 200px;
   border: none;
   border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
+/* Social Section */
 .social-icons {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+}
+
+.social-link {
   display: flex;
-  gap: 10px;
+  align-items: center;
+  color: #ffffff;
+  text-decoration: none;
+  padding: 8px 12px;
+  border-radius: 5px;
+  transition: all 0.3s ease;
+  background-color: rgba(255, 255, 255, 0.1);
 }
 
-.icon {
-  font-size: 24px;
-  transition: transform 0.3s;
+.social-link:hover {
+  background-color: #ff9800;
+  transform: translateY(-2px);
 }
 
-.icon:hover {
-  transform: scale(1.2);
+.social-link i {
+  margin-right: 10px;
+  font-size: 1.2rem;
 }
 
-.email {
-  color: white;
-  text-decoration: underline;
+/* Units Section */
+.units-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
 }
 
+.units-list li {
+  margin-bottom: 12px;
+  padding-left: 20px;
+  position: relative;
+}
+
+.units-list li::before {
+  content: '•';
+  position: absolute;
+  left: 0;
+  color: #ff9800;
+}
+
+/* Footer Bottom */
 .footer-bottom {
-  margin-top: 20px;
-  padding-top: 10px;
-  border-top: 1px solid white;
-  font-size: 14px;
+  margin-top: 40px;
+  padding: 20px;
+  text-align: center;
+  background-color: rgba(0, 0, 0, 0.2);
 }
 
-/* Responsive */
+.footer-bottom p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* Responsive Design */
 @media (max-width: 768px) {
   .footer-container {
-    flex-direction: column;
-    align-items: center;
+    grid-template-columns: 1fr;
   }
+
   .footer-section {
-    width: 90%;
+    align-items: center;
     text-align: center;
-    margin-bottom: 20px;
+  }
+
+  .footer-section h3::after {
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .social-icons {
+    justify-content: center;
+  }
+
+  .units-list {
+    text-align: left;
   }
 }
 </style>

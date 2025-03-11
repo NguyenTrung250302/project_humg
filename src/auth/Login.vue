@@ -39,40 +39,40 @@
 
 <script setup>
 import { ref } from "vue";
-import { RouterLink, useRouter } from "vue-router";
+import { useRouter } from "vue-router";
 import { useUserStore } from "../store/userStore";
 
-// Lấy thông tin router để điều hướng
 const router = useRouter();
-// Lấy store user
 const userStore = useUserStore();
 
-// State để theo dõi giá trị của mật khẩu và tình trạng hiển thị mật khẩu
 const username = ref("");
 const password = ref("");
 const passwordVisible = ref(false);
 
-// Hàm để chuyển đổi trạng thái hiển thị mật khẩu
 function togglePasswordVisibility() {
   passwordVisible.value = !passwordVisible.value;
 }
 
-// Hàm xử lý đăng nhập
 const handleLogin = async () => {
+  if (!username.value.trim() || !password.value.trim()) {
+    window.$dialog.fail("Vui lòng nhập đầy đủ thông tin!");
+    return;
+  }
+
   const result = await userStore.login(username.value, password.value);
 
-  console.log("Kết quả từ server:", result);
-
   if (!result || !result.success) {
-    window.$dialog.fail(result?.message || "Lỗi không xác định!");
+    window.$dialog.fail(result?.message || "Đăng nhập thất bại!");
     return;
   }
 
   window.$dialog.success(result.message);
-  router.push("/");
+  setTimeout(() => {
+    router.push("/");
+  }, 1000);
 };
-
 </script>
+
 
 <style scoped>
 #container_login {

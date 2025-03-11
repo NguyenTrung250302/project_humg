@@ -10,7 +10,7 @@
       <!-- Form -->
       <form @submit.prevent="handleForgetPass">
         <div class="input-group">
-          <input type="email" placeholder="Email" v-model="email" required />
+          <input type="email" placeholder="Email" v-model="email"/>
         </div>
         <button type="submit">GỬI YÊU CẦU</button>
       </form>
@@ -20,24 +20,32 @@
 
 <script setup>
 import { ref } from "vue";
-import { useRouter } from "vue-router";  // Import useRouter
+import { useRouter } from "vue-router";  
 import { useUserStore } from "../store/userStore";
 
 const userStore = useUserStore();
 const email = ref("");
-const router = useRouter();  // Khai báo router để sử dụng
+const router = useRouter();
 
 const handleForgetPass = async () => {
+  if (!email.value.trim()) {
+    window.$dialog.fail("Vui lòng nhập email!"); 
+    return;
+  }
+
   const response = await userStore.forgetPassword(email.value);
 
-  if (response.success) {
-    alert(response.message);
-    router.push("/OtpForgotPassword");
+  if (response?.success) {
+    window.$dialog.success(response.message);
+    setTimeout(() => {
+      router.push("/OtpForgotPassword");
+    }, 1000);
   } else {
-    alert(response.message);
+    window.$dialog.fail(response.message || "Có lỗi xảy ra, vui lòng thử lại!");
   }
 };
 </script>
+
 
 
 

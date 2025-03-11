@@ -70,6 +70,11 @@ function togglePasswordVisibility() {
 
 // 🛠 Gọi hàm `register` từ `store`
 async function handleSubmit() {
+    if (!username.value || !email.value || !maTv.value || !password.value) {
+        window.$dialog.fail("Vui lòng nhập đầy đủ thông tin!"); 
+        return;
+    }
+
     const result = await userStore.register(
       username.value,
       maTv.value,
@@ -77,22 +82,19 @@ async function handleSubmit() {
       email.value
     );
 
-    console.log("Kết quả từ server:", result); 
-
     if (!result || !result.success) {
       window.$dialog.fail(result?.message || "Lỗi không xác định!"); 
       return; 
     } 
-      window.$dialog.success(result.message); 
-      localStorage.removeItem("userEmail", email.value);
-      localStorage.setItem("userEmail", email.value);
-      setTimeout(() => {
+
+    window.$dialog.success(result.message); 
+    localStorage.setItem("userEmail", email.value);
+    
+    setTimeout(() => {
         router.push("/VerifyEmail"); 
     }, 1000);
 }
-
 </script>
-
 
 
 
