@@ -41,6 +41,40 @@ export const useUserStore = defineStore("user", () => {
         }
     };
 
+    const activatePassword = async (email, code) => {
+        loading.value = true;
+        error.value = null;
+    
+        try {
+            const formData = new FormData();
+            formData.append("code", code);
+    
+            const response = await axios.put(
+                `https://localhost:7244/api/Controller_Authenic/Activate_Password?email=${encodeURIComponent(email)}`,
+                formData,
+                { headers: { "Content-Type": "multipart/form-data" } }
+            );
+    
+            console.log("✅ Phản hồi từ API:", response.data);
+    
+            if (response.data.status === 200) {
+                return { success: true, message: response.data.message || "Kích hoạt mật khẩu thành công!" };
+            } else {
+                return { success: false, message: response.data.message || "Kích hoạt mật khẩu thất bại!" };
+            }
+        } catch (err) {
+            console.error("❌ Lỗi kích hoạt mật khẩu:", err.response?.data || err.message);
+            error.value = err.response?.data?.message || "Kích hoạt mật khẩu thất bại!";
+            return { success: false, message: error.value };
+        } finally {
+            loading.value = false;
+        }
+    };
+    
+    
+    
+    
+
     // 🛠 Hàm đăng ký người dùng
     const register = async (username, maTV, password, email) => {
         loading.value = true;
@@ -169,5 +203,6 @@ export const useUserStore = defineStore("user", () => {
         activateAccount,
         login,
         forgetPassword, 
+        activatePassword,
     };
 });

@@ -20,21 +20,23 @@
 
 <script setup>
 import { ref } from "vue";
-import { useRouter } from "vue-router";  // Import useRouter
+import { useRouter } from "vue-router";  
 import { useUserStore } from "../store/userStore";
 
 const userStore = useUserStore();
 const email = ref("");
-const router = useRouter();  // Khai báo router để sử dụng
+const router = useRouter();  
 
 const handleForgetPass = async () => {
   const response = await userStore.forgetPassword(email.value);
 
   if (response.success) {
-    alert(response.message);
+    window.$dialog.success(response.message);
+    localStorage.removeItem("userEmail", email.value);
+    localStorage.setItem("userEmail", email.value);
     router.push("/OtpForgotPassword");
   } else {
-    alert(response.message);
+    window.$dialog.fail(response.message);
   }
 };
 </script>

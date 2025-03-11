@@ -1,16 +1,10 @@
 <template>
   <div id="forgotpassword-container">
     <div id="forgotpassword-form">
-      <!-- Logo -->
       <img src="/src/assets/imgs/auth_imgs/logo.png" alt="Logo" class="logo" />
-
-      <!-- Tiêu đề -->
       <h2>XÁC THỰC EMAIL</h2>
-
-      <!-- Email thông báo -->
       <p class="email-info">Mã OTP đã được gửi đến <b>{{ email }}</b></p>
 
-      <!-- Nhập mã OTP -->
       <div class="otp-container">
         <input 
           v-for="(digit, index) in otp" 
@@ -25,7 +19,6 @@
         />
       </div>
 
-      <!-- Nút Xác nhận -->
       <button class="confirm-btn" @click="handleVerifyOtp" :disabled="!isOtpComplete">
         <span>XÁC NHẬN</span>
       </button>
@@ -42,8 +35,8 @@ const userStore = useUserStore();
 const router = useRouter();
 
 const email = ref("");
-const otp = ref(["", "", "", "", "", ""]); // Mảng rỗng ban đầu
-const otpRefs = ref([]); // Danh sách ref để điều khiển input
+const otp = ref(["", "", "", "", "", ""]); 
+const otpRefs = ref([]); 
 
 onMounted(() => {
   email.value = localStorage.getItem("userEmail") || "";
@@ -52,12 +45,12 @@ onMounted(() => {
 // Xử lý nhập số OTP
 const handleInput = (index) => {
   if (!/^\d$/.test(otp.value[index])) {
-    otp.value[index] = ""; // Chỉ cho phép số 0-9
+    otp.value[index] = ""; 
     return;
   }
 
   if (index < 5) {
-    nextTick(() => otpRefs.value[index + 1]?.focus()); // Chuyển sang ô tiếp theo
+    nextTick(() => otpRefs.value[index + 1]?.focus()); 
   }
 };
 
@@ -74,18 +67,13 @@ const isOtpComplete = computed(() => otp.value.every((digit) => digit !== ""));
 // Xác thực OTP
 const handleVerifyOtp = async () => {
   const otpCode = otp.value.join(""); 
-  console.log("🔍 OTP hiện tại:", otp.value);// Chuyển thành chuỗi số OTP
-  if (otp.value.some((digit) => digit === "")) {
-    console.log("⚠️ OTP chưa đủ 6 số!");
-    window.$dialog.fail("Vui lòng nhập đủ 6 chữ số OTP!");
+  if (otpCode.length !== 6) {
+    window.$dialog.error("Vui lòng nhập đúng 6 chữ số OTP!");
     return;
   }
   
-  
-
   const result = await userStore.activateAccount(otpCode); 
 
-  
   if (!result.success) {
     window.$dialog.fail(result.message);
     return;

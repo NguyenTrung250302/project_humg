@@ -1,82 +1,89 @@
 <template>
   <div id="forgotpassword-container">
     <div id="forgotpassword-form">
-      <!-- Logo -->
       <img src="/src/assets/imgs/auth_imgs/logo.png" alt="Logo" class="logo" />
+      <h2>XÁC THỰC OTP</h2>
+      <p class="email-info">Mã xác thực OTP đã được gửi đến <b>{{ email }}</b></p>
 
-      <!-- Tiêu đề -->
-      <h2>XÁC NHẬN MÃ OTP</h2>
-
-      <!-- Email thông báo -->
-      <p class="email-info">Mã OTP đã được gửi đến <b>{{ email }}</b></p>
-
-      <!-- Nhập mã OTP -->
       <div class="otp-container">
-        <input v-for="(digit, index) in otp" :key="index" type="text" maxlength="1" class="otp-box" v-model="otp[index]" />
+        <input 
+          v-for="(digit, index) in otp" 
+          :key="index" 
+          ref="otpRefs"
+          type="text" 
+          maxlength="1" 
+          class="otp-box" 
+          v-model="otp[index]"
+          @input="handleInput(index)"
+          @keydown.delete="handleDelete(index)"
+        />
       </div>
 
-      <!-- Nút Xác nhận -->
-      <button class="confirm-btn" @click="handleVerifyOtp">XÁC NHẬN</button>
-
-      <!-- Nút Gửi lại mã -->
-      <button class="resend-btn" @click="handleResendOtp">GỬI LẠI MÃ</button>
+      <button class="confirm-btn" @click="checkOtp" :disabled="!isOtpComplete">
+        <span>XÁC NHẬN</span>
+      </button>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { onMounted, ref, computed, nextTick } from "vue";
 import { useRouter } from "vue-router";
 import { useUserStore } from "../store/userStore";
 
 const userStore = useUserStore();
-const email = ref(""); 
-const otp = ref(["", "", "", "", "", ""]);
 const router = useRouter();
 
-const handleVerifyOtp = async () => {
-  const otpCode = otp.value.join("");
-  if (!otpCode.trim()) {
-    alert("Vui lòng nhập mã OTP!");
+const email = ref("");
+const otp = ref(["", "", "", "", "", ""]); 
+const otpRefs = ref([]); 
+
+onMounted(() => {
+  email.value = localStorage.getItem("userEmail") || "";
+});
+
+// Xử lý nhập số OTP
+const handleInput = (index) => {
+  if (!/^\d$/.test(otp.value[index])) {
+    otp.value[index] = ""; 
     return;
   }
 
-  try {
-    const result = await userStore.verifyOtp(otpCode, email.value);
-
-    console.log("Kết quả xác thực OTP:", result);
-
-    if (!result) {
-      alert(userStore.error || "Xác thực OTP thất bại!");
-      return;
-    }
-
-    alert("Xác thực OTP thành công!");
-    router.push("/UpdatePassword"); // Chuyển hướng sang trang UpdatePassword sau khi xác thực thành công
-  } catch (error) {
-    console.error("Chi tiết lỗi:", error.response?.data || error.message);
-    alert("Có lỗi xảy ra, vui lòng thử lại!");
+  if (index < 5) {
+    nextTick(() => otpRefs.value[index + 1]?.focus()); 
   }
 };
 
-const handleResendOtp = async () => {
-  try {
-    const result = await userStore.forgotPassword(email.value);
-
-    console.log("Kết quả gửi lại mã OTP:", result);
-
-    if (!result) {
-      alert(userStore.error || "Gửi lại mã OTP thất bại!");
-      return;
-    }
-
-    alert("Mã OTP đã được gửi lại!");
-  } catch (error) {
-    console.error("Chi tiết lỗi:", error.response?.data || error.message);
-    alert("Có lỗi xảy ra, vui lòng thử lại!");
+// Xử lý xóa số (quay lại ô trước)
+const handleDelete = (index) => {
+  if (otp.value[index] === "" && index > 0) {
+    nextTick(() => otpRefs.value[index - 1]?.focus());
   }
 };
+
+// Kiểm tra đủ 6 số để kích hoạt nút XÁC NHẬN
+const isOtpComplete = computed(() => otp.value.every((digit) => digit !== ""));
+
+// Xác thực OTP và nhận mật khẩu
+const checkOtp = async () => {
+  const otpCode = otp.value.join(""); 
+
+  const result = await userStore.activatePassword(email.value, otpCode);
+
+  if (result.success) {
+    window.$dialog.success(result.message);
+    router.push("/Login"); 
+    localStorage.removeItem("userEmail");
+  } else {
+    window.$dialog.fail(result.message);
+  }
+};
+
 </script>
+
+
+
+
 
 <style scoped>
 #forgotpassword-container {
