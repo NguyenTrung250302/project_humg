@@ -12,32 +12,93 @@
 
       <!-- Nhập mã OTP -->
       <div class="otp-container">
-        <input v-for="(digit, index) in otp" :key="index" type="text" maxlength="1" class="otp-box" v-model="otp[index]" />
+        <input 
+          v-for="(digit, index) in otp" 
+          :key="index" 
+          ref="otpRefs"
+          type="text" 
+          maxlength="1" 
+          class="otp-box" 
+          v-model="otp[index]"
+          @input="handleInput(index)"
+          @keydown.delete="handleDelete(index)"
+        />
       </div>
 
       <!-- Nút Xác nhận -->
-      <button class="confirm-btn" >XÁC NHẬN</button>
-
-      <!-- Nút Gửi lại mã -->
-      <!-- <button class="resend-btn" >GỬI LẠI MÃ</button> -->
+      <button class="confirm-btn" @click="handleVerifyOtp" :disabled="!isOtpComplete">
+        <span>XÁC NHẬN</span>
+      </button>
     </div>
   </div>
 </template>
 
 <script setup>
-import { onMounted, ref } from "vue";
+import { onMounted, ref, computed, nextTick } from "vue";
+import { useRouter } from "vue-router";
+import { useUserStore } from "../store/userStore";
 
-const email = ref(""); 
-const otp = ref(["", "", "", "", "", ""]);
+const userStore = useUserStore();
+const router = useRouter();
+
+const email = ref("");
+const otp = ref(["", "", "", "", "", ""]); // Mảng rỗng ban đầu
+const otpRefs = ref([]); // Danh sách ref để điều khiển input
 
 onMounted(() => {
   email.value = localStorage.getItem("userEmail") || "";
-  // email.value = localStorage.removeItem("userEmail") ;
 });
 
+// Xử lý nhập số OTP
+const handleInput = (index) => {
+  if (!/^\d$/.test(otp.value[index])) {
+    otp.value[index] = ""; // Chỉ cho phép số 0-9
+    return;
+  }
 
+  if (index < 5) {
+    nextTick(() => otpRefs.value[index + 1]?.focus()); // Chuyển sang ô tiếp theo
+  }
+};
 
+// Xử lý xóa số (quay lại ô trước)
+const handleDelete = (index) => {
+  if (otp.value[index] === "" && index > 0) {
+    nextTick(() => otpRefs.value[index - 1]?.focus());
+  }
+};
+
+// Kiểm tra đủ 6 số để kích hoạt nút XÁC NHẬN
+const isOtpComplete = computed(() => otp.value.every((digit) => digit !== ""));
+
+// Xác thực OTP
+const handleVerifyOtp = async () => {
+  const otpCode = otp.value.join(""); 
+  console.log("🔍 OTP hiện tại:", otp.value);// Chuyển thành chuỗi số OTP
+  if (otp.value.some((digit) => digit === "")) {
+    console.log("⚠️ OTP chưa đủ 6 số!");
+    window.$dialog.fail("Vui lòng nhập đủ 6 chữ số OTP!");
+    return;
+  }
+  
+  
+
+  const result = await userStore.activateAccount(otpCode); 
+
+  
+  if (!result.success) {
+    window.$dialog.fail(result.message);
+    return;
+  }
+  window.$dialog.success(result.message);
+  setTimeout(() => router.push("/Login"), 1000);
+  localStorage.removeItem("userEmail");
+};
 </script>
+
+
+
+
 
 <style scoped>
 #forgotpassword-container {

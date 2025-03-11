@@ -42,46 +42,53 @@ export const useUserStore = defineStore("user", () => {
             loading.value = false;
         }
     };
-    // 🛠 Hàm kích hoạt tài khoản
+
+
     const activateAccount = async (otp) => {
-        loading.value = true;
-        error.value = null;
+    if (!otp || otp.length !== 6) {
+        return { success: false, message: "Vui lòng nhập đúng 6 chữ số OTP!" };
+    }
 
-        try {
-            const formData = new FormData();
-            formData.append("Otp", otp);
+    loading.value = true;
+    error.value = null;
 
-            const response = await axios.put(
-                "https://localhost:7244/api/Controller_Authenic/Activate_Account",
-                formData,
-                {
-                    headers: { "Content-Type": "multipart/form-data" }
-                }
-            );
+    try {
+        // 🔥 Tạo FormData thay vì JSON
+        const formData = new FormData();
+        formData.append("Opt", otp);
 
-            console.log(response.data);
+        console.log("🔹 Gửi OTP:", formData); // Kiểm tra request
 
-            if (response.data.status === 200) {
-                return { success: true, message: response.data.message || "Kích hoạt tài khoản thành công!" };
-            } else {
-                return { success: false, message: response.data.message || "Kích hoạt tài khoản thất bại!" };
-            }
-        } catch (err) {
-            console.error("❌ Lỗi kích hoạt tài khoản:", err.response?.data || err.message);
-            error.value = err.response?.data?.message || "Kích hoạt tài khoản thất bại!";
-            return { success: false, message: error.value };
-        } finally {
-            loading.value = false;
+        const response = await axios.put(
+            "https://localhost:7244/api/Controller_Authenic/Active_Account",
+            formData,
+            { headers: { "Content-Type": "multipart/form-data" } } // 🔥 Gửi đúng định dạng FormData
+        );
+
+        console.log("✅ Phản hồi từ API:", response.data);
+
+        if (response.data.status === 200) {
+            return { success: true, message: response.data.message || "Kích hoạt tài khoản thành công!" };
+        } else {
+            return { success: false, message: response.data.message || "Kích hoạt tài khoản thất bại!" };
         }
-    };
+    } catch (err) {
+        console.error("❌ Lỗi kích hoạt tài khoản:", err.response?.data || err.message);
+        error.value = err.response?.data?.message || "Kích hoạt tài khoản thất bại!";
+        return { success: false, message: error.value };
+    } finally {
+        loading.value = false;
+    }
+};
+
+    
+    
 
     return { 
         loading, 
         error,
         user,
         register,
-        forgotPassword,
-        verifyOtp,
         activateAccount,
     };
 });
