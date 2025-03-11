@@ -25,7 +25,7 @@ import { useUserStore } from "../store/userStore";
 
 const userStore = useUserStore();
 const email = ref("");
-const router = useRouter();
+const router = useRouter();  
 
 const handleForgetPass = async () => {
   if (!email.value.trim()) {
@@ -35,13 +35,13 @@ const handleForgetPass = async () => {
 
   const response = await userStore.forgetPassword(email.value);
 
-  if (response?.success) {
+  if (response.success) {
     window.$dialog.success(response.message);
-    setTimeout(() => {
-      router.push("/OtpForgotPassword");
-    }, 1000);
+    localStorage.removeItem("userEmail", email.value);
+    localStorage.setItem("userEmail", email.value);
+    router.push("/OtpForgotPassword");
   } else {
-    window.$dialog.fail(response.message || "Có lỗi xảy ra, vui lòng thử lại!");
+    window.$dialog.fail(response.message);
   }
 };
 </script>

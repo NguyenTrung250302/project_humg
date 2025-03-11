@@ -1,15 +1,11 @@
 <template>
   <div id="container_login">
     <div id="form_login">
-      <!-- Logo -->
       <img src="/src/assets/imgs/auth_imgs/logo.png" alt="Logo" class="logo" />
 
-      <!-- Tiêu đề -->
       <h2>HỆ THỐNG QUẢN LÝ ĐOÀN VIÊN HUMG</h2>
 
-      <!-- Form -->
       <form @submit.prevent="handleSubmit">
-        <!-- Hàng đầu tiên: Tên người dùng và Email -->
         <div class="input-group-inline">
           <div class="input-group">
             <input type="text" placeholder="Tên người dùng" v-model="username" />
@@ -19,7 +15,6 @@
           </div>
         </div>
 
-        <!-- Hàng thứ hai: Mã Tv và Mật khẩu -->
         <div class="input-group-inline">
           <div class="input-group">
             <input type="text" placeholder="Mã Tv" v-model="maTv" />
@@ -36,12 +31,9 @@
             </span>
           </div>
         </div>
-
-        <!-- Nút đăng ký -->
-        <button type="submit">ĐĂNG KÝ</button>
+        <button type="submit" :disabled="isSubmitting">ĐĂNG KÝ</button>
       </form>
 
-      <!-- Các nút quên mật khẩu và đăng ký -->
       <div class="auth-links">
         <a href="/ForgotPassword" class="ForgotPassword">Quên mật khẩu? &nbsp;</a>
         <a href="/Login" class="Register">Đăng nhập</a>
@@ -63,13 +55,16 @@ const email = ref("");
 const maTv = ref("");
 const password = ref("");
 const passwordVisible = ref(false);
+const isSubmitting = ref(false);
 
 function togglePasswordVisibility() {
   passwordVisible.value = !passwordVisible.value;
 }
 
-// 🛠 Gọi hàm `register` từ `store`
 async function handleSubmit() {
+    if (isSubmitting.value) return; 
+
+    isSubmitting.value = true; 
     if (!username.value || !email.value || !maTv.value || !password.value) {
         window.$dialog.fail("Vui lòng nhập đầy đủ thông tin!"); 
         return;
@@ -82,18 +77,22 @@ async function handleSubmit() {
       email.value
     );
 
-    if (!result || !result.success) {
-      window.$dialog.fail(result?.message || "Lỗi không xác định!"); 
-      return; 
-    } 
+    console.log("Kết quả từ server:", result);
 
-    window.$dialog.success(result.message); 
-    localStorage.setItem("userEmail", email.value);
-    
-    setTimeout(() => {
-        router.push("/VerifyEmail"); 
-    }, 1000);
+    if (!result || !result.success) {
+      window.$dialog.fail(result?.message || "Lỗi không xác định!");
+    } else {
+      window.$dialog.success(result.message);
+      localStorage.setItem("userEmail", email.value);
+      setTimeout(() => {
+        router.push("/VerifyEmail")
+      }, 1000);
+    }
+
+    isSubmitting.value = false;
 }
+
+
 </script>
 
 
