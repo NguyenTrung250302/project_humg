@@ -22,7 +22,7 @@
       <button class="confirm-btn" @click="checkOtp" :disabled="!isOtpComplete">
         <span>XÁC NHẬN</span>
       </button>
-    </div>
+    </div> 
   </div>
 </template>
 
