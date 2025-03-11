@@ -8,7 +8,7 @@
       <h2 class="title">QUÊN MẬT KHẨU</h2>
 
       <!-- Form -->
-      <form @submit.prevent="handleForgotPassword">
+      <form @submit.prevent="handleForgetPass">
         <div class="input-group">
           <input type="email" placeholder="Email" v-model="email" required />
         </div>
@@ -20,37 +20,26 @@
 
 <script setup>
 import { ref } from "vue";
-import { useRouter } from "vue-router";
+import { useRouter } from "vue-router";  // Import useRouter
 import { useUserStore } from "../store/userStore";
 
 const userStore = useUserStore();
 const email = ref("");
-const router = useRouter();
+const router = useRouter();  // Khai báo router để sử dụng
 
-const handleForgotPassword = async () => {
-  if (!email.value.trim()) {
-    alert("Vui lòng nhập email!");
-    return;
-  }
+const handleForgetPass = async () => {
+  const response = await userStore.forgetPassword(email.value);
 
-  try {
-    const result = await userStore.forgotPassword(email.value);
-
-    console.log("Kết quả quên mật khẩu:", result);
-
-    if (!result) {
-      alert(userStore.error || "Gửi yêu cầu thất bại!");
-      return;
-    }
-
-    alert("Yêu cầu quên mật khẩu đã được gửi!");
-    router.push("/OtpForgotPassword"); // Chuyển hướng sang trang OtpForgotPassword
-  } catch (error) {
-    console.error("Chi tiết lỗi:", error.response?.data || error.message);
-    alert("Có lỗi xảy ra, vui lòng thử lại!");
+  if (response.success) {
+    alert(response.message);
+    router.push("/OtpForgotPassword");
+  } else {
+    alert(response.message);
   }
 };
 </script>
+
+
 
 <style scoped>
 #forgot-password-container {

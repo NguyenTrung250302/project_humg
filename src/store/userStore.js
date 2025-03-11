@@ -7,6 +7,40 @@ export const useUserStore = defineStore("user", () => {
     const error = ref(null);
     const user = ref(null);
 
+
+    // 🛠 Hàm quên mật khẩu
+    const forgetPassword = async (email) => {
+        loading.value = true;
+        error.value = null;
+
+        try {
+            const formData = new FormData();
+            formData.append("Email", email);
+
+            const response = await axios.put(
+                "https://localhost:7244/api/Controller_Authenic/Forget_Password",
+                formData,
+                {
+                    headers: { "Content-Type": "multipart/form-data" },
+                }
+            );
+
+            console.log(response.data);
+
+            if (response.data.status === 200) {
+                return { success: true, message: response.data.message || "Kiểm tra email của bạn để lấy lại mật khẩu!" };
+            } else {
+                return { success: false, message: response.data.message || "Quên mật khẩu thất bại!" };
+            }
+        } catch (err) {
+            console.error("❌ Lỗi quên mật khẩu:", err.response?.data || err.message);
+            error.value = err.response?.data?.message || "Không thể kết nối tới server!";
+            return { success: false, message: error.value };
+        } finally {
+            loading.value = false;
+        }
+    };
+
     // 🛠 Hàm đăng ký người dùng
     const register = async (username, maTV, password, email) => {
         loading.value = true;
@@ -75,13 +109,56 @@ export const useUserStore = defineStore("user", () => {
         }
     };
 
+    // 🛠 Hàm đăng nhập
+    const login = async (username, password) => {
+        loading.value = true;
+        error.value = null;
+
+        try {
+            // Tạo FormData cho login
+            const formData = new FormData();
+            formData.append("Username", username);
+            formData.append("Password", password);
+
+            // Gửi yêu cầu đăng nhập
+            const response = await axios.post(
+                "https://localhost:7244/api/Controller_Authenic/Login",
+                formData,
+                {
+                    headers: { "Content-Type": "multipart/form-data" },
+                }
+            );
+
+            console.log(response.data);
+
+            if (response.data.status === 200 && response.data.data) {
+                localStorage.setItem("accessToken", response.data.data.accessToken);
+                user.value = response.data.data;
+
+                return { success: true, message: response.data.message || "Đăng nhập thành công!" };
+            } else {
+                return { success: false, message: response.data.message || "Đăng nhập thất bại!" };
+            }
+        } catch (err) {
+            console.error("❌ Lỗi đăng nhập:", err.response?.data || err.message);
+            error.value = err.response?.data?.message || "Đăng nhập thất bại!";
+            return { success: false, message: error.value };
+        } finally {
+            loading.value = false;
+        }
+    };
+
+
+
+    
+
     return { 
         loading, 
         error,
         user,
         register,
-        forgotPassword,
-        verifyOtp,
         activateAccount,
+        login,
+        forgetPassword, 
     };
 });

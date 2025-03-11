@@ -30,8 +30,8 @@
 
       <!-- Các nút quên mật khẩu và đăng ký -->
       <div class="auth-links">
-        <a href="/forgot-password" class="forgot-password">Quên mật khẩu?</a>
-        <a href="/register" class="register">Đăng ký</a>
+        <RouterLink to="/ForgotPassword" class="forgot-password">Quên mật khẩu?</RouterLink>
+        <RouterLink  to="/Register" class="register">Đăng ký</RouterLink>
       </div>
     </div>
   </div>
@@ -39,11 +39,14 @@
 
 <script setup>
 import { ref } from "vue";
-import { useRouter } from "vue-router";
+import { RouterLink, useRouter } from "vue-router";
 import { useUserStore } from "../store/userStore";
 
+// Lấy thông tin router để điều hướng
 const router = useRouter();
+// Lấy store user
 const userStore = useUserStore();
+
 // State để theo dõi giá trị của mật khẩu và tình trạng hiển thị mật khẩu
 const username = ref("");
 const password = ref("");
@@ -54,37 +57,21 @@ function togglePasswordVisibility() {
   passwordVisible.value = !passwordVisible.value;
 }
 
-// toggle password
-const showPassword = ref(false);
-const togglePassword = () => {
-    showPassword.value = !showPassword.value;
-};
-
+// Hàm xử lý đăng nhập
 const handleLogin = async () => {
-    if (!username.value.trim() || !password.value.trim()) {
-        alert("Vui lòng nhập đầy đủ thông tin!");
-        return;
-    }
+  const result = await userStore.login(username.value, password.value);
 
-    try {
-        const result = await userStore.login(username.value, password.value);
+  console.log("Kết quả từ server:", result);
 
-        console.log("Kết quả đăng nhập:", result);
+  if (!result || !result.success) {
+    window.$dialog.fail(result?.message || "Lỗi không xác định!");
+    return;
+  }
 
-        if (!result) {
-            alert(userStore.error || "Đăng nhập thất bại!");
-            return;
-        }
-
-        alert("Đăng nhập thành công!");
-        setTimeout(() => {
-            router.push("/"); 
-        }, 1000);
-    } catch (error) {
-        console.error("Chi tiết lỗi:", error.response?.data || error.message);
-        alert("Có lỗi xảy ra, vui lòng thử lại!");
-    }
+  window.$dialog.success(result.message);
+  router.push("/");
 };
+
 </script>
 
 <style scoped>
