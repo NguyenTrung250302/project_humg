@@ -77,17 +77,17 @@ async function handleSubmit() {
       email.value
     );
 
-    console.log("Kết quả từ server:", result); // Kiểm tra dữ liệu trả về
+    console.log("Kết quả từ server:", result); 
 
     if (!result || !result.success) {
-      window.$dialog.fail(result?.message || "Lỗi không xác định!"); // Hiển thị thông báo từ BE
+      window.$dialog.fail(result?.message || "Lỗi không xác định!"); 
       return; 
     } 
-      window.$dialog.success(result.message); // Hiển thị lỗi nếu có
+      window.$dialog.success(result.message); 
       localStorage.removeItem("userEmail", email.value);
       localStorage.setItem("userEmail", email.value);
       setTimeout(() => {
-        router.push("/VerifyEmail"); // Chuyển hướng sang trang VerifyEmail
+        router.push("/VerifyEmail"); 
     }, 1000);
 }
 
