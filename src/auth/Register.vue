@@ -17,7 +17,7 @@
 
         <div class="input-group-inline">
           <div class="input-group">
-            <input type="text" placeholder="Mã Tv" v-model="maTv" />
+            <input type="text" placeholder="Mã Sinh Viên" v-model="maTv" />
           </div>
           <div class="input-group password-group">
             <input
@@ -77,7 +77,7 @@ async function handleSubmit() {
       email.value
     );
 
-    console.log("Kết quả từ server:", result);
+    // console.log("Kết quả từ server:", result);
 
     if (!result || !result.success) {
       window.$dialog.fail(result?.message || "Lỗi không xác định!");

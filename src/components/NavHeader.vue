@@ -7,7 +7,7 @@
         </ul>
         <ul class="nav-header-ul">
             <li class="nav-header-item" tabindex="0">
-                <RouterLink to="/">Quản lý thông tin</RouterLink>
+                <RouterLink to="/">Danh sách đoàn viên</RouterLink>
             </li>
         </ul>
         <ul class="nav-header-ul">
@@ -17,7 +17,7 @@
         </ul>
         <ul class="nav-header-ul">
             <li class="nav-header-item" tabindex="0">
-                <RouterLink to="/">Báo cáo / Thống kê</RouterLink>
+                <RouterLink to="/">Lịch sử hoạt động</RouterLink>
             </li>
         </ul>
         <ul class="nav-header-ul notify-container">

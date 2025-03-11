@@ -6,6 +6,8 @@ import ForgotPassword from "../auth/ForgotPassword.vue";
 import OtpForgotPassword from "../auth/OtpForgotPassword.vue";
 import UpdatePassword from "../auth/UpdatePassword.vue";
 import VerifyEmail from "../auth/VerifyEmail.vue";
+import Profile from "../auth/Profile.vue";
+import MemberList from "../views/MemberList.vue";
 
 const routes = [
   // Redirect '/' to '/Login'
@@ -25,6 +27,11 @@ const routes = [
     path: "/Register",
     name: "Register",
     component: Register,
+  },
+  {
+    path: "/Profile",
+    name: "Profile",
+    component: Profile,
   },
   // path views
   {
@@ -51,6 +58,11 @@ const routes = [
     path: "/VerifyEmail",
     name: "VerifyEmail",
     component: VerifyEmail,
+  },
+  {
+    path: "/MemberList",
+    name: "MemberList",
+    component: MemberList,
   },
 ];
 
