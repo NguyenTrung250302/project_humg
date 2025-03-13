@@ -6,16 +6,18 @@ import ForgotPassword from "../auth/ForgotPassword.vue";
 import OtpForgotPassword from "../auth/OtpForgotPassword.vue";
 import UpdatePassword from "../auth/UpdatePassword.vue";
 import VerifyEmail from "../auth/VerifyEmail.vue";
+import Profile from "../auth/Profile.vue";
+import MemberList from "../views/MemberList.vue";
 
 const routes = [
-  // Redirect '/' to '/Login'
+  // HomeView
   {
     path: "/",
     name: "HomeView",
     component: HomeView,
   },
   //--------------------------------------------------------------------------------------------------
-  // path auth
+  // Auth
   {
     path: "/Login",
     name: "Login",
@@ -26,11 +28,10 @@ const routes = [
     name: "Register",
     component: Register,
   },
-  // path views
   {
-    path: "/Home",
-    name: "Home",
-    component: HomeView,
+    path: "/Profile",
+    name: "Profile",
+    component: Profile,
   },
   {
     path: "/ForgotPassword",
@@ -52,6 +53,24 @@ const routes = [
     name: "VerifyEmail",
     component: VerifyEmail,
   },
+  {
+    path: "/MemberList",
+    name: "MemberList",
+    component: MemberList,
+  },
+
+
+
+
+
+
+
+
+
+
+
+
+
 ];
 
 const router = createRouter({
