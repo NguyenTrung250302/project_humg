@@ -7,7 +7,7 @@
         </ul>
         <ul class="nav-header-ul">
             <li class="nav-header-item" tabindex="0">
-                <RouterLink to="/">Danh sách đoàn viên</RouterLink>
+                <RouterLink to="/MemberList">Danh sách đoàn viên</RouterLink>
             </li>
         </ul>
         <ul class="nav-header-ul">
@@ -26,7 +26,7 @@
             </svg>
         </ul>
         <div class="nav-header-login">
-            <button class="btn-login"><RouterLink to="/Login">Đăng nhập</RouterLink></button>
+            <RouterLink to="/Login"><button class="btn-login">Đăng nhập</button></RouterLink>
         </div>
     </div>
 </template>

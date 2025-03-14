@@ -8,6 +8,12 @@ export const useUserStore = defineStore("user", () => {
     const user = ref(null);
 
     
+    // truyền token vào Bearear (token)
+    const getAuthHeaders = () => {
+        const token = localStorage.getItem("accessToken");
+        return token ? { Authorization: `Bearer ${token}` } : {};
+    };
+
 
     // 🛠 Hàm quên mật khẩu
     const forgetPassword = async (email) => {
@@ -34,7 +40,6 @@ export const useUserStore = defineStore("user", () => {
                 return { success: false, message: response.data.message || "Quên mật khẩu thất bại!" };
             }
         } catch (err) {
-            // console.error("❌ Lỗi quên mật khẩu:", err.response?.data || err.message);
             error.value = err.response?.data?.message || "Không thể kết nối tới server!";
             return { success: false, message: error.value };
         } finally {
@@ -79,7 +84,7 @@ export const useUserStore = defineStore("user", () => {
     // 🛠 Hàm đăng ký người dùng
     const register = async (username, maTV, password, email) => {
         loading.value = true;
-        error.value = null; // Reset lỗi trước khi gửi request
+        error.value = null;
 
         try {
             const formData = new FormData();
@@ -104,7 +109,6 @@ export const useUserStore = defineStore("user", () => {
                 return { success: false, message: response.data.message || "Đăng kí thất bại!" };
             }
         } catch (err) {
-            // console.error("Lỗi API:", err.response?.data);
             error.value = err.response?.data?.message || "Không thể kết nối tới server!";
             return { success: false, message: error.value };
         } finally {
@@ -122,19 +126,14 @@ export const useUserStore = defineStore("user", () => {
     error.value = null;
 
     try {
-        // 🔥 Tạo FormData thay vì JSON
         const formData = new FormData();
         formData.append("Opt", otp);
-
-        // console.log("🔹 Gửi OTP:", formData); // Kiểm tra request
 
         const response = await axios.put(
             "https://localhost:7244/api/Controller_Authenic/Active_Account",
             formData,
-            { headers: { "Content-Type": "multipart/form-data" } } // 🔥 Gửi đúng định dạng FormData
+            { headers: { "Content-Type": "multipart/form-data" } }
         );
-
-        // console.log("✅ Phản hồi từ API:", response.data);
 
         if (response.data.status === 200) {
             return { success: true, message: response.data.message || "Kích hoạt tài khoản thành công!" };
@@ -142,7 +141,6 @@ export const useUserStore = defineStore("user", () => {
             return { success: false, message: response.data.message || "Kích hoạt tài khoản thất bại!" };
         }
     } catch (err) {
-        // console.error("❌ Lỗi kích hoạt tài khoản:", err.response?.data || err.message);
         error.value = err.response?.data?.message || "Kích hoạt tài khoản thất bại!";
         return { success: false, message: error.value };
     } finally {
@@ -150,8 +148,6 @@ export const useUserStore = defineStore("user", () => {
     }
 };
 
-    
-    
 
     // 🛠 Hàm đăng nhập
     const login = async (username, password) => {
@@ -159,12 +155,10 @@ export const useUserStore = defineStore("user", () => {
         error.value = null;
 
         try {
-            // Tạo FormData cho login
             const formData = new FormData();
             formData.append("Username", username);
             formData.append("Password", password);
 
-            // Gửi yêu cầu đăng nhập
             const response = await axios.post(
                 "https://localhost:7244/api/Controller_Authenic/Login",
                 formData,
@@ -172,8 +166,6 @@ export const useUserStore = defineStore("user", () => {
                     headers: { "Content-Type": "multipart/form-data" },
                 }
             );
-
-            // console.log(response.data);
 
             if (response.data.status === 200 && response.data.data) {
                 localStorage.setItem("accessToken", response.data.data.accessToken);
@@ -184,7 +176,6 @@ export const useUserStore = defineStore("user", () => {
                 return { success: false, message: response.data.message || "Đăng nhập thất bại!" };
             }
         } catch (err) {
-            // console.error("❌ Lỗi đăng nhập:", err.response?.data || err.message);
             error.value = err.response?.data?.message || "Đăng nhập thất bại!";
             return { success: false, message: error.value };
         } finally {
