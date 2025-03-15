@@ -10,7 +10,7 @@
       <!-- Form -->
       <form @submit.prevent="handleLogin">
         <div class="input-group">
-          <input type="text" placeholder="Tên người dùng" v-model="username" />
+          <input type="text" placeholder="Nhập MSSV hoặc Tên đăng nhập" v-model="username" />
         </div>
 
         <div class="input-group">

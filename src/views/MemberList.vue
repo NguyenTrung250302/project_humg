@@ -18,7 +18,7 @@
               <th>Lớp</th>
               <th>Email</th>
               <th>Giới tính</th>
-              <th>Hành động</th>
+              <th>Trạng Thái</th>
             </tr>
           </thead>
           <tbody>
@@ -32,7 +32,7 @@
               <td>{{ student.email }}</td>
               <td>{{ student.gender }}</td>
               <td>
-                <button class="action-btn">⋮</button>
+                <button class="action-btn">Kỷ luật </button>
               </td>
             </tr>
           </tbody>
@@ -44,7 +44,7 @@
 
   
   <script setup>
-  import { ref, computed } from "vue";
+  import { ref } from "vue";
   import Header from "../components/Header.vue";
 import NavHeader from "../components/NavHeader.vue";
 import Footer from "../components/Footer.vue";
