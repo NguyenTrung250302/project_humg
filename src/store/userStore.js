@@ -202,7 +202,7 @@ export const useUserStore = defineStore("user", () => {
                 memberInfo.value = response.data.data; 
                 return { success: true, message: response.data.message };
             } else {
-                return { success: false, message: "Không tìm thấy thông tin người dùng!" };
+                return { success: false, message: response.data.message || "Không tìm thấy thông tin người dùng!" };
             }
             
         } catch (err) {
@@ -239,7 +239,7 @@ export const useUserStore = defineStore("user", () => {
             if (response.data.status === 200) {
                 return { success: true, message: response.data.message };
             } else {
-                return { success: false, message: "Không tìm thấy thông tin người dùng!" };
+                return { success: false, message: response.data.message };
             }
         } catch (err) {
             error.value = err.response?.data?.message || "Không thể kết nối tới server!";
