@@ -6,7 +6,7 @@ import ForgotPassword from "../auth/ForgotPassword.vue";
 import OtpForgotPassword from "../auth/OtpForgotPassword.vue";
 import UpdatePassword from "../auth/UpdatePassword.vue";
 import VerifyEmail from "../auth/VerifyEmail.vue";
-import Profile from "../auth/Profile.vue";
+import Profile from "../views/Profile.vue";
 import MemberList from "../views/MemberList.vue";
 
 const routes = [
