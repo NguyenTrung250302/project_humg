@@ -8,6 +8,11 @@
       <form @submit.prevent="handleSubmit">
         <div class="input-group-inline">
           <div class="input-group">
+            <input type="text" placeholder="Họ và Tên" v-model="fullName" />
+          </div>
+        </div>
+        <div class="input-group-inline">
+          <div class="input-group">
             <input type="text" placeholder="Tên người dùng" v-model="username" />
           </div>
           <div class="input-group">
@@ -15,9 +20,10 @@
           </div>
         </div>
 
+
         <div class="input-group-inline">
           <div class="input-group">
-            <input type="text" placeholder="Mã Sinh Viên" v-model="maTv" />
+            <input type="text" placeholder="Mã Sinh Viên" v-model="maSv" />
           </div>
           <div class="input-group password-group">
             <input
@@ -52,7 +58,8 @@ const router = useRouter();
 
 const username = ref("");
 const email = ref("");
-const maTv = ref("");
+const fullName = ref("");
+const maSv = ref("");
 const password = ref("");
 const passwordVisible = ref(false);
 const isSubmitting = ref(false);
@@ -65,16 +72,17 @@ async function handleSubmit() {
     if (isSubmitting.value) return; 
 
     isSubmitting.value = true; 
-    if (!username.value || !email.value || !maTv.value || !password.value) {
+    if (!username.value || !email.value || !maSv.value || !password.value || !fullName.value) {
         window.$dialog.fail("Vui lòng nhập đầy đủ thông tin!"); 
         return;
     }
 
     const result = await userStore.register(
       username.value,
-      maTv.value,
+      maSv.value,
       password.value,
-      email.value
+      email.value,
+      fullName.value
     );
 
     // console.log("Kết quả từ server:", result);

@@ -79,7 +79,7 @@ const handleVerifyOtp = async () => {
     return;
   }
   
-  const result = await userStore.activateAccount(otpCode); 
+  const result = await userStore.activateAccount(email.value ,otpCode); 
 
   if (!result.success) {
     window.$dialog.fail(result.message);

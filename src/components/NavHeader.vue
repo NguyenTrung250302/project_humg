@@ -26,68 +26,111 @@
             </svg>
         </ul>
         <div class="nav-header-login">
-            <RouterLink to="/Login"><button class="btn-login">Đăng nhập</button></RouterLink>
+            <div v-if="userInfo">
+                <RouterLink to="/Profile">
+                <div class="user-info">
+                        <img :src="userInfo.urlAvatar" alt="User Avatar" class="user-avatar" />
+                        <p class="user-name">{{ userInfo.fullName }}</p>
+                    </div>
+                </RouterLink>
+            </div>
+            <div v-else>
+                <RouterLink to="/Login"><button class="btn-login">Đăng nhập</button></RouterLink>
+            </div>
         </div>
     </div>
 </template>
 
 <script setup>
+import { ref, onMounted } from 'vue';
+import { useUserStore } from '../store/userStore'; 
 import { RouterLink } from 'vue-router';
 
+const userStore = useUserStore();
+
+const userInfo = ref(null);
+onMounted(async () => {
+  await userStore.getMemberInfo(); 
+  userInfo.value = userStore.memberInfo; 
+});
 
 </script>
 
 <style scoped>
-    *{
-        text-decoration: none;
-        color: white;
-    }
-    .nav-header{
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        background-color: #2D3B8D;
-        font-weight: 550;
-        padding: 10px 0;
-    }
+*{
+    text-decoration: none;
+    color: white;
+}
+.nav-header{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #2D3B8D;
+    font-weight: 550;
+    padding: 10px 0;
+}
 
-    ul{
-        margin: 0;
-        padding: 15px; 
-        list-style: none;
-        cursor: pointer;
-    }
+ul{
+    margin: 0;
+    padding: 15px; 
+    list-style: none;
+    cursor: pointer;
+}
 
-    li{
-        font-size: 18px;
-        padding: 10px 15px;
-    }
+li{
+    font-size: 18px;
+    padding: 10px 15px;
+}
 
-    li:hover{
-        background-color: rgba(255, 255, 255, 0.367);
-        border-radius: 5px;
-    }
-    
-    .btn-login{
-        background-color:#2D3B8D;
-        outline: none;
-        border: 1px solid white;
-        padding: 8px 12px;
-        border-radius: 10px;
-        cursor: pointer;
-        font-weight: 550;
-        margin-left: 20px;
-    }
+li:hover{
+    background-color: rgba(255, 255, 255, 0.367);
+    border-radius: 5px;
+}
 
-    .btn-login:hover{
-        background-color: rgba(255, 255, 255, 0.2);
-    }
+.btn-login{
+    background-color:#2D3B8D;
+    outline: none;
+    border: 1px solid white;
+    padding: 8px 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 550;
+    margin-left: 20px;
+}
 
-    li:focus {
-        color: white;
-    }
+.btn-login:hover{
+    background-color: rgba(255, 255, 255, 0.2);
+}
 
-    .notify-container {
-        margin-right: 8px;
-    }
+li:focus {
+    color: white;
+}
+
+.notify-container {
+    margin-right: 8px;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    padding: 2px 8px;
+}
+
+.user-info:hover{
+    background-color: rgba(255, 255, 255, 0.367);
+    border-radius: 5px;
+}
+
+.user-avatar {
+    width:50px;
+    object-fit: cover;
+    height: 50px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.user-name {
+    font-size: 16px;
+    font-weight: 600;
+}
 </style>

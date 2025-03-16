@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 import { useUserStore } from "../store/userStore";
 import Header from "../components/Header.vue";
 import NavHeader from "../components/NavHeader.vue";
@@ -17,6 +17,31 @@ const confirmPassword = ref("");
 const selectedFile = ref(null); 
 const isPasswordVisible = ref(false); 
 
+
+
+const userInfo = ref(null);
+onMounted(async () => {
+  await userStore.getMemberInfo(); 
+  userInfo.value = userStore.memberInfo;
+  
+  if (userInfo.value?.birthdate) {
+    userInfo.value.birthdate = formatDate(userInfo.value.birthdate);
+  }
+  if (userInfo.value?.dateOfJoining) {
+    userInfo.value.dateOfJoining = formatDate(userInfo.value.dateOfJoining);
+  }
+  console.log(userInfo.value);
+});
+
+const formatDate = (dateString) => {
+  const date = new Date(dateString);
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const year = date.getFullYear();
+  
+  return `${day}/${month}/${year}`;
+};
+
 const togglePasswordForm = () => {
   showPasswordForm.value = !showPasswordForm.value;
 };
@@ -33,7 +58,7 @@ const submitPasswordChange = async () => {
     return;
   }
 
-  const result = await userStore.changePassword(oldPassword.value, newPassword.value);
+  const result = await userStore.changePassword(oldPassword.value, newPassword.value, confirmPassword.value);
 
   if (result.success) {
     window.$dialog.success(result.message);
@@ -53,7 +78,7 @@ const changeAvatar = (event) => {
     selectedFile.value = file;
     const reader = new FileReader();
     reader.onloadend = () => {
-      userStore.user.urlavartar = reader.result;
+      userInfo.value.urlAvatar = reader.result;
       isAvatarChanged.value = true; 
     };
     reader.readAsDataURL(file);
@@ -105,10 +130,10 @@ const togglePasswordVisibility = () => {
 
   <div class="profile-layout">
     <div class="profile-info">
-      <div class="avatar-section">
+      <div class="profile-avatar">
         <input type="file" id="avatar-upload" class="avatar-upload" @change="changeAvatar" />
         <label for="avatar-upload" class="avatar-label">
-          <img src="../assets/imgs/auth_imgs/schoollogo.png" alt="Avatar" class="avatar" />
+          <img :src="userInfo?.urlAvatar || ''" alt="Avatar" class="avatar-img" />
         </label>
         <label for="avatar-upload" class="change-avatar-text" style="text-decoration: none;">Thay đổi ảnh đại diện</label>
       </div>
@@ -119,22 +144,72 @@ const togglePasswordVisibility = () => {
         </button>
       </div>
 
-      <div class="email-section">
-        <div class="email-item">
-          <div class="email-title">Email:</div>
-          <div class="email-value">{{  }}</div>
+      <div class="profile-details">
+        <div class="profile-item">
+          <div class="profile-label">Họ Tên:</div>
+          <input type="text" :value="userInfo?.fullName || ''" class="profile-input" />
+        </div>
+        <div class="profile-item">
+          <div class="profile-label">Email:</div>
+          <input type="email" :value="userInfo?.email || ''" class="profile-input" disabled/>
+        </div>
+        <div class="profile-item">
+          <div class="profile-label">Số điện thoại:</div>
+          <input type="email" :value="userInfo?.phoneNumber || ''" class="profile-input"/>
+        </div>
+        <div class="profile-item">
+          <div class="profile-label">Mã sinh viên:</div>
+          <input type="email" :value="userInfo?.maSV || ''" class="profile-input" disabled/>
+        </div>
+        <div class="profile-item">
+          <div class="profile-label">Ngày sinh:</div>
+          <input type="text" :value="userInfo?.birthdate || ''" class="profile-input"/>
+        </div>
+        <div class="profile-item">
+          <div class="profile-label">Lớp:</div>
+          <input type="text" :value="userInfo?.class || ''" class="profile-input" />
+        </div>
+        <div class="profile-item">
+          <div class="profile-label">Quốc tịch:</div>
+          <input type="text" :value="userInfo?.nation || ''" class="profile-input" />
+        </div>
+        <div class="profile-item">
+          <div class="profile-label">Dân tộc:</div>
+          <input type="text" :value="userInfo?.religion || ''" class="profile-input"/>
+        </div>
+        <div class="profile-item">
+          <div class="profile-label">Chức vụ:</div>
+          <input type="text" :value="userInfo?.roleName || ''" class="profile-input" disabled/>
+        </div>
+        <div class="profile-item">
+          <div class="profile-label">Ngày gia nhập đoàn:</div>
+          <input type="text" :value="userInfo?.dateOfJoining || ''" class="profile-input"/>
+        </div>
+        <div class="profile-item">
+          <div class="profile-label">Nơi gia nhập đoàn:</div>
+          <input type="text" :value="userInfo?.placeOfJoining || ''" class="profile-input"/>
+        </div>
+        <div class="profile-item">
+          <div class="profile-label">Chính trị:</div>
+          <input type="text" :value="userInfo?.politicalTheory || ''" class="profile-input"/>
         </div>
       </div>
 
+      <div class="btn-logout">
+        <button @click="submitProfileChanges" class="btn-action">
+          Xác nhận sửa thông tin
+        </button>
+      </div>
+          
       <div class="action-buttons">
-        <div class="change-password">
-          <button @click="togglePasswordForm" class="btn-change-password">
+        <div class="btn-change-password">
+          <button @click="togglePasswordForm" class="btn-action">
             Đổi mật khẩu
           </button>
         </div>
 
-        <div class="logout">
-          <button @click="logout" class="btn-logout">
+        <div class="btn-logout">
+          <button @click="logout" class="btn-action">
             Đăng xuất
           </button>
         </div>
@@ -161,6 +236,7 @@ const togglePasswordVisibility = () => {
   <Footer></Footer>
 </template>
 
+
 <style scoped>
 .profile-layout {
   display: flex;
@@ -173,16 +249,16 @@ const togglePasswordVisibility = () => {
 
 .profile-info {
   width: 100%;
-  max-width: 600px;
+  max-width: 650px; 
   background-color: #fff;
-  padding: 20px;
+  padding: 30px; 
   border-radius: 10px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-.avatar-section {
+.profile-avatar {
   text-align: center;
-  margin-bottom: 20px;
+  margin-bottom: 30px;
   position: relative;
 }
 
@@ -196,22 +272,22 @@ const togglePasswordVisibility = () => {
   position: relative;
 }
 
-.avatar {
-  width: 120px;
-  height: 120px;
+.avatar-img {
+  width: 140px; 
+  height: 140px; 
   border-radius: 50%;
   object-fit: cover;
   border: 4px solid #007bff;
   transition: border 0.3s ease;
 }
 
-.avatar-label:hover .avatar {
+.avatar-label:hover .avatar-img {
   border-color: #0056b3;
 }
 
 .change-avatar-text {
   margin-top: 10px;
-  font-size: 14px;
+  font-size: 16px; 
   color: #007bff;
   cursor: pointer;
   text-decoration: underline;
@@ -222,11 +298,11 @@ const togglePasswordVisibility = () => {
 
 .confirm-avatar-change {
   text-align: center;
-  margin-top: 10px;
+  margin-top: 15px;
 }
 
 .btn-confirm-avatar-change {
-  padding: 10px 20px;
+  padding: 12px 25px;
   background-color: #28a745;
   color: white;
   font-size: 16px;
@@ -239,78 +315,72 @@ const togglePasswordVisibility = () => {
   background-color: #218838;
 }
 
-.email-section {
+.profile-details {
   font-size: 18px;
-  margin-bottom: 20px;
+  margin-bottom: 30px; 
 }
 
-.email-item {
+.profile-item {
   display: flex;
-  justify-content: flex-start;
+  justify-content: space-between; 
   align-items: center;
-  margin-bottom: 10px;
+  margin-bottom: 15px;
 }
 
-.email-title {
-  font-weight: bold;
+.profile-label {
+  font-weight: 600;
   color: #333;
+  width: 30%; 
   margin-right: 10px;
 }
 
-.email-value {
-  font-size: 16px;
-  color: #555;
+.profile-input {
+  font-size: 15px;
+  width: 65%;
+  padding: 12px;
+  margin-top: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
 }
 
 .action-buttons {
   display: flex;
   justify-content: space-between;
-  margin-top: 20px;
-}
-
-.change-password,
-.logout {
-  flex: 1;
-  margin: 0 10px;
+  margin-top: 25px;
 }
 
 .btn-change-password,
 .btn-logout {
+  flex: 1;
+  margin: 0 12px; 
+}
+
+.btn-action {
   width: 100%;
-  padding: 10px;
+  padding: 12px;
   font-size: 16px;
   border-radius: 5px;
   cursor: pointer;
 }
 
-.btn-change-password {
+.btn-action {
   background-color: #007bff;
   color: white;
   border: none;
 }
 
-.btn-logout {
-  background-color: #dc3545;
-  color: white;
-  border: none;
-}
-
-.btn-change-password:hover {
+.btn-action:hover {
   background-color: #0056b3;
 }
 
-.btn-logout:hover {
-  background-color: #c82333;
-}
-
 .password-form {
-  margin-top: 20px;
+  margin-top: 30px;
 }
 
 .input-field {
   width: 100%;
-  padding: 10px;
-  margin-bottom: 10px;
+  padding: 12px;
+  margin-bottom: 12px;
   border: 1px solid #ccc;
   border-radius: 5px;
   font-size: 16px;
@@ -318,7 +388,7 @@ const togglePasswordVisibility = () => {
 
 .btn-submit {
   width: 100%;
-  padding: 10px;
+  padding: 12px;
   background-color: #28a745;
   color: white;
   border: none;
