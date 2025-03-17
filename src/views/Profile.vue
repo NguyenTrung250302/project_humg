@@ -37,6 +37,21 @@ const togglePasswordVisibility = () => {
   isPasswordVisible.value = !isPasswordVisible.value;
 };
 
+// Hàm thay đổi avatar để nhận hình từ máy
+const changeAvatar = (event) => {
+  const file = event.target.files[0];
+  if (file) {
+    selectedFile.value = file;
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      userInfo.value.urlAvatar = reader.result;
+      isAvatarChanged.value = true; 
+    };
+    reader.readAsDataURL(file);
+  }
+};
+
+
 // get memberInfo
 const userInfo = ref({});
 onMounted(async () => {
@@ -49,8 +64,8 @@ onMounted(async () => {
   if (userInfo.value?.dateOfJoining) {
     userInfo.value.dateOfJoining = formatDate(userInfo.value.dateOfJoining);
   }
-  console.log(userInfo.value);
 });
+
 
 // Hàm đổi mật khẩu
 const submitPasswordChange = async () => {
@@ -77,6 +92,7 @@ const submitPasswordChange = async () => {
   }
 };
 
+
 // Hàm cập nhật thông tin member
 const updateProfile = async () => {
   const result = await userStore.updateProfile({
@@ -99,19 +115,18 @@ const updateProfile = async () => {
 };
 
 
-// Hàm thay đổi avatar
-const changeAvatar = (event) => {
-  const file = event.target.files[0];
-  if (file) {
-    selectedFile.value = file;
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      userInfo.value.urlAvatar = reader.result;
-      isAvatarChanged.value = true; 
-    };
-    reader.readAsDataURL(file);
+// Hàm cập nhật ảnh
+const updateAvatar = async () => {
+  window.$dialog.success("Vui lòng chờ...");
+  const result = await userStore.updateUserImage(selectedFile.value);
+  if (result.success) {
+    window.$dialog.success(result.message);
+  } else {
+    window.$dialog.fail(result.message);
   }
 };
+
+
 
 
 // Hàm đăng xuất
@@ -140,7 +155,7 @@ const logout = () => {
       </div>
 
       <div v-if="isAvatarChanged" class="confirm-avatar-change">
-        <button @click="" class="btn-confirm-avatar-change">
+        <button @click="updateAvatar" class="btn-confirm-avatar-change">
           Xác nhận thay đổi ảnh
         </button>
       </div>
@@ -251,16 +266,16 @@ const logout = () => {
 
 .profile-info {
   width: 100%;
-  max-width: 650px; 
+  max-width: 750px; 
   background-color: #fff;
-  padding: 30px; 
+  padding: 30px;
   border-radius: 10px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
 .profile-avatar {
   text-align: center;
-  margin-bottom: 30px;
+  margin-bottom: 20px;
   position: relative;
 }
 
@@ -275,8 +290,8 @@ const logout = () => {
 }
 
 .avatar-img {
-  width: 140px; 
-  height: 140px; 
+  width: 140px;
+  height: 140px;
   border-radius: 50%;
   object-fit: cover;
   border: 4px solid #007bff;
@@ -289,7 +304,7 @@ const logout = () => {
 
 .change-avatar-text {
   margin-top: 10px;
-  font-size: 16px; 
+  font-size: 16px;
   color: #007bff;
   cursor: pointer;
   text-decoration: underline;
@@ -318,29 +333,29 @@ const logout = () => {
 }
 
 .profile-details {
-  font-size: 18px;
-  margin-bottom: 30px; 
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  justify-content: space-between;
 }
 
 .profile-item {
   display: flex;
-  justify-content: space-between; 
-  align-items: center;
-  margin-bottom: 15px;
+  flex-direction: column;
+  width: calc(50% - 10px); 
 }
 
 .profile-label {
   font-weight: 600;
   color: #333;
-  width: 30%; 
-  margin-right: 10px;
+  margin-bottom: 5px;
 }
 
+
 .profile-input {
-  font-size: 15px;
-  width: 65%;
-  padding: 12px;
-  margin-top: 10px;
+  font-size: 14px;
+  width: 100%;
+  padding: 15px; 
   border: 1px solid #ccc;
   border-radius: 5px;
 }
@@ -354,11 +369,12 @@ const logout = () => {
 .btn-change-password,
 .btn-logout {
   flex: 1;
-  margin: 0 12px; 
+  margin: 0 12px;
 }
 
 .btn-action {
   width: 100%;
+  margin-top: 20px;
   padding: 12px;
   font-size: 16px;
   border-radius: 5px;
@@ -379,9 +395,14 @@ const logout = () => {
   margin-top: 30px;
 }
 
+.input-container {
+  position: relative;
+  width: 100%;
+}
+
 .input-field {
   width: 100%;
-  padding: 12px;
+  padding: 10px;
   margin-bottom: 12px;
   border: 1px solid #ccc;
   border-radius: 5px;
@@ -403,11 +424,6 @@ const logout = () => {
   background-color: #218838;
 }
 
-.input-container {
-  position: relative;
-  width: 100%;
-}
-
 .btn-toggle-password {
   position: absolute;
   right: 10px;
@@ -418,4 +434,5 @@ const logout = () => {
   color: #007bff;
   font-size: 20px;
 }
+
 </style>

@@ -10,7 +10,7 @@ export const useUserStore = defineStore("user", () => {
     
     // truyền token vào Bearear (token)
     const getAuthHeaders = () => {
-        const token = localStorage.getItem('accessToken'); // Lấy token từ localStorage (hoặc từ store)
+        const token = localStorage.getItem('accessToken'); // Lấy token từ localStorage 
         return {
             Authorization: `Bearer ${token}`,
             accept: '*/*',
@@ -294,8 +294,41 @@ export const useUserStore = defineStore("user", () => {
     };
     
     
-    
-    
+    // Hàm cập nhật ảnh người dùng
+    const updateUserImage = async (urlAvatar) => {
+        loading.value = true;
+        error.value = null;
+        
+        try {
+            const formData = new FormData();
+            formData.append("UrlAvatar", urlAvatar);  
+            
+            const response = await axios.put(
+                "https://localhost:7244/api/Controller_MemberInfo/Update_user_img", 
+                formData,
+                { 
+                    headers: {
+                        ...getAuthHeaders(),
+                        "Content-Type": "multipart/form-data"
+                    } 
+                }
+            );
+            
+            console.log(response.data);
+            
+            if (response.data.status === 200) {
+                return { success: true, message: response.data.message || "Cập nhật ảnh thành công!" };
+            } else {
+                return { success: false, message: response.data.message || "Cập nhật ảnh thất bại!" };
+            }
+        } catch (err) {
+            error.value = err.response?.data?.message || "Không thể kết nối tới server!";
+            return { success: false, message: error.value };
+        } finally {
+            loading.value = false;
+        }
+    };
+
     
     return { 
         loading, 
@@ -311,5 +344,6 @@ export const useUserStore = defineStore("user", () => {
         getMemberInfo,
         changePassword,
         updateProfile,
+        updateUserImage,
     };
 });

@@ -1,24 +1,32 @@
 <template>
     <div class="nav-header">
         <ul class="nav-header-ul">
-            <li class="nav-header-item" tabindex="0">
-                <RouterLink to="/">Trang chủ</RouterLink>
-            </li>
+            <RouterLink to="/">
+                <li class="nav-header-item" tabindex="0">
+                    Trang chủ
+                </li>
+            </RouterLink>
         </ul>
         <ul class="nav-header-ul">
-            <li class="nav-header-item" tabindex="0">
-                <RouterLink to="/MemberList">Danh sách đoàn viên</RouterLink>
-            </li>
+            <RouterLink to="/MemberList">
+                <li class="nav-header-item" tabindex="0">
+                    Danh sách đoàn viên
+                </li>
+            </RouterLink>
         </ul>
         <ul class="nav-header-ul">
-            <li class="nav-header-item" tabindex="0">
-                <RouterLink to="/">Khen thưởng / Kỉ luật</RouterLink>
-            </li>
+            <RouterLink to="/">
+                <li class="nav-header-item" tabindex="0">
+                    Khen thưởng / Kỉ luật
+                </li>
+             </RouterLink>
         </ul>
         <ul class="nav-header-ul">
-            <li class="nav-header-item" tabindex="0">
-                <RouterLink to="/">Lịch sử hoạt động</RouterLink>
-            </li>
+            <RouterLink to="/">
+                <li class="nav-header-item" tabindex="0">
+                    Lịch sử hoạt động
+                </li>
+            </RouterLink>
         </ul>
         <ul class="nav-header-ul notify-container">
             <svg class="notify-icon" width="18" height="19" viewBox="0 0 18 19" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -35,7 +43,9 @@
                 </RouterLink>
             </div>
             <div v-else>
-                <RouterLink to="/Login"><button class="btn-login">Đăng nhập</button></RouterLink>
+                <RouterLink to="/Login">
+                    <button class="btn-login">Đăng nhập</button>
+                </RouterLink>
             </div>
         </div>
     </div>
