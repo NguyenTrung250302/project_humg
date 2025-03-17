@@ -73,17 +73,13 @@ const isOtpComplete = computed(() => otp.value.every((digit) => digit !== ""));
 // Theo dõi sự thay đổi của OTP và cảnh báo nếu chưa nhập đủ
 watch(isOtpComplete, (newValue) => {
   if (!newValue) {
-    window.$dialog.warning("Bạn cần nhập đủ 6 số OTP!");
+    window.$dialog.fail("Bạn cần nhập đủ 6 số OTP!");
   }
 });
 
 // Xác thực OTP
 const handleVerifyOtp = async () => {
   const otpCode = otp.value.join(""); 
-  if (otpCode.length !== 6) {
-    window.$dialog.error("Vui lòng nhập đúng 6 chữ số OTP!");
-    return;
-  }
   
   const result = await userStore.activateAccount(email.value ,otpCode); 
 

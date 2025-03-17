@@ -17,9 +17,28 @@ const confirmPassword = ref("");
 const selectedFile = ref(null); 
 const isPasswordVisible = ref(false); 
 
+// Format ngày tháng
+const formatDate = (dateString) => {
+  const date = new Date(dateString);
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const year = date.getFullYear();
+  
+  return `${day}/${month}/${year}`;
+};
 
+// Ẩn hiện Form đổi mật khẩu
+const togglePasswordForm = () => {
+  showPasswordForm.value = !showPasswordForm.value;
+};
 
-const userInfo = ref(null);
+// Hàm thay đổi trạng thái hiển thị mật khẩu
+const togglePasswordVisibility = () => {
+  isPasswordVisible.value = !isPasswordVisible.value;
+};
+
+// get memberInfo
+const userInfo = ref({});
 onMounted(async () => {
   await userStore.getMemberInfo(); 
   userInfo.value = userStore.memberInfo;
@@ -32,19 +51,6 @@ onMounted(async () => {
   }
   console.log(userInfo.value);
 });
-
-const formatDate = (dateString) => {
-  const date = new Date(dateString);
-  const day = String(date.getDate()).padStart(2, '0');
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const year = date.getFullYear();
-  
-  return `${day}/${month}/${year}`;
-};
-
-const togglePasswordForm = () => {
-  showPasswordForm.value = !showPasswordForm.value;
-};
 
 // Hàm đổi mật khẩu
 const submitPasswordChange = async () => {
@@ -71,6 +77,28 @@ const submitPasswordChange = async () => {
   }
 };
 
+// Hàm cập nhật thông tin member
+const updateProfile = async () => {
+  const result = await userStore.updateProfile({
+    politicalTheory: userInfo.value.politicalTheory || undefined,
+    nation: userInfo.value.nation || undefined,
+    birthdate: userInfo.value.birthdate || undefined,
+    religion: userInfo.value.religion || undefined,
+    dateOfJoining: userInfo.value.dateOfJoining || undefined,
+    phoneNumber: userInfo.value.phoneNumber || undefined,
+    class: userInfo.value.class || undefined,
+    fullName: userInfo.value.fullName || undefined,
+    placeOfJoining: userInfo.value.placeOfJoining || undefined,
+  });
+
+  if (result.success) {
+    window.$dialog.success(result.message);
+  } else {
+    window.$dialog.fail(result.message);
+  }
+};
+
+
 // Hàm thay đổi avatar
 const changeAvatar = (event) => {
   const file = event.target.files[0];
@@ -85,29 +113,6 @@ const changeAvatar = (event) => {
   }
 };
 
-// Hàm xác nhận thay đổi avatar
-const submitAvatarChange = async () => {
-  if (!selectedFile.value) {
-    window.$dialog.fail("Vui lòng chọn ảnh để thay đổi!");
-    return;
-  }
-
-  window.$dialog.success("Loading...");
-  
-  const formData = new FormData();
-  formData.append("Urlavartar", selectedFile.value);
-  formData.append("Id", userStore.user.id); 
-
-  const result = await userStore.updateAvatar(formData);
-
-  if (result.success) {
-    window.$dialog.success(result.message);
-    isAvatarChanged.value = false; 
-    selectedFile.value = null; 
-  } else {
-    window.$dialog.fail(result.message);
-  }
-};
 
 // Hàm đăng xuất
 const logout = () => {
@@ -117,12 +122,8 @@ const logout = () => {
     router.push("/");
   }, 1500);
 };
-
-// Hàm thay đổi trạng thái hiển thị mật khẩu
-const togglePasswordVisibility = () => {
-  isPasswordVisible.value = !isPasswordVisible.value;
-};
 </script>
+
 
 <template>
   <Header></Header>
@@ -139,7 +140,7 @@ const togglePasswordVisibility = () => {
       </div>
 
       <div v-if="isAvatarChanged" class="confirm-avatar-change">
-        <button @click="submitAvatarChange" class="btn-confirm-avatar-change">
+        <button @click="" class="btn-confirm-avatar-change">
           Xác nhận thay đổi ảnh
         </button>
       </div>
@@ -147,7 +148,7 @@ const togglePasswordVisibility = () => {
       <div class="profile-details">
         <div class="profile-item">
           <div class="profile-label">Họ Tên:</div>
-          <input type="text" :value="userInfo?.fullName || ''" class="profile-input" />
+          <input v-model="userInfo.fullName" class="profile-input" />
         </div>
         <div class="profile-item">
           <div class="profile-label">Email:</div>
@@ -155,48 +156,48 @@ const togglePasswordVisibility = () => {
         </div>
         <div class="profile-item">
           <div class="profile-label">Số điện thoại:</div>
-          <input type="email" :value="userInfo?.phoneNumber || ''" class="profile-input"/>
+          <input v-model="userInfo.phoneNumber" type="email" class="profile-input"/>
         </div>
         <div class="profile-item">
           <div class="profile-label">Mã sinh viên:</div>
-          <input type="email" :value="userInfo?.maSV || ''" class="profile-input" disabled/>
+          <input :value="userInfo?.maSV || ''" class="profile-input" disabled/>
         </div>
         <div class="profile-item">
           <div class="profile-label">Ngày sinh:</div>
-          <input type="text" :value="userInfo?.birthdate || ''" class="profile-input"/>
+          <input v-model="userInfo.birthdate" type="text" class="profile-input"/>
         </div>
         <div class="profile-item">
           <div class="profile-label">Lớp:</div>
-          <input type="text" :value="userInfo?.class || ''" class="profile-input" />
+          <input v-model="userInfo.class" type="text" class="profile-input" />
         </div>
         <div class="profile-item">
           <div class="profile-label">Quốc tịch:</div>
-          <input type="text" :value="userInfo?.nation || ''" class="profile-input" />
+          <input v-model="userInfo.nation" type="text" class="profile-input" />
         </div>
         <div class="profile-item">
           <div class="profile-label">Dân tộc:</div>
-          <input type="text" :value="userInfo?.religion || ''" class="profile-input"/>
+          <input v-model="userInfo.religion" type="text" class="profile-input"/>
         </div>
         <div class="profile-item">
           <div class="profile-label">Chức vụ:</div>
-          <input type="text" :value="userInfo?.roleName || ''" class="profile-input" disabled/>
+          <input v-model="userInfo.roleName" type="text" class="profile-input" disabled/>
         </div>
         <div class="profile-item">
           <div class="profile-label">Ngày gia nhập đoàn:</div>
-          <input type="text" :value="userInfo?.dateOfJoining || ''" class="profile-input"/>
+          <input v-model="userInfo.dateOfJoining" type="text" class="profile-input"/>
         </div>
         <div class="profile-item">
           <div class="profile-label">Nơi gia nhập đoàn:</div>
-          <input type="text" :value="userInfo?.placeOfJoining || ''" class="profile-input"/>
+          <input v-model="userInfo.placeOfJoining" type="text" class="profile-input"/>
         </div>
         <div class="profile-item">
           <div class="profile-label">Chính trị:</div>
-          <input type="text" :value="userInfo?.politicalTheory || ''" class="profile-input"/>
+          <input v-model="userInfo.politicalTheory" type="text" class="profile-input"/>
         </div>
       </div>
 
       <div class="btn-logout">
-        <button @click="submitProfileChanges" class="btn-action">
+        <button @click="updateProfile" class="btn-action">
           Xác nhận sửa thông tin
         </button>
       </div>
@@ -235,6 +236,7 @@ const togglePasswordVisibility = () => {
 
   <Footer></Footer>
 </template>
+
 
 
 <style scoped>

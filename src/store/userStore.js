@@ -248,6 +248,53 @@ export const useUserStore = defineStore("user", () => {
             loading.value = false;
         }
     };
+
+
+    const updateProfile = async (
+        { politicalTheory, nation, birthdate, religion, dateOfJoining, phoneNumber, classValue, fullName, placeOfJoining }) => {
+        loading.value = true;
+        error.value = null;
+    
+        try {
+            const formData = new FormData();
+    
+            // Chỉ thêm vào FormData nếu giá trị không null hoặc undefined
+            if (politicalTheory) formData.append('PoliticalTheory', politicalTheory);
+            if (nation) formData.append('Nation', nation);
+            if (birthdate) formData.append('Birthdate', birthdate);
+            if (religion) formData.append('Religion', religion);
+            if (dateOfJoining) formData.append('DateOfJoining', dateOfJoining);
+            if (phoneNumber) formData.append('PhoneNumber', phoneNumber);
+            if (classValue) formData.append('Class', classValue);
+            if (fullName) formData.append('FullName', fullName);
+            if (placeOfJoining) formData.append('PlaceOfJoining', placeOfJoining);
+    
+            const response = await axios.put(
+                "https://localhost:7244/api/Controller_MemberInfo/Update_member_info", 
+                formData,
+                { 
+                    headers: {
+                        ...getAuthHeaders(), 
+                        "Content-Type": "multipart/form-data"
+                    } 
+                }
+            );
+            console.log(response.data);
+            if (response.data.status === 200) {
+                return { success: true, message: response.data.message };
+            } else {
+                return { success: false, message: response.data.message };
+            }
+        } catch (err) {
+            error.value = err.response?.data?.message || "Không thể kết nối tới server!";
+            return { success: false, message: error.value };
+        } finally {
+            loading.value = false;
+        }
+    };
+    
+    
+    
     
     
     return { 
@@ -263,5 +310,6 @@ export const useUserStore = defineStore("user", () => {
         memberInfo,
         getMemberInfo,
         changePassword,
+        updateProfile,
     };
 });
