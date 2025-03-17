@@ -61,9 +61,18 @@ const handleLogin = async () => {
 
   const result = await userStore.login(username.value, password.value);
 
-  if (!result || !result.success) {
+ 
+  if(result.message === "Mã xác nhận đã hết hạn! Đã gửi mã mới qua email của bạn."){
+    window.$dialog.fail(result.message);
+      setTimeout(() => {
+      router.push("/VerifyEmail");
+    }, 1000);
+    return;
+  }else{
+    if (!result || !result.success) {
     window.$dialog.fail(result?.message || "Đăng nhập thất bại!");
     return;
+    }
   }
 
   window.$dialog.success(result.message);

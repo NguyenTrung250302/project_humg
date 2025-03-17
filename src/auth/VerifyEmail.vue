@@ -19,6 +19,12 @@
         />
       </div>
 
+      <p class="resenOtp">Nếu mã xác thực hết hạn vui lòng 
+        <RouterLink to="/Login">
+           <b style="color: #2D3B8D;">ĐĂNG NHẬP</b>
+        </RouterLink> lại để nhận mã !
+      </p>
+
       <button class="confirm-btn" @click="handleVerifyOtp" :disabled="!isOtpComplete">
         <span>XÁC NHẬN</span>
       </button>
@@ -94,6 +100,9 @@ const handleVerifyOtp = async () => {
 
 
 <style scoped>
+*{
+  text-decoration: none;
+}
 #forgotpassword-container {
   margin: 0;
   padding: 0;
@@ -136,6 +145,12 @@ h2 {
 
 .email-info {
   font-size: 14px;
+  color: #333;
+  margin-bottom: 15px;
+}
+
+.resenOtp{
+   font-size: 14px;
   color: #333;
   margin-bottom: 15px;
 }
