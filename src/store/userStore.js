@@ -164,12 +164,15 @@ export const useUserStore = defineStore("user", () => {
                 }
             );
             
+            console.log(response);
             if (response.data.status === 200 && response.data.data) {
                 localStorage.setItem("accessToken", response.data.data.accessToken);
+                localStorage.removeItem("userEmail");
                 user.value = response.data.data;
                 
                 return { success: true, message: response.data.message || "Đăng nhập thành công!" };
             } else {
+                localStorage.setItem("userEmail", response.data.data.email);
                 return { success: false, message: response.data.message || "Đăng nhập thất bại!" };
             }
         } catch (err) {
