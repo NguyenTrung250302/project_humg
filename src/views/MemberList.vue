@@ -7,18 +7,17 @@ import Footer from "../components/Footer.vue";
 
 const store = useManagerStore();
 
-
 const formatDate = (dateString) => {
   const date = new Date(dateString);
-  const day = String(date.getDate()).padStart(2, '0');
-  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, "0");
+  const month = String(date.getMonth() + 1).padStart(2, "0");
   const year = date.getFullYear();
-  
+
   return `${day}/${month}/${year}`;
 };
 
 onMounted(async () => {
-  await store.getMemberList(1); 
+  await store.getMemberList(1);
 });
 </script>
 
@@ -28,10 +27,7 @@ onMounted(async () => {
   <div class="container">
     <header>
       <div class="search-box">
-        <input
-          type="text"
-          placeholder="Tìm kiếm sinh viên theo tên hoặc mã sinh viên"
-        />
+        <input type="text" placeholder="Tìm kiếm sinh viên theo tên hoặc mã sinh viên" />
       </div>
       <h1>ĐOÀN VIÊN</h1>
     </header>
@@ -56,12 +52,12 @@ onMounted(async () => {
           >
             <td>
               <img class="avatar" :src="member.urlAvatar" alt="avatar" />
-              {{ member.fullName }} 
+              {{ member.fullName }}
             </td>
             <td>{{ member.roleName }}</td>
             <td>{{ member.class }}</td>
             <td>{{ member.email }}</td>
-            <td>{{ formatDate(member.birthdate) }}</td> 
+            <td>{{ formatDate(member.birthdate) }}</td>
             <td>
               <button class="action-btn"></button>
             </td>
@@ -69,10 +65,23 @@ onMounted(async () => {
         </tbody>
       </table>
     </div>
+
+    <div class="pagination">
+      <button @click="store.goToPage(store.currentPage - 1)" :disabled="store.currentPage === 1">
+        Trang trước
+      </button>
+
+      <span v-for="page in store.totalPages" :key="page" @click="store.goToPage(page)" :class="{ active: store.currentPage === page }">
+        {{ page }}
+      </span>
+
+      <button @click="store.goToPage(store.currentPage + 1)" :disabled="store.currentPage === store.totalPages">
+        Trang sau
+      </button>
+    </div>
   </div>
   <Footer></Footer>
 </template>
-
 
 <style scoped>
 .container {
@@ -143,6 +152,20 @@ th {
   text-align: center;
 }
 
+.pagination button {
+  margin: 0 5px;
+  padding: 5px 10px;
+  border: none;
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+}
+
+.pagination button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
 .pagination span {
   margin: 0 5px;
   cursor: pointer;
@@ -150,5 +173,6 @@ th {
 
 .pagination .active {
   font-weight: bold;
+  color: red;
 }
 </style>
