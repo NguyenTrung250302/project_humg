@@ -115,16 +115,20 @@ const updateProfile = async () => {
 };
 
 
-// Hàm cập nhật ảnh
 const updateAvatar = async () => {
   window.$dialog.success("Vui lòng chờ...");
   const result = await userStore.updateUserImage(selectedFile.value);
+
   if (result.success) {
     window.$dialog.success(result.message);
+    setTimeout(() => {
+      location.reload(); 
+    }, 1000);
   } else {
     window.$dialog.fail(result.message);
   }
 };
+
 
 
 
