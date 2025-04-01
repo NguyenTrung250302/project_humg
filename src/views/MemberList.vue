@@ -23,16 +23,6 @@ const formatDate = (dateString) => {
 const searchMembers = async () => {
   const searchValue = searchQuery.value.trim();
 
-  // Nếu searchValue rỗng, load lại danh sách ban đầu từ store
-  if (!searchValue) {
-    memberList.value = store.members.filter(
-      (member) =>
-        member.roleName !== "Liên chi đoàn khoa" &&
-        member.roleName !== "Bí thư đoàn viên"
-    );
-    return;
-  }
-
   // Tạo object params rỗng
   const params = {};
 
@@ -69,7 +59,12 @@ const searchMembers = async () => {
 // Gọi hàm lấy danh sách thành viên khi component được mount
 onMounted(async () => {
   await store.getMemberList(1);
-  memberList.value = store.members; // Cập nhật danh sách trung gian ban đầu
+  memberList.value = store.members.filter(
+    (member) =>
+      member.roleName &&
+      member.roleName !== "Liên chi đoàn khoa" &&
+      member.roleName !== "Bí thư đoàn viên"
+  ); // Cập nhật danh sách trung gian ban đầu với lọc
 });
 </script>
 
@@ -81,7 +76,7 @@ onMounted(async () => {
       <div class="search-box">
         <input
           type="text"
-          placeholder="Tìm kiếm theo mã sinh viên, tên, email, số điện thoại, trạng thái"
+          placeholder="Tìm kiếm theo mã sinh viên, tên, email, số điện thoại"
           v-model="searchQuery"
         />
         <button @click="searchMembers">Tìm kiếm</button>

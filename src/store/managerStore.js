@@ -36,14 +36,7 @@ export const useManagerStore = defineStore("manager", () => {
         response.data.items &&
         Array.isArray(response.data.items)
       ) {
-        const filteredMembers = response.data.items.filter(
-          (member) =>
-            member.roleName &&
-            member.roleName !== "Liên chi đoàn khoa" &&
-            member.roleName !== "Bí thư đoàn viên"
-        );
-
-        members.value = filteredMembers;
+        members.value = response.data.items;
         totalItems.value = response.data.totalItems;
         totalPages.value = response.data.totalPages;
         currentPage.value = response.data.currentPage;
