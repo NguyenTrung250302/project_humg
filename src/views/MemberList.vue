@@ -1,12 +1,15 @@
 <script setup>
-import { onMounted } from "vue";
+import { onMounted, ref } from "vue";
 import { useManagerStore } from "../store/managerStore";
 import Header from "../components/Header.vue";
 import NavHeader from "../components/NavHeader.vue";
 import Footer from "../components/Footer.vue";
 
 const store = useManagerStore();
+const memberList = ref([]); // Danh sách trung gian để lưu trữ thành viên
+const searchQuery = ref(""); // Biến để lưu truy vấn tìm kiếm
 
+// Hàm định dạng ngày
 const formatDate = (dateString) => {
   const date = new Date(dateString);
   const day = String(date.getDate()).padStart(2, "0");
@@ -16,8 +19,35 @@ const formatDate = (dateString) => {
   return `${day}/${month}/${year}`;
 };
 
+// Hàm tìm kiếm thành viên
+const searchMembers = async () => {
+  const params = {
+    FullName: searchQuery.value, // Tìm kiếm theo tên
+    // Bạn có thể thêm các tham số khác nếu cần
+  };
+
+  const result = await store.searchMembers(params);
+  if (result.success) {
+    // Lọc bỏ các member có roleName là "Liên chi đoàn khoa" và "Bí thư đoàn viên"
+    memberList.value = result.data.items
+      .filter(
+        (member) =>
+          member.roleName !== "Liên chi đoàn khoa" &&
+          member.roleName !== "Bí thư đoàn viên"
+      )
+      .map((member) => ({
+        ...member,
+        // Bạn có thể thêm các chuyển đổi khác nếu cần
+      }));
+  } else {
+    console.error(result.message);
+  }
+};
+
+// Gọi hàm lấy danh sách thành viên khi component được mount
 onMounted(async () => {
   await store.getMemberList(1);
+  memberList.value = store.members; // Cập nhật danh sách trung gian ban đầu
 });
 </script>
 
@@ -27,7 +57,12 @@ onMounted(async () => {
   <div class="container">
     <header>
       <div class="search-box">
-        <input type="text" placeholder="Tìm kiếm sinh viên theo tên hoặc mã sinh viên" />
+        <input
+          type="text"
+          placeholder="Tìm kiếm theo mã sinh viên, tên, email, số điện thoại, trạng thái"
+          v-model="searchQuery"
+          @input="searchMembers"
+        />
       </div>
       <h1>ĐOÀN VIÊN</h1>
     </header>
@@ -46,7 +81,7 @@ onMounted(async () => {
         </thead>
         <tbody>
           <tr
-            v-for="(member, index) in store.members"
+            v-for="(member, index) in memberList"
             :key="index"
             :class="{ 'even-row': index % 2 === 1 }"
           >
@@ -67,15 +102,26 @@ onMounted(async () => {
     </div>
 
     <div class="pagination">
-      <button @click="store.goToPage(store.currentPage - 1)" :disabled="store.currentPage === 1">
+      <button
+        @click="store.goToPage(store.currentPage - 1)"
+        :disabled="store.currentPage === 1"
+      >
         Trang trước
       </button>
 
-      <span v-for="page in store.totalPages" :key="page" @click="store.goToPage(page)" :class="{ active: store.currentPage === page }">
+      <span
+        v-for="page in store.totalPages"
+        :key="page"
+        @click="store.goToPage(page)"
+        :class="{ active: store.currentPage === page }"
+      >
         {{ page }}
       </span>
 
-      <button @click="store.goToPage(store.currentPage + 1)" :disabled="store.currentPage === store.totalPages">
+      <button
+        @click="store.goToPage(store.currentPage + 1)"
+        :disabled="store.currentPage === store.totalPages"
+      >
         Trang sau
       </button>
     </div>
