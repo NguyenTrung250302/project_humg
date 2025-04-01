@@ -13,13 +13,12 @@
         </div>
         <div class="input-group-inline">
           <div class="input-group">
-            <input type="text" placeholder="Tên người dùng" v-model="username" />
+            <input type="text" placeholder="Tên đăng nhập" v-model="username" />
           </div>
           <div class="input-group">
             <input type="email" placeholder="Email" v-model="email" />
           </div>
         </div>
-
 
         <div class="input-group-inline">
           <div class="input-group">
@@ -41,7 +40,9 @@
       </form>
 
       <div class="auth-links">
-        <a href="/ForgotPassword" class="ForgotPassword">Quên mật khẩu? &nbsp;</a>
+        <a href="/ForgotPassword" class="ForgotPassword"
+          >Quên mật khẩu? &nbsp;</a
+        >
         <a href="/Login" class="Register">Đăng nhập</a>
       </div>
     </div>
@@ -51,7 +52,7 @@
 <script setup>
 import { ref } from "vue";
 import { useUserStore } from "../store/userStore";
-import { useRouter } from 'vue-router';
+import { useRouter } from "vue-router";
 
 const userStore = useUserStore();
 const router = useRouter();
@@ -69,41 +70,43 @@ function togglePasswordVisibility() {
 }
 
 async function handleSubmit() {
-    if (isSubmitting.value) return; 
+  if (isSubmitting.value) return;
 
-    isSubmitting.value = true; 
-    if (!username.value || !email.value || !maSv.value || !password.value || !fullName.value) {
-        window.$dialog.fail("Vui lòng nhập đầy đủ thông tin!"); 
-        return;
-    }
+  isSubmitting.value = true;
+  if (
+    !username.value ||
+    !email.value ||
+    !maSv.value ||
+    !password.value ||
+    !fullName.value
+  ) {
+    window.$dialog.fail("Vui lòng nhập đầy đủ thông tin!");
+    return;
+  }
 
-    const result = await userStore.register(
-      username.value,
-      maSv.value,
-      password.value,
-      email.value,
-      fullName.value
-    );
+  const result = await userStore.register(
+    username.value,
+    maSv.value,
+    password.value,
+    email.value,
+    fullName.value
+  );
 
-    // console.log("Kết quả từ server:", result);
+  // console.log("Kết quả từ server:", result);
 
-    if (!result || !result.success) {
-      window.$dialog.fail(result?.message || "Lỗi không xác định!");
-    } else {
-      window.$dialog.success(result.message);
-      localStorage.setItem("userEmail", email.value);
-      setTimeout(() => {
-        router.push("/VerifyEmail")
-      }, 1000);
-    }
+  if (!result || !result.success) {
+    window.$dialog.fail(result?.message || "Lỗi không xác định!");
+  } else {
+    window.$dialog.success(result.message);
+    localStorage.setItem("userEmail", email.value);
+    setTimeout(() => {
+      router.push("/VerifyEmail");
+    }, 1000);
+  }
 
-    isSubmitting.value = false;
+  isSubmitting.value = false;
 }
-
-
 </script>
-
-
 
 <style scoped>
 /* Container chính */

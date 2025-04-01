@@ -84,7 +84,7 @@ export const useManagerStore = defineStore("manager", () => {
         `https://localhost:7244/api/Controller_MemberInfo/Search_Member?${params.toString()}`,
         {
           headers: {
-            // ...getAuthHeaders(),
+            ...getAuthHeaders(),
           },
         }
       );

@@ -21,10 +21,33 @@ const formatDate = (dateString) => {
 
 // Hàm tìm kiếm thành viên
 const searchMembers = async () => {
-  const params = {
-    FullName: searchQuery.value, // Tìm kiếm theo tên
-    // Bạn có thể thêm các tham số khác nếu cần
-  };
+  const searchValue = searchQuery.value.trim();
+
+  // Nếu searchValue rỗng, load lại danh sách ban đầu từ store
+  if (!searchValue) {
+    memberList.value = store.members.filter(
+      (member) =>
+        member.roleName !== "Liên chi đoàn khoa" &&
+        member.roleName !== "Bí thư đoàn viên"
+    );
+    return;
+  }
+
+  // Tạo object params rỗng
+  const params = {};
+
+  // Kiểm tra giá trị searchValue để xác định đang tìm kiếm theo trường nào
+  if (/^\d+$/.test(searchValue)) {
+    // Nếu searchValue chỉ chứa số -> có thể là MaSV hoặc PhoneNumber
+    params.MaSV = searchValue;
+    params.PhoneNumber = searchValue;
+  } else if (searchValue.includes("@")) {
+    // Nếu searchValue chứa @ -> có thể là email
+    params.Email = searchValue;
+  } else {
+    // Trường hợp còn lại -> tìm theo tên
+    params.FullName = searchValue;
+  }
 
   const result = await store.searchMembers(params);
   if (result.success) {
@@ -37,7 +60,6 @@ const searchMembers = async () => {
       )
       .map((member) => ({
         ...member,
-        // Bạn có thể thêm các chuyển đổi khác nếu cần
       }));
   } else {
     console.error(result.message);
@@ -61,10 +83,10 @@ onMounted(async () => {
           type="text"
           placeholder="Tìm kiếm theo mã sinh viên, tên, email, số điện thoại, trạng thái"
           v-model="searchQuery"
-          @input="searchMembers"
         />
+        <button @click="searchMembers">Tìm kiếm</button>
       </div>
-      <h1>ĐOÀN VIÊN</h1>
+      <h1>DANH SÁCH ĐOÀN VIÊN</h1>
     </header>
 
     <div class="table-container">
@@ -148,15 +170,31 @@ header {
 }
 
 .search-box input {
-  width: 50%;
+  width: 70%;
   padding: 10px;
   font-size: 16px;
   border: 2px solid #ddd;
   border-radius: 5px;
+  margin-right: 10px;
+}
+
+.search-box button {
+  padding: 10px 15px;
+  font-size: 16px;
+  border: none;
+  border-radius: 5px;
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.search-box button:hover {
+  background-color: #0056b3;
 }
 
 .table-container {
-  margin: 20px;
+  margin: 40px;
 }
 
 table {
@@ -194,17 +232,19 @@ th {
 }
 
 .pagination {
-  margin-top: 10px;
+  margin-top: 20px;
   text-align: center;
 }
 
 .pagination button {
   margin: 0 5px;
-  padding: 5px 10px;
+  padding: 10px 15px;
   border: none;
+  border-radius: 5px;
   background-color: #007bff;
   color: white;
   cursor: pointer;
+  transition: background-color 0.3s;
 }
 
 .pagination button:disabled {
@@ -214,11 +254,19 @@ th {
 
 .pagination span {
   margin: 0 5px;
+  padding: 10px 15px;
   cursor: pointer;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+}
+
+.pagination span:hover {
+  background-color: #f0f0f0;
 }
 
 .pagination .active {
   font-weight: bold;
-  color: red;
+  color: #007bff;
+  background-color: #e7f1ff;
 }
 </style>

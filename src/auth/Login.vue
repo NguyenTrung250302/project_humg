@@ -10,7 +10,7 @@
       <!-- Form -->
       <form @submit.prevent="handleLogin">
         <div class="input-group">
-          <input type="text" placeholder="Nhập MSSV hoặc Tên đăng nhập" v-model="username" />
+          <input type="text" placeholder="Tên đăng nhập" v-model="username" />
         </div>
 
         <div class="input-group">
@@ -30,8 +30,10 @@
 
       <!-- Các nút quên mật khẩu và đăng ký -->
       <div class="auth-links">
-        <RouterLink to="/ForgotPassword" class="forgot-password">Quên mật khẩu?</RouterLink>
-        <RouterLink  to="/Register" class="register">Đăng ký</RouterLink>
+        <RouterLink to="/ForgotPassword" class="forgot-password"
+          >Quên mật khẩu?</RouterLink
+        >
+        <RouterLink to="/Register" class="register">Đăng ký</RouterLink>
       </div>
     </div>
   </div>
@@ -61,26 +63,29 @@ const handleLogin = async () => {
 
   const result = await userStore.login(username.value, password.value);
 
- 
-  if(result.message === "Tài khoản chưa được kích hoạt! Vui lòng kiểm tra email và kích hoạt tài khoản."){
+  if (
+    result.message ===
+    "Tài khoản chưa được kích hoạt! Vui lòng kiểm tra email và kích hoạt tài khoản."
+  ) {
     window.$dialog.fail(result.message);
-      setTimeout(() => {
+    setTimeout(() => {
       router.push("/VerifyEmail");
     }, 1000);
     return;
   }
-  if(result.message === "Mã xác nhận đã hết hạn! Đã gửi mã mới qua email của bạn."){
+  if (
+    result.message ===
+    "Mã xác nhận đã hết hạn! Đã gửi mã mới qua email của bạn."
+  ) {
     window.$dialog.fail(result.message);
-      setTimeout(() => {
+    setTimeout(() => {
       router.push("/VerifyEmail");
     }, 1000);
     return;
-  }
-  
-  else{
+  } else {
     if (!result || !result.success) {
-    window.$dialog.fail(result?.message || "Đăng nhập thất bại!");
-    return;
+      window.$dialog.fail(result?.message || "Đăng nhập thất bại!");
+      return;
     }
   }
 
@@ -90,7 +95,6 @@ const handleLogin = async () => {
   }, 1000);
 };
 </script>
-
 
 <style scoped>
 #container_login {

@@ -4,26 +4,28 @@ import { useUserStore } from "../store/userStore";
 import Header from "../components/Header.vue";
 import NavHeader from "../components/NavHeader.vue";
 import Footer from "../components/Footer.vue";
-import { useRouter } from "vue-router"; 
+import { useRouter } from "vue-router";
 
 const userStore = useUserStore();
-const router = useRouter(); 
+const router = useRouter();
 
 const showPasswordForm = ref(false);
 const isAvatarChanged = ref(false);
 const oldPassword = ref("");
 const newPassword = ref("");
 const confirmPassword = ref("");
-const selectedFile = ref(null); 
-const isPasswordVisible = ref(false); 
+const selectedFile = ref(null);
+const isOldPasswordVisible = ref(false);
+const isNewPasswordVisible = ref(false);
+const isConfirmPasswordVisible = ref(false);
 
 // Format ngày tháng
 const formatDate = (dateString) => {
   const date = new Date(dateString);
-  const day = String(date.getDate()).padStart(2, '0');
-  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, "0");
+  const month = String(date.getMonth() + 1).padStart(2, "0");
   const year = date.getFullYear();
-  
+
   return `${day}/${month}/${year}`;
 };
 
@@ -32,9 +34,19 @@ const togglePasswordForm = () => {
   showPasswordForm.value = !showPasswordForm.value;
 };
 
-// Hàm thay đổi trạng thái hiển thị mật khẩu
-const togglePasswordVisibility = () => {
-  isPasswordVisible.value = !isPasswordVisible.value;
+// Hàm thay đổi trạng thái hiển thị mật khẩu cũ
+const toggleOldPasswordVisibility = () => {
+  isOldPasswordVisible.value = !isOldPasswordVisible.value;
+};
+
+// Hàm thay đổi trạng thái hiển thị mật khẩu mới
+const toggleNewPasswordVisibility = () => {
+  isNewPasswordVisible.value = !isNewPasswordVisible.value;
+};
+
+// Hàm thay đổi trạng thái hiển thị mật khẩu xác nhận
+const toggleConfirmPasswordVisibility = () => {
+  isConfirmPasswordVisible.value = !isConfirmPasswordVisible.value;
 };
 
 // Hàm thay đổi avatar để nhận hình từ máy
@@ -45,19 +57,18 @@ const changeAvatar = (event) => {
     const reader = new FileReader();
     reader.onloadend = () => {
       userInfo.value.urlAvatar = reader.result;
-      isAvatarChanged.value = true; 
+      isAvatarChanged.value = true;
     };
     reader.readAsDataURL(file);
   }
 };
 
-
 // get memberInfo
 const userInfo = ref({});
 onMounted(async () => {
-  await userStore.getMemberInfo(); 
+  await userStore.getMemberInfo();
   userInfo.value = userStore.memberInfo;
-  
+
   if (userInfo.value?.birthdate) {
     userInfo.value.birthdate = formatDate(userInfo.value.birthdate);
   }
@@ -65,7 +76,6 @@ onMounted(async () => {
     userInfo.value.dateOfJoining = formatDate(userInfo.value.dateOfJoining);
   }
 });
-
 
 // Hàm đổi mật khẩu
 const submitPasswordChange = async () => {
@@ -79,7 +89,11 @@ const submitPasswordChange = async () => {
     return;
   }
 
-  const result = await userStore.changePassword(oldPassword.value, newPassword.value, confirmPassword.value);
+  const result = await userStore.changePassword(
+    oldPassword.value,
+    newPassword.value,
+    confirmPassword.value
+  );
 
   if (result.success) {
     window.$dialog.success(result.message);
@@ -91,7 +105,6 @@ const submitPasswordChange = async () => {
     window.$dialog.fail(result.message);
   }
 };
-
 
 // Hàm cập nhật thông tin member
 const updateProfile = async () => {
@@ -114,7 +127,6 @@ const updateProfile = async () => {
   }
 };
 
-
 const updateAvatar = async () => {
   window.$dialog.success("Vui lòng chờ...");
   const result = await userStore.updateUserImage(selectedFile.value);
@@ -122,16 +134,12 @@ const updateAvatar = async () => {
   if (result.success) {
     window.$dialog.success(result.message);
     setTimeout(() => {
-      location.reload(); 
+      location.reload();
     }, 1000);
   } else {
     window.$dialog.fail(result.message);
   }
 };
-
-
-
-
 
 // Hàm đăng xuất
 const logout = () => {
@@ -143,7 +151,6 @@ const logout = () => {
 };
 </script>
 
-
 <template>
   <Header></Header>
   <NavHeader></NavHeader>
@@ -151,11 +158,25 @@ const logout = () => {
   <div class="profile-layout">
     <div class="profile-info">
       <div class="profile-avatar">
-        <input type="file" id="avatar-upload" class="avatar-upload" @change="changeAvatar" />
+        <input
+          type="file"
+          id="avatar-upload"
+          class="avatar-upload"
+          @change="changeAvatar"
+        />
         <label for="avatar-upload" class="avatar-label">
-          <img :src="userInfo?.urlAvatar || ''" alt="Avatar" class="avatar-img" />
+          <img
+            :src="userInfo?.urlAvatar || ''"
+            alt="Avatar"
+            class="avatar-img"
+          />
         </label>
-        <label for="avatar-upload" class="change-avatar-text" style="text-decoration: none;">Thay đổi ảnh đại diện</label>
+        <label
+          for="avatar-upload"
+          class="change-avatar-text"
+          style="text-decoration: none"
+          >Thay đổi ảnh đại diện</label
+        >
       </div>
 
       <div v-if="isAvatarChanged" class="confirm-avatar-change">
@@ -171,19 +192,32 @@ const logout = () => {
         </div>
         <div class="profile-item">
           <div class="profile-label">Email:</div>
-          <input type="email" :value="userInfo?.email || ''" class="profile-input" disabled/>
+          <input
+            type="email"
+            :value="userInfo?.email || ''"
+            class="profile-input"
+            disabled
+          />
         </div>
         <div class="profile-item">
           <div class="profile-label">Số điện thoại:</div>
-          <input v-model="userInfo.phoneNumber" type="email" class="profile-input"/>
+          <input
+            v-model="userInfo.phoneNumber"
+            type="email"
+            class="profile-input"
+          />
         </div>
         <div class="profile-item">
           <div class="profile-label">Mã sinh viên:</div>
-          <input :value="userInfo?.maSV || ''" class="profile-input" disabled/>
+          <input :value="userInfo?.maSV || ''" class="profile-input" disabled />
         </div>
         <div class="profile-item">
           <div class="profile-label">Ngày sinh:</div>
-          <input v-model="userInfo.birthdate" type="text" class="profile-input"/>
+          <input
+            v-model="userInfo.birthdate"
+            type="text"
+            class="profile-input"
+          />
         </div>
         <div class="profile-item">
           <div class="profile-label">Lớp:</div>
@@ -195,32 +229,53 @@ const logout = () => {
         </div>
         <div class="profile-item">
           <div class="profile-label">Dân tộc:</div>
-          <input v-model="userInfo.religion" type="text" class="profile-input"/>
+          <input
+            v-model="userInfo.religion"
+            type="text"
+            class="profile-input"
+          />
         </div>
         <div class="profile-item">
           <div class="profile-label">Chức vụ:</div>
-          <input v-model="userInfo.roleName" type="text" class="profile-input" disabled/>
+          <input
+            v-model="userInfo.roleName"
+            type="text"
+            class="profile-input"
+            disabled
+          />
         </div>
         <div class="profile-item">
           <div class="profile-label">Ngày gia nhập đoàn:</div>
-          <input v-model="userInfo.dateOfJoining" type="text" class="profile-input"/>
+          <input
+            v-model="userInfo.dateOfJoining"
+            type="text"
+            class="profile-input"
+          />
         </div>
         <div class="profile-item">
           <div class="profile-label">Nơi gia nhập đoàn:</div>
-          <input v-model="userInfo.placeOfJoining" type="text" class="profile-input"/>
+          <input
+            v-model="userInfo.placeOfJoining"
+            type="text"
+            class="profile-input"
+          />
         </div>
         <div class="profile-item">
           <div class="profile-label">Chính trị:</div>
-          <input v-model="userInfo.politicalTheory" type="text" class="profile-input"/>
+          <input
+            v-model="userInfo.politicalTheory"
+            type="text"
+            class="profile-input"
+          />
         </div>
       </div>
 
       <div class="btn-logout">
         <button @click="updateProfile" class="btn-action">
-          Xác nhận sửa thông tin
+          Xác nhận cập nhật thông tin
         </button>
       </div>
-          
+
       <div class="action-buttons">
         <div class="btn-change-password">
           <button @click="togglePasswordForm" class="btn-action">
@@ -229,34 +284,62 @@ const logout = () => {
         </div>
 
         <div class="btn-logout">
-          <button @click="logout" class="btn-action">
-            Đăng xuất
-          </button>
+          <button @click="logout" class="btn-action">Đăng xuất</button>
         </div>
       </div>
 
       <div v-if="showPasswordForm" class="password-form">
         <div class="input-container">
-          <input v-model="oldPassword" :type="isPasswordVisible ? 'text' : 'password'" placeholder="Mật khẩu cũ" class="input-field" />
-          <button @click="togglePasswordVisibility" class="btn-toggle-password">{{ isPasswordVisible ? "🙈" : "👁️" }}</button>
+          <input
+            v-model="oldPassword"
+            :type="isOldPasswordVisible ? 'text' : 'password'"
+            placeholder="Mật khẩu cũ"
+            class="input-field"
+          />
+          <button
+            @click="toggleOldPasswordVisibility"
+            class="btn-toggle-password"
+          >
+            {{ isOldPasswordVisible ? "🙈" : "👁️" }}
+          </button>
         </div>
         <div class="input-container">
-          <input v-model="newPassword" :type="isPasswordVisible ? 'text' : 'password'" placeholder="Mật khẩu mới" class="input-field" />
-          <button @click="togglePasswordVisibility" class="btn-toggle-password">{{ isPasswordVisible ? "🙈" : "👁️" }}</button>
+          <input
+            v-model="newPassword"
+            :type="isNewPasswordVisible ? 'text' : 'password'"
+            placeholder="Mật khẩu mới"
+            class="input-field"
+          />
+          <button
+            @click="toggleNewPasswordVisibility"
+            class="btn-toggle-password"
+          >
+            {{ isNewPasswordVisible ? "🙈" : "👁️" }}
+          </button>
         </div>
         <div class="input-container">
-          <input v-model="confirmPassword" :type="isPasswordVisible ? 'text' : 'password'" placeholder="Nhập lại mật khẩu mới" class="input-field" />
-          <button @click="togglePasswordVisibility" class="btn-toggle-password">{{ isPasswordVisible ? "🙈" : "👁️" }}</button>
+          <input
+            v-model="confirmPassword"
+            :type="isConfirmPasswordVisible ? 'text' : 'password'"
+            placeholder="Nhập lại mật khẩu mới"
+            class="input-field"
+          />
+          <button
+            @click="toggleConfirmPasswordVisibility"
+            class="btn-toggle-password"
+          >
+            {{ isConfirmPasswordVisible ? "🙈" : "👁️" }}
+          </button>
         </div>
-        <button @click="submitPasswordChange" class="btn-submit">Xác nhận</button>
+        <button @click="submitPasswordChange" class="btn-submit">
+          Xác nhận
+        </button>
       </div>
     </div>
   </div>
 
   <Footer></Footer>
 </template>
-
-
 
 <style scoped>
 .profile-layout {
@@ -270,7 +353,7 @@ const logout = () => {
 
 .profile-info {
   width: 100%;
-  max-width: 750px; 
+  max-width: 750px;
   background-color: #fff;
   padding: 30px;
   border-radius: 10px;
@@ -346,7 +429,7 @@ const logout = () => {
 .profile-item {
   display: flex;
   flex-direction: column;
-  width: calc(50% - 10px); 
+  width: calc(50% - 10px);
 }
 
 .profile-label {
@@ -355,11 +438,10 @@ const logout = () => {
   margin-bottom: 5px;
 }
 
-
 .profile-input {
   font-size: 14px;
   width: 100%;
-  padding: 15px; 
+  padding: 15px;
   border: 1px solid #ccc;
   border-radius: 5px;
 }
@@ -438,5 +520,4 @@ const logout = () => {
   color: #007bff;
   font-size: 20px;
 }
-
 </style>
