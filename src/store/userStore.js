@@ -195,8 +195,6 @@ export const useUserStore = defineStore("user", () => {
           headers: { "Content-Type": "multipart/form-data" },
         }
       );
-
-      console.log(response);
       if (response.data.status === 200 && response.data.data) {
         localStorage.setItem("accessToken", response.data.data.accessToken);
         localStorage.removeItem("userEmail");
@@ -236,7 +234,6 @@ export const useUserStore = defineStore("user", () => {
         "https://localhost:7244/api/Controller_MemberInfo/Get_Menber_Info",
         { headers: getAuthHeaders() }
       );
-      console.log(response.data);
 
       if (response.data.status === 200) {
         memberInfo.value = response.data.data;
