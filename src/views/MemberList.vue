@@ -76,7 +76,7 @@ onMounted(async () => {
       <div class="search-box">
         <input
           type="text"
-          placeholder="Tìm kiếm theo mã sinh viên, tên, email, số điện thoại"
+          placeholder="Tìm kiếm theo mã sinh viên, tên, email, số điện thoại, trạng thái"
           v-model="searchQuery"
         />
         <button @click="searchMembers">Tìm kiếm</button>
