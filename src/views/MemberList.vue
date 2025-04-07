@@ -1,13 +1,13 @@
 <script setup>
-import { onMounted, ref } from "vue";
+import { onMounted, ref, watch } from "vue";
 import { useManagerStore } from "../store/managerStore";
 import Header from "../components/Header.vue";
 import NavHeader from "../components/NavHeader.vue";
 import Footer from "../components/Footer.vue";
 
 const store = useManagerStore();
-const memberList = ref([]); // Danh sách trung gian để lưu trữ thành viên
-const searchQuery = ref(""); // Biến để lưu truy vấn tìm kiếm
+const memberList = ref([]);
+const searchQuery = ref("");
 
 // Hàm định dạng ngày
 const formatDate = (dateString) => {
@@ -15,62 +15,63 @@ const formatDate = (dateString) => {
   const day = String(date.getDate()).padStart(2, "0");
   const month = String(date.getMonth() + 1).padStart(2, "0");
   const year = date.getFullYear();
-
   return `${day}/${month}/${year}`;
 };
 
 // Hàm tìm kiếm thành viên
 const searchMembers = async () => {
   const searchValue = searchQuery.value.trim();
-
-  // Tạo object params rỗng
   const params = {};
 
-  // Kiểm tra giá trị searchValue để xác định đang tìm kiếm theo trường nào
   if (/^\d+$/.test(searchValue)) {
-    // Nếu searchValue chỉ chứa số -> có thể là MaSV hoặc PhoneNumber
     params.MaSV = searchValue;
     params.PhoneNumber = searchValue;
   } else if (searchValue.includes("@")) {
-    // Nếu searchValue chứa @ -> có thể là email
     params.Email = searchValue;
   } else {
-    // Trường hợp còn lại -> tìm theo tên
     params.FullName = searchValue;
   }
 
   const result = await store.searchMembers(params);
   if (result.success) {
-    // Lọc bỏ các member có roleName là "Liên chi đoàn khoa" và "Bí thư đoàn viên"
-    memberList.value = result.data.items
-      .filter(
-        (member) =>
-          member.roleName !== "Liên chi đoàn khoa" &&
-          member.roleName !== "Bí thư đoàn viên"
-      )
-      .map((member) => ({
-        ...member,
-      }));
+    memberList.value = result.data.items.filter(
+      (member) =>
+        member.roleName !== "Liên chi đoàn khoa" &&
+        member.roleName !== "Bí thư đoàn viên"
+    );
   } else {
     console.error(result.message);
   }
 };
 
-// Gọi hàm lấy danh sách thành viên khi component được mount
+// Theo dõi khi store.members thay đổi thì cập nhật lại memberList
+watch(
+  () => store.members,
+  (newMembers) => {
+    memberList.value = newMembers.filter(
+      (member) =>
+        member.roleName !== "Liên chi đoàn khoa" &&
+        member.roleName !== "Bí thư đoàn viên"
+    );
+  }
+);
+
+// Chuyển trang
+const goToPage = async (page) => {
+  if (page >= 1 && page <= store.totalPages) {
+    await store.goToPage(page);
+  }
+};
+
+// Khi component mount
 onMounted(async () => {
   await store.getMemberList(1);
-  memberList.value = store.members.filter(
-    (member) =>
-      member.roleName &&
-      member.roleName !== "Liên chi đoàn khoa" &&
-      member.roleName !== "Bí thư đoàn viên"
-  ); // Cập nhật danh sách trung gian ban đầu với lọc
 });
 </script>
 
 <template>
-  <Header></Header>
-  <NavHeader></NavHeader>
+  <Header />
+  <NavHeader />
   <div class="container">
     <header>
       <div class="search-box">
@@ -119,32 +120,27 @@ onMounted(async () => {
     </div>
 
     <div class="pagination">
-      <button
-        @click="store.goToPage(store.currentPage - 1)"
-        :disabled="store.currentPage === 1"
-      >
+      <button @click="goToPage(store.currentPage - 1)" :disabled="store.currentPage === 1">
         Trang trước
       </button>
 
       <span
         v-for="page in store.totalPages"
         :key="page"
-        @click="store.goToPage(page)"
+        @click="goToPage(page)"
         :class="{ active: store.currentPage === page }"
       >
         {{ page }}
       </span>
 
-      <button
-        @click="store.goToPage(store.currentPage + 1)"
-        :disabled="store.currentPage === store.totalPages"
-      >
+      <button @click="goToPage(store.currentPage + 1)" :disabled="store.currentPage === store.totalPages">
         Trang sau
       </button>
     </div>
   </div>
-  <Footer></Footer>
+  <Footer />
 </template>
+
 
 <style scoped>
 .container {
