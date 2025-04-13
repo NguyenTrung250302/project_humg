@@ -109,4 +109,42 @@ const router = createRouter({
   routes,
 });
 
+import { useUserStore } from "../store/userStore";
+
+router.beforeEach(async (to, from, next) => {
+  const userStore = useUserStore();
+
+  const adminRoutes = [
+    "/Dashboard", 
+    "/HelloAdmin", 
+    "/EventManager", 
+    "/AdminProfile",
+  
+  ];
+  const isAdminRoute = adminRoutes.includes(to.path);
+
+  // console.log("Chuyển đến:", to.path);
+  // console.log("Thông tin người dùng trước khi kiểm tra:", userStore.memberInfo);
+
+  // Nếu là trang admin
+  if (isAdminRoute) {
+    // Nếu chưa có memberInfo thì gọi API lấy
+    if (!userStore.memberInfo) {
+      const result = await userStore.getMemberInfo();
+      console.log("Lấy lại memberInfo sau reload:", result);
+    }
+
+    // Sau khi gọi API vẫn không có hoặc là Đoàn viên -> chặn
+    if (!userStore.memberInfo || userStore.memberInfo.roleName === "Đoàn viên") {
+      console.log("Chặn truy cập admin do không đủ quyền");
+      return next("/");
+    }
+  }
+
+  next();
+});
+
+
+
+
 export default router;

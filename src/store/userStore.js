@@ -173,10 +173,10 @@ export const useUserStore = defineStore("user", () => {
                 return { success: true, message: response.data.message || "Đăng nhập thành công!" };
             } else {
                 localStorage.setItem("userEmail", response.data.data.email);
-                return { success: false, message: response.data.message || "Đăng nhập thất bại!" };
+                return { success: false, message: response.data.message || "Sai tài khoản hoặc mật khẩu!" };
             }
         } catch (err) {
-            error.value = err.response?.data?.message || "Đăng nhập thất bại!";
+            error.value = err.response?.data?.message || "Sai tài khoản hoặc mật khẩu!";
             return { success: false, message: error.value };
         } finally {
             loading.value = false;
