@@ -9,6 +9,22 @@ const store = useManagerStore();
 const memberList = ref([]);
 const searchQuery = ref("");
 
+const showDialog = ref(false);
+const dialogType = ref(""); // 'khen-thuong' hoặc 'ky-luat'
+const selectedMemberId = ref(null);
+
+const openDialog = (type, id) => {
+  dialogType.value = type;
+  selectedMemberId.value = id;
+
+  showDialog.value = true;
+};
+
+const closeDialog = () => {
+  showDialog.value = false;
+  dialogType.value = "";
+};
+
 // Hàm định dạng ngày
 const formatDate = (dateString) => {
   const date = new Date(dateString);
@@ -94,7 +110,7 @@ onMounted(async () => {
             <th>Lớp</th>
             <th>Email</th>
             <th>Ngày sinh</th>
-            <th>Trạng Thái</th>
+            <th>Đề Xuất</th>
           </tr>
         </thead>
         <tbody>
@@ -112,15 +128,43 @@ onMounted(async () => {
             <td>{{ member.email }}</td>
             <td>{{ formatDate(member.birthdate) }}</td>
             <td>
-              <button class="action-btn"></button>
+              <button
+                class="action-btn reward-btn"
+                @click="openDialog('khen-thuong', member.maSV)"
+                title="Khen thưởng"
+              >
+                <i class="fas fa-gift"></i>
+              </button>
+              \
+              <button
+                class="action-btn discipline-btn"
+                @click="openDialog('ky-luat', member.maSV)"
+                title="Kỷ luật"
+              >
+                <i class="fas fa-exclamation-triangle"></i>
+              </button>
             </td>
           </tr>
         </tbody>
       </table>
     </div>
+    <!-- Dialog hiển thị khi bấm khen thưởng hoặc kỷ luật -->
+    <div v-if="showDialog" class="dialog-overlay" @click.self="closeDialog">
+      <div class="dialog-box">
+        <h3>{{ dialogType === "khen-thuong" ? "Khen thưởng" : "Kỷ luật" }}</h3>
+        <textarea rows="4" placeholder="Nhập mô tả..."></textarea>
+        <div class="dialog-buttons">
+          <button class="submit-btn">Submit</button>
+          <button class="cancel-btn" @click="closeDialog">Cancel</button>
+        </div>
+      </div>
+    </div>
 
     <div class="pagination">
-      <button @click="goToPage(store.currentPage - 1)" :disabled="store.currentPage === 1">
+      <button
+        @click="goToPage(store.currentPage - 1)"
+        :disabled="store.currentPage === 1"
+      >
         Trang trước
       </button>
 
@@ -133,14 +177,16 @@ onMounted(async () => {
         {{ page }}
       </span>
 
-      <button @click="goToPage(store.currentPage + 1)" :disabled="store.currentPage === store.totalPages">
+      <button
+        @click="goToPage(store.currentPage + 1)"
+        :disabled="store.currentPage === store.totalPages"
+      >
         Trang sau
       </button>
     </div>
   </div>
   <Footer />
 </template>
-
 
 <style scoped>
 .container {
@@ -259,5 +305,86 @@ th {
   font-weight: bold;
   color: #007bff;
   background-color: #e7f1ff;
+}
+
+.action-btn i {
+  font-size: 16px;
+}
+.reward-btn {
+  color: #28a745; /* xanh lá: khen thưởng */
+  transition: color 0.3s;
+}
+
+.reward-btn:hover {
+  color: #218838;
+}
+
+.discipline-btn {
+  color: #dc3545; /* đỏ: kỷ luật */
+  transition: color 0.3s;
+}
+
+.discipline-btn:hover {
+  color: #c82333;
+}
+
+/* dialog  */
+.dialog-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.dialog-box {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  width: 400px;
+  max-width: 90%;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.dialog-box h3 {
+  margin-top: 0;
+  color: #333;
+}
+
+.dialog-box textarea {
+  width: 100%;
+  margin: 10px 0;
+  padding: 10px;
+  font-size: 14px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+.dialog-buttons {
+  text-align: right;
+}
+
+.dialog-buttons button {
+  padding: 8px 14px;
+  margin-left: 8px;
+  border: none;
+  border-radius: 5px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.submit-btn {
+  background-color: #007bff;
+  color: white;
+}
+
+.cancel-btn {
+  background-color: #ccc;
+  color: #333;
 }
 </style>

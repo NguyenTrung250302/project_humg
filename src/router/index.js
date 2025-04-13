@@ -8,6 +8,7 @@ import UpdatePassword from "../auth/UpdatePassword.vue";
 import VerifyEmail from "../auth/VerifyEmail.vue";
 import Profile from "../views/Profile.vue";
 import MemberList from "../views/MemberList.vue";
+import RewardDiscripline from "../views/RewardDiscipline.vue";
 
 const routes = [
   // HomeView
@@ -58,19 +59,11 @@ const routes = [
     name: "MemberList",
     component: MemberList,
   },
-
-
-
-
-
-
-
-
-
-
-
-
-
+  {
+    path: "/RewardDiscripline",
+    name: "RewardDiscripline",
+    component: RewardDiscripline,
+  },
 ];
 
 const router = createRouter({

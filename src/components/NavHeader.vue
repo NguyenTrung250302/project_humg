@@ -11,7 +11,7 @@
       </RouterLink>
     </ul>
     <ul class="nav-header-ul">
-      <RouterLink to="/">
+      <RouterLink to="/RewardDiscripline">
         <li class="nav-header-item" tabindex="0">Khen thưởng / Kỉ luật</li>
       </RouterLink>
     </ul>

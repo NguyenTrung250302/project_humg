@@ -31,7 +31,7 @@
     <div class="content-frame">
       <!-- Hiển thị lỗi nếu có -->
       <div v-if="eventStore.error" class="error-box">
-        <p>🚫 {{ eventStore.error }}</p>
+        <p>{{ eventStore.error }}</p>
       </div>
 
       <!-- Loading -->
