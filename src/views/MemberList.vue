@@ -1,9 +1,13 @@
 <script setup>
 import { onMounted, ref, watch } from "vue";
 import { useManagerStore } from "../store/managerStore";
+import { useUserStore } from "../store/userStore";
 import Header from "../components/Header.vue";
 import NavHeader from "../components/NavHeader.vue";
 import Footer from "../components/Footer.vue";
+
+const userStore = useUserStore();
+const roleNamelogin = ref("");
 
 const store = useManagerStore();
 const memberList = ref([]);
@@ -82,6 +86,7 @@ const goToPage = async (page) => {
 // Khi component mount
 onMounted(async () => {
   await store.getMemberList(1);
+  roleNamelogin.value = userStore.memberInfo.roleName;
 });
 </script>
 
@@ -111,7 +116,7 @@ onMounted(async () => {
             <th>Email</th>
             <th>Khen thưởng</th>
             <th>Ngày sinh</th>
-            <th>Đề Xuất</th>
+            <th v-if="roleNamelogin === 'Bí thư đoàn viên'">Đề Xuất</th>
           </tr>
         </thead>
         <tbody>
@@ -145,7 +150,7 @@ onMounted(async () => {
             </td>
 
             <td>{{ formatDate(member.birthdate) }}</td>
-            <td>
+            <td v-if="roleNamelogin === 'Bí thư đoàn viên'">
               <button
                 class="action-btn reward-btn"
                 @click="openDialog('khen-thuong', member.maSV)"

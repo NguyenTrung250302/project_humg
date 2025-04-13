@@ -2,7 +2,7 @@ import { defineStore } from "pinia";
 import { ref } from "vue";
 import axios from "axios";
 
-export const RewardDisciplineStore = defineStore("event", () => {
+export const useRewardDisciplineStore = defineStore("event", () => {
   const listReward = ref([]);
   const listDiscipline = ref([]);
 
