@@ -15,6 +15,11 @@
         <li class="nav-header-item" tabindex="0">Khen thưởng / Kỉ luật</li>
       </RouterLink>
     </ul>
+    <ul class="nav-header-ul">
+      <RouterLink to="/RewardDiscripline">
+        <li class="nav-header-item" tabindex="0">Lịch sử phê duyệt</li>
+      </RouterLink>
+    </ul>
 
     <ul class="nav-header-ul notify-container">
       <svg

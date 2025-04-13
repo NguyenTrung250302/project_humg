@@ -109,6 +109,7 @@ onMounted(async () => {
             <th>Chức vụ</th>
             <th>Lớp</th>
             <th>Email</th>
+            <th>Khen thưởng</th>
             <th>Ngày sinh</th>
             <th>Đề Xuất</th>
           </tr>
@@ -126,6 +127,23 @@ onMounted(async () => {
             <td>{{ member.roleName }}</td>
             <td>{{ member.class }}</td>
             <td>{{ member.email }}</td>
+            <td>
+              <span v-if="member.isOutstandingMember">
+                <i
+                  class="fas fa-medal"
+                  style="color: gold"
+                  title="Đoàn viên ưu tú"
+                ></i>
+              </span>
+              <span v-else>
+                <i
+                  class="fas fa-circle"
+                  style="color: lightgray"
+                  title="Thành viên bình thường"
+                ></i>
+              </span>
+            </td>
+
             <td>{{ formatDate(member.birthdate) }}</td>
             <td>
               <button
@@ -260,7 +278,12 @@ th {
   margin-right: 10px;
   vertical-align: middle;
 }
+.fas.fa-medal,
+.fas.fa-times {
+  font-size: 18px;
+}
 
+/* btn */
 .action-btn {
   background: none;
   border: none;
