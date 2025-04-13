@@ -71,7 +71,6 @@ export const useEventStore = defineStore("event", () => {
       );
 
       if (response.status === 200 && response.data.items) {
-        console.log("response doc:", response);
         documentList.value = response.data.items;
         error.value = null;
       } else {

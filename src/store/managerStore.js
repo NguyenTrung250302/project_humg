@@ -37,6 +37,7 @@ export const useManagerStore = defineStore("manager", () => {
         Array.isArray(response.data.items)
       ) {
         members.value = response.data.items;
+        console.log(members.value);
         totalItems.value = response.data.totalItems;
         totalPages.value = response.data.totalPages;
         currentPage.value = response.data.currentPage;

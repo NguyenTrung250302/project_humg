@@ -16,7 +16,7 @@
       </RouterLink>
     </ul>
     <ul class="nav-header-ul">
-      <RouterLink to="/RewardDiscripline">
+      <RouterLink to="/ApprovalHistory">
         <li class="nav-header-item" tabindex="0">Lịch sử phê duyệt</li>
       </RouterLink>
     </ul>
@@ -38,7 +38,13 @@
     </ul>
     <div class="nav-header-login">
       <div v-if="userInfo">
-        <RouterLink :to="userInfo && userInfo.roleName === 'Liên chi đoàn khoa' ? '/HelloAdmin' : '/Profile'">
+        <RouterLink
+          :to="
+            userInfo && userInfo.roleName === 'Liên chi đoàn khoa'
+              ? '/HelloAdmin'
+              : '/Profile'
+          "
+        >
           <div class="user-info">
             <img
               :src="userInfo.urlAvatar"
