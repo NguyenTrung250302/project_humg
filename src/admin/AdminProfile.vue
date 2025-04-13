@@ -195,7 +195,7 @@ const logout = () => {
                 type="email"
                 :value="userInfo?.email || ''"
                 class="profile-input"
-                disabled
+                
               />
             </div>
             <div class="profile-item">
@@ -211,7 +211,7 @@ const logout = () => {
               <input
                 :value="userInfo?.maSV || ''"
                 class="profile-input"
-                disabled
+                
               />
             </div>
             <div class="profile-item">
@@ -252,7 +252,7 @@ const logout = () => {
                 v-model="userInfo.roleName"
                 type="text"
                 class="profile-input"
-                disabled
+                
               />
             </div>
             <div class="profile-item">

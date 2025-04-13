@@ -9,8 +9,8 @@ import Dashboard from './Dashboard.vue';
     <div class="container-dashboard">
       <Dashboard></Dashboard>
       <div class="main">
-        <h1>Sửa truyện</h1>
-        
+        <h1>Quản lý sự kiện</h1>
+
       </div>
     </div>
   </template>

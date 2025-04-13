@@ -33,7 +33,7 @@
     </ul>
     <div class="nav-header-login">
       <div v-if="userInfo">
-        <RouterLink to="/Profile">
+        <RouterLink :to="userInfo && userInfo.roleName === 'Liên chi đoàn khoa' ? '/HelloAdmin' : '/Profile'">
           <div class="user-info">
             <img
               :src="userInfo.urlAvatar"
@@ -64,6 +64,7 @@ const userInfo = ref(null);
 onMounted(async () => {
   await userStore.getMemberInfo();
   userInfo.value = userStore.memberInfo;
+  // console.log("userInfo", userInfo.value.roleName);
 });
 </script>
 
