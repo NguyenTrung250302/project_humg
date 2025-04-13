@@ -1,6 +1,32 @@
 <template>
   <div class="home-body">
-    <h1 class="page-title">🎉 Sự kiện nổi bật</h1>
+    <!-- 📢 Thông báo tài liệu (hiển thị lớn ở đầu) -->
+    <div
+      v-if="eventStore.documentList && eventStore.documentList.length > 0"
+      class="document-banner"
+    >
+      <div class="document-banner-inner">
+        <img
+          :src="eventStore.documentList[0].urlAvatar"
+          alt="Ảnh tài liệu"
+          class="banner-image"
+        />
+        <div class="banner-text">
+          <h2 class="banner-title">
+            📢 {{ eventStore.documentList[0].documentTitle }}
+          </h2>
+          <p class="banner-content">
+            {{ eventStore.documentList[0].documentContent }}
+          </p>
+          <p class="banner-meta">
+            🧑 {{ eventStore.documentList[0].userName }} -
+            {{ formatDate(eventStore.documentList[0].createAt) }}
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <h1 class="page-title">🎉 NHỮNG SỰ KIỆN NỔI BẬT GẦN ĐÂY</h1>
 
     <div class="content-frame">
       <!-- Hiển thị lỗi nếu có -->
@@ -39,7 +65,7 @@
         </div>
       </div>
 
-      <!-- Không có dữ liệu -->
+      <!-- Không có sự kiện -->
       <div v-else class="no-event">
         <p>😕 Hiện tại không có sự kiện nào để hiển thị.</p>
       </div>
@@ -56,7 +82,7 @@ const isLoading = ref(true);
 
 onMounted(async () => {
   isLoading.value = true;
-  await eventStore.getEventList();
+  await eventStore.getEventList(), eventStore.getDocumentList();
   isLoading.value = false;
 });
 
@@ -74,6 +100,51 @@ const formatDate = (dateStr) => {
   font-family: "Segoe UI", sans-serif;
 }
 
+/* Thông báo tài liệu lớn */
+.document-banner {
+  background-color: #fffbe6;
+  border: 2px solid #ffe58f;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 30px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.document-banner-inner {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+.banner-image {
+  width: 180px;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.banner-text {
+  flex: 1;
+}
+
+.banner-title {
+  font-size: 22px;
+  color: #d48806;
+  margin-bottom: 10px;
+}
+
+.banner-content {
+  font-size: 15px;
+  color: #444;
+  margin-bottom: 8px;
+}
+
+.banner-meta {
+  font-size: 13px;
+  color: #888;
+}
+
+/* Tiêu đề trang */
 .page-title {
   text-align: center;
   font-size: 32px;
@@ -86,6 +157,7 @@ const formatDate = (dateStr) => {
   margin: 0 auto;
 }
 
+/* --- Event styles --- */
 .event-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
