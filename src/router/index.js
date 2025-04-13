@@ -135,7 +135,7 @@ router.beforeEach(async (to, from, next) => {
     }
 
     // Sau khi gọi API vẫn không có hoặc là Đoàn viên -> chặn
-    if (!userStore.memberInfo || userStore.memberInfo.roleName === "Đoàn viên") {
+    if (!userStore.memberInfo || userStore.memberInfo.roleName === "Đoàn viên" || userStore.memberInfo.roleName === "Bí thư đoàn viên") {
       console.log("Chặn truy cập admin do không đủ quyền");
       return next("/");
     }

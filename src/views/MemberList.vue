@@ -1,9 +1,13 @@
 <script setup>
 import { onMounted, ref, watch } from "vue";
 import { useManagerStore } from "../store/managerStore";
+import { useUserStore } from "../store/userStore";
 import Header from "../components/Header.vue";
 import NavHeader from "../components/NavHeader.vue";
 import Footer from "../components/Footer.vue";
+
+const userStore = useUserStore();
+const roleNamelogin = ref("");
 
 const store = useManagerStore();
 const memberList = ref([]);
@@ -82,6 +86,7 @@ const goToPage = async (page) => {
 // Khi component mount
 onMounted(async () => {
   await store.getMemberList(1);
+  roleNamelogin.value = userStore.memberInfo.roleName;
 });
 </script>
 
@@ -109,8 +114,9 @@ onMounted(async () => {
             <th>Chức vụ</th>
             <th>Lớp</th>
             <th>Email</th>
+            <th>Khen thưởng</th>
             <th>Ngày sinh</th>
-            <th>Đề Xuất</th>
+            <th v-if="roleNamelogin === 'Bí thư đoàn viên'">Đề Xuất</th>
           </tr>
         </thead>
         <tbody>
@@ -126,8 +132,25 @@ onMounted(async () => {
             <td>{{ member.roleName }}</td>
             <td>{{ member.class }}</td>
             <td>{{ member.email }}</td>
-            <td>{{ formatDate(member.birthdate) }}</td>
             <td>
+              <span v-if="member.isOutstandingMember">
+                <i
+                  class="fas fa-medal"
+                  style="color: gold"
+                  title="Đoàn viên ưu tú"
+                ></i>
+              </span>
+              <span v-else>
+                <i
+                  class="fas fa-circle"
+                  style="color: lightgray"
+                  title="Thành viên bình thường"
+                ></i>
+              </span>
+            </td>
+
+            <td>{{ formatDate(member.birthdate) }}</td>
+            <td v-if="roleNamelogin === 'Bí thư đoàn viên'">
               <button
                 class="action-btn reward-btn"
                 @click="openDialog('khen-thuong', member.maSV)"
@@ -260,7 +283,12 @@ th {
   margin-right: 10px;
   vertical-align: middle;
 }
+.fas.fa-medal,
+.fas.fa-times {
+  font-size: 18px;
+}
 
+/* btn */
 .action-btn {
   background: none;
   border: none;
