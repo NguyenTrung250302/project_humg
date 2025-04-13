@@ -8,7 +8,11 @@ import UpdatePassword from "../auth/UpdatePassword.vue";
 import VerifyEmail from "../auth/VerifyEmail.vue";
 import Profile from "../views/Profile.vue";
 import MemberList from "../views/MemberList.vue";
-import RewardDiscripline from "../views/RewardDiscipline.vue";
+import Dashboard from "../admin/Dashboard.vue";
+import EventManager from "../admin/EventManager.vue";
+import HelloAdmin from "../admin/HelloAdmin.vue";
+import AdminProfile from "../admin/AdminProfile.vue";
+import RewardDiscipline from "../views/RewardDiscipline.vue";
 
 const routes = [
   // HomeView
@@ -62,8 +66,42 @@ const routes = [
   {
     path: "/RewardDiscripline",
     name: "RewardDiscripline",
-    component: RewardDiscripline,
+    component: RewardDiscipline,
   },
+
+  // Admin
+  {
+    path: "/Dashboard",
+    name: "Dashboard",
+    component: Dashboard,
+  },
+  {
+    path: "/HelloAdmin",
+    name: "HelloAdmin",
+    component: HelloAdmin,
+  },
+  {
+    path: "/EventManager",
+    name: "EventManager",
+    component: EventManager,
+  },
+  {
+    path: "/AdminProfile",
+    name: "AdminProfile",
+    component: AdminProfile,
+  },
+
+
+
+
+
+
+
+
+
+
+
+
 ];
 
 const router = createRouter({
