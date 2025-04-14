@@ -222,73 +222,76 @@ export const useUserStore = defineStore("user", () => {
     }
   };
 
-    const logout = () => {
-        localStorage.removeItem("accessToken");
-        memberInfo.value = null;
-    }
-    
-    const memberInfo = ref(null); 
-    const getMemberInfo = async () => {
-        loading.value = true;
-        error.value = null;
-        
-        try {
-            const response = await axios.get(
-                "https://localhost:7244/api/Controller_MemberInfo/Get_Menber_Info",
-                { headers: getAuthHeaders() } 
-            );
-            console.log("Member Info", response.data);
-            
-            if (response.data.status === 200) {
-                memberInfo.value = response.data.data; 
-                return { success: true, message: response.data.message };
-            } else {
-                return { success: false, message: response.data.message || "Không tìm thấy thông tin người dùng!" };
-            }
-            
-        } catch (err) {
-            error.value = err.response?.data?.message || "Không thể kết nối tới server!";
-            return { success: false, message: error.value };
-        } finally {
-            loading.value = false;
-        }
-    };
+  const logout = () => {
+    localStorage.removeItem("accessToken");
+    memberInfo.value = null;
+  };
 
-    
-    const changePassword = async (password, newpassword, renewpassword) => {
-        loading.value = true;
-        error.value = null;
-    
-        try {
-            const formData = new FormData();
-            formData.append("Password", password);
-            formData.append("newpassword", newpassword);
-            formData.append("renewpassword", renewpassword);
-    
-            const response = await axios.put(
-                "https://localhost:7244/api/Controller_Authenic/Change_Password", 
-                formData,
-                { 
-                    headers: {
-                        ...getAuthHeaders(),
-                        "Content-Type": "multipart/form-data"
-                    } 
-                }
-            );
-            console.log(response.data);
-    
-            if (response.data.status === 200) {
-                return { success: true, message: response.data.message };
-            } else {
-                return { success: false, message: response.data.message };
-            }
-        } catch (err) {
-            error.value = err.response?.data?.message || "Không thể kết nối tới server!";
-            return { success: false, message: error.value };
-        } finally {
-            loading.value = false;
+  const memberInfo = ref(null);
+  const getMemberInfo = async () => {
+    loading.value = true;
+    error.value = null;
+
+    try {
+      const response = await axios.get(
+        "https://localhost:7244/api/Controller_MemberInfo/Get_Menber_Info",
+        { headers: getAuthHeaders() }
+      );
+
+      if (response.data.status === 200) {
+        memberInfo.value = response.data.data;
+        return { success: true, message: response.data.message };
+      } else {
+        return {
+          success: false,
+          message:
+            response.data.message || "Không tìm thấy thông tin người dùng!",
+        };
+      }
+    } catch (err) {
+      error.value =
+        err.response?.data?.message || "Không thể kết nối tới server!";
+      return { success: false, message: error.value };
+    } finally {
+      loading.value = false;
+    }
+  };
+
+  const changePassword = async (password, newpassword, renewpassword) => {
+    loading.value = true;
+    error.value = null;
+
+    try {
+      const formData = new FormData();
+      formData.append("Password", password);
+      formData.append("newpassword", newpassword);
+      formData.append("renewpassword", renewpassword);
+
+      const response = await axios.put(
+        "https://localhost:7244/api/Controller_Authenic/Change_Password",
+        formData,
+        {
+          headers: {
+            ...getAuthHeaders(),
+            "Content-Type": "multipart/form-data",
+          },
         }
-    };
+      );
+      console.log(response.data);
+
+      if (response.data.status === 200) {
+        return { success: true, message: response.data.message };
+      } else {
+        return { success: false, message: response.data.message };
+      }
+    } catch (err) {
+      error.value =
+        err.response?.data?.message || "Không thể kết nối tới server!";
+      return { success: false, message: error.value };
+    } finally {
+      loading.value = false;
+    }
+  };
 
   const updateProfile = async ({
     politicalTheory,

@@ -11,7 +11,7 @@
     >
       <p>{{ RewardDisciplineStore.error }}</p>
     </div>
-    <h1>📜 Lịch sử phê duyệt</h1>
+    <h1>📜 LỊCH SỬ PHÊ DUYỆT</h1>
     <div class="history-list">
       <div
         class="history-item"
@@ -29,14 +29,18 @@
             history.historyType === "reward" ? "🎖️ Khen thưởng" : "⚠️ Kỷ luật"
           }}
         </p>
-        <p>Phê duyệt bởi ID: {{ history.approvedById }}</p>
+        <p>Đoàn viên: {{ history.memberName }}</p>
+        <p>MSV: {{ history.memberMaSV }}</p>
+        <p>Nội dung: {{ history.description }}</p>
+        <p>Phê duyệt bởi: {{ history.approvedByName }}</p>
+        <p>Thời gian phê duyệt: {{ history.approvedDate }}</p>
+        <p>Mã ID đề xuất: {{ history.rewardDisciplineId }}</p>
         <p>
           Trạng thái:
           <span :class="history.isAccept ? 'status accept' : 'status reject'">
             {{ history.isAccept ? "Đã chấp nhận" : "Bị từ chối" }}
           </span>
         </p>
-        <p>Reward/Discipline ID: {{ history.rewardDisciplineId }}</p>
       </div>
     </div>
   </div>
@@ -55,7 +59,12 @@ const approvalHistory = ref([]);
 
 onMounted(async () => {
   await RewardDisciplineStore.GetApprovalHistory();
-  approvalHistory.value = RewardDisciplineStore.listApprovalHistory;
+  approvalHistory.value = RewardDisciplineStore.listApprovalHistory.map(
+    (item) => ({
+      ...item,
+      approvedDate: item.approvedDate.split("T")[0],
+    })
+  );
 });
 </script>
 

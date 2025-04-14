@@ -15,10 +15,11 @@
 
     <!-- Khen thưởng -->
     <section class="section">
-      <h2 class="section-title">🎖️ Khen thưởng</h2>
+      <h2 class="section-title">🎖️ KHEN THƯỞNG</h2>
       <div class="card-list">
         <div class="card" v-for="(reward, index) in rewards" :key="index">
-          <h3>{{ reward.recipientName }}</h3>
+          <h3>Đoàn viên: {{ reward.recipientName }}</h3>
+          <p>Mã SV: {{ reward.recipientMaSV }}</p>
           <p>Lý do: {{ reward.description }}</p>
           <p>Ngày duyệt: {{ reward.createDate }}</p>
           <p>Đề xuất bởi: {{ reward.proposerName }}</p>
@@ -31,14 +32,14 @@
 
     <!-- Kỷ luật -->
     <section class="section">
-      <h2 class="section-title">⚠️ Kỷ luật</h2>
+      <h2 class="section-title">⚠️ KỶ LUẬT</h2>
       <div class="card-list">
         <div
           class="card warning"
           v-for="(penalty, index) in penalties"
           :key="index"
         >
-          <h3>{{ penalty.recipientName }}</h3>
+          <h3>Đoàn viên: {{ penalty.recipientName }}</h3>
           <p>Lý do: {{ penalty.description }}</p>
           <p>Ngày duyệt: {{ penalty.createDate }}</p>
           <p>Đề xuất bởi: {{ penalty.proposerName }}</p>
@@ -69,21 +70,13 @@ onMounted(async () => {
   await RewardDisciplineStore.GetListDiscipline();
 
   rewards.value = RewardDisciplineStore.listReward.map((item) => ({
-    recipientName: item.recipientName,
-    description: item.description,
+    ...item,
     createDate: item.createDate.split("T")[0],
-    status: item.status,
-    proposerName: item.proposerName,
-    rejectReason: item.rejectReason,
   }));
 
   penalties.value = RewardDisciplineStore.listDiscipline.map((item) => ({
-    recipientName: item.recipientName,
-    description: item.description,
+    ...item,
     createDate: item.createDate.split("T")[0],
-    status: item.status,
-    proposerName: item.proposerName,
-    rejectReason: item.rejectReason,
   }));
 });
 </script>
