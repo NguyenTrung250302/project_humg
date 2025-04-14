@@ -3,6 +3,16 @@
   <NavHeader />
 
   <div class="main-content">
+    <div
+      v-if="
+        RewardDisciplineStore.error &&
+        RewardDisciplineStore.error.includes('🔒')
+      "
+      class="auth-error-box"
+    >
+      <p>{{ RewardDisciplineStore.error }}</p>
+    </div>
+
     <!-- Khen thưởng -->
     <section class="section">
       <h2 class="section-title">🎖️ Khen thưởng</h2>
@@ -152,5 +162,15 @@ onMounted(async () => {
   .card {
     flex: 1 1 100%;
   }
+}
+
+.auth-error-box {
+  text-align: center;
+  padding: 20px;
+  background-color: #fff3cd;
+  border-radius: 10px;
+  color: #856404;
+  font-weight: bold;
+  margin-bottom: 20px;
 }
 </style>

@@ -117,6 +117,13 @@ onMounted(async () => {
   <NavHeader />
   <div class="container">
     <header>
+      <div
+        v-if="store.error && store.error.includes('🔒')"
+        class="auth-error-box"
+      >
+        <p>{{ store.error }}</p>
+      </div>
+
       <div class="search-box">
         <input
           type="text"
@@ -441,5 +448,15 @@ th {
 .cancel-btn {
   background-color: #ccc;
   color: #333;
+}
+
+.auth-error-box {
+  text-align: center;
+  padding: 20px;
+  background-color: #fff3cd;
+  border-radius: 10px;
+  color: #856404;
+  font-weight: bold;
+  margin-top: 20px;
 }
 </style>

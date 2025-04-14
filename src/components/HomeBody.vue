@@ -29,7 +29,10 @@
     <h1 class="page-title">🎉 NHỮNG SỰ KIỆN NỔI BẬT GẦN ĐÂY</h1>
 
     <div class="content-frame">
-      <div v-if="eventStore.error" class="error-box">
+      <div
+        v-if="eventStore.error && eventStore.error.includes('🔒')"
+        class="auth-error-box"
+      >
         <p>{{ eventStore.error }}</p>
       </div>
 
@@ -95,7 +98,6 @@ const goToEventDetail = (id) => {
   router.push(`/EventsDetail/${id}`);
 };
 </script>
-
 
 <style scoped>
 .home-body {
@@ -203,10 +205,10 @@ const goToEventDetail = (id) => {
   color: #555;
   margin-bottom: 10px;
   display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    text-overflow: ellipsis;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .event-detail {
@@ -215,14 +217,13 @@ const goToEventDetail = (id) => {
   margin-bottom: 4px;
 }
 
-.error-box,
-.loading-box,
-.no-event {
+/*  */
+.auth-error-box {
   text-align: center;
   padding: 20px;
-  background-color: #ffe5e5;
+  background-color: #fff3cd;
   border-radius: 10px;
-  color: #d10000;
+  color: #856404;
   font-weight: bold;
   margin-top: 20px;
 }

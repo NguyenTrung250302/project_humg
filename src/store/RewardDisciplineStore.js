@@ -8,6 +8,7 @@ export const useRewardDisciplineStore = defineStore(
     const listReward = ref([]);
     const listDiscipline = ref([]);
     const listApprovalHistory = ref([]);
+    const error = ref(null);
 
     const getAuthHeaders = () => {
       const token = localStorage.getItem("accessToken");
@@ -23,7 +24,7 @@ export const useRewardDisciplineStore = defineStore(
       const headers = getAuthHeaders();
 
       if (!headers) {
-        error.value = "🔒 Bạn cần đăng nhập để xem danh sách sự kiện.";
+        error.value = "🔒 Bạn cần đăng nhập để xem danh sách thông tin.";
         listReward.value = [];
         return;
       }
@@ -47,7 +48,7 @@ export const useRewardDisciplineStore = defineStore(
       const headers = getAuthHeaders();
 
       if (!headers) {
-        error.value = "🔒 Bạn cần đăng nhập để xem danh sách sự kiện.";
+        error.value = "🔒 Bạn cần đăng nhập để xem danh sách thông tin.";
         listDiscipline.value = [];
         return;
       }
@@ -155,6 +156,7 @@ export const useRewardDisciplineStore = defineStore(
       listReward,
       listDiscipline,
       listApprovalHistory,
+      error,
     };
   }
 );

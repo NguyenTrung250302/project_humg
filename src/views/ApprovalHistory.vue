@@ -2,6 +2,15 @@
   <Header></Header>
   <NavHeader></NavHeader>
   <div class="main-content">
+    <div
+      v-if="
+        RewardDisciplineStore.error &&
+        RewardDisciplineStore.error.includes('🔒')
+      "
+      class="auth-error-box"
+    >
+      <p>{{ RewardDisciplineStore.error }}</p>
+    </div>
     <h1>📜 Lịch sử phê duyệt</h1>
     <div class="history-list">
       <div
@@ -148,5 +157,15 @@ h1 {
   .history-item p {
     font-size: 14px;
   }
+}
+
+.auth-error-box {
+  text-align: center;
+  padding: 20px;
+  background-color: #fff3cd;
+  border-radius: 10px;
+  color: #856404;
+  font-weight: bold;
+  margin-bottom: 20px;
 }
 </style>
