@@ -13,6 +13,7 @@ import EventManager from "../admin/EventManager.vue";
 import HelloAdmin from "../admin/HelloAdmin.vue";
 import AdminProfile from "../admin/AdminProfile.vue";
 import RewardDiscipline from "../views/RewardDiscipline.vue";
+import ApprovalHistory from "../views/ApprovalHistory.vue";
 
 const routes = [
   // HomeView
@@ -95,18 +96,11 @@ const routes = [
     name: "AdminProfile",
     component: AdminProfile,
   },
-
-
-
-
-
-
-
-
-
-
-
-
+  {
+    path: "/ApprovalHistory",
+    name: "ApprovalHistory",
+    component: ApprovalHistory,
+  },
 ];
 
 const router = createRouter({
@@ -121,11 +115,10 @@ router.beforeEach(async (to, from, next) => {
   const userStore = useUserStore();
 
   const adminRoutes = [
-    "/Dashboard", 
-    "/HelloAdmin", 
-    "/EventManager", 
+    "/Dashboard",
+    "/HelloAdmin",
+    "/EventManager",
     "/AdminProfile",
-  
   ];
   const isAdminRoute = adminRoutes.includes(to.path);
 
@@ -141,7 +134,11 @@ router.beforeEach(async (to, from, next) => {
     }
 
     // Sau khi gọi API vẫn không có hoặc là Đoàn viên -> chặn
-    if (!userStore.memberInfo || userStore.memberInfo.roleName === "Đoàn viên" || userStore.memberInfo.roleName === "Bí thư đoàn viên") {
+    if (
+      !userStore.memberInfo ||
+      userStore.memberInfo.roleName === "Đoàn viên" ||
+      userStore.memberInfo.roleName === "Bí thư đoàn viên"
+    ) {
       console.log("Chặn truy cập admin do không đủ quyền");
       return next("/");
     }
@@ -149,8 +146,5 @@ router.beforeEach(async (to, from, next) => {
 
   next();
 });
-
-
-
 
 export default router;

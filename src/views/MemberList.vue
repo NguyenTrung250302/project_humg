@@ -2,25 +2,31 @@
 import { onMounted, ref, watch } from "vue";
 import { useManagerStore } from "../store/managerStore";
 import { useUserStore } from "../store/userStore";
+import { useRewardDisciplineStore } from "../store/RewardDisciplineStore";
 import Header from "../components/Header.vue";
 import NavHeader from "../components/NavHeader.vue";
 import Footer from "../components/Footer.vue";
 
+//get info user login
 const userStore = useUserStore();
 const roleNamelogin = ref("");
 
+// update Reward and DisciplineStore
+const RewardDisciplineStore = useRewardDisciplineStore();
+
+// get list user member
 const store = useManagerStore();
 const memberList = ref([]);
 const searchQuery = ref("");
 
 const showDialog = ref(false);
 const dialogType = ref(""); // 'khen-thuong' hoặc 'ky-luat'
-const selectedMemberId = ref(null);
+const selectedMemberMSV = ref(null);
+const description = ref("");
 
 const openDialog = (type, id) => {
   dialogType.value = type;
-  selectedMemberId.value = id;
-
+  selectedMemberMSV.value = id;
   showDialog.value = true;
 };
 
@@ -83,6 +89,22 @@ const goToPage = async (page) => {
   }
 };
 
+// Method to handle form submission
+const submitProposal = async () => {
+  if (dialogType.value === "khen-thuong") {
+    await RewardDisciplineStore.PostListReward(
+      description.value,
+      selectedMemberMSV.value
+    );
+  } else if (dialogType.value === "ky-luat") {
+    await RewardDisciplineStore.PostListDiscipline(
+      description.value,
+      selectedMemberMSV.value
+    );
+  }
+  closeDialog(); // Close the dialog after submission
+};
+
 // Khi component mount
 onMounted(async () => {
   await store.getMemberList(1);
@@ -98,12 +120,12 @@ onMounted(async () => {
       <div class="search-box">
         <input
           type="text"
-          placeholder="Tìm kiếm theo mã sinh viên, tên, email, số điện thoại, trạng thái"
+          placeholder="Tìm kiếm theo mã sinh viên, tên, email"
           v-model="searchQuery"
         />
         <button @click="searchMembers">Tìm kiếm</button>
       </div>
-      <h1>DANH SÁCH ĐOÀN VIÊN</h1>
+      <h1>DANH SÁCH ĐOÀN VIÊN HUMG</h1>
     </header>
 
     <div class="table-container">
@@ -111,10 +133,10 @@ onMounted(async () => {
         <thead>
           <tr>
             <th>Tên</th>
-            <th>Chức vụ</th>
+            <th>Mã sinh viên</th>
             <th>Lớp</th>
             <th>Email</th>
-            <th>Khen thưởng</th>
+            <th>Ưu tú</th>
             <th>Ngày sinh</th>
             <th v-if="roleNamelogin === 'Bí thư đoàn viên'">Đề Xuất</th>
           </tr>
@@ -129,7 +151,7 @@ onMounted(async () => {
               <img class="avatar" :src="member.urlAvatar" alt="avatar" />
               {{ member.fullName }}
             </td>
-            <td>{{ member.roleName }}</td>
+            <td>{{ member.maSV }}</td>
             <td>{{ member.class }}</td>
             <td>{{ member.email }}</td>
             <td>
@@ -150,6 +172,7 @@ onMounted(async () => {
             </td>
 
             <td>{{ formatDate(member.birthdate) }}</td>
+            <!-- form đề xuất khen thưởng - kỷ luật -->
             <td v-if="roleNamelogin === 'Bí thư đoàn viên'">
               <button
                 class="action-btn reward-btn"
@@ -175,9 +198,13 @@ onMounted(async () => {
     <div v-if="showDialog" class="dialog-overlay" @click.self="closeDialog">
       <div class="dialog-box">
         <h3>{{ dialogType === "khen-thuong" ? "Khen thưởng" : "Kỷ luật" }}</h3>
-        <textarea rows="4" placeholder="Nhập mô tả..."></textarea>
+        <textarea
+          v-model="description"
+          rows="4"
+          placeholder="Nhập mô tả..."
+        ></textarea>
         <div class="dialog-buttons">
-          <button class="submit-btn">Submit</button>
+          <button class="submit-btn" @click="submitProposal">Submit</button>
           <button class="cancel-btn" @click="closeDialog">Cancel</button>
         </div>
       </div>
