@@ -68,6 +68,11 @@ const routes = [
     name: "RewardDiscripline",
     component: RewardDiscipline,
   },
+  {
+    path: "/EventsDetail/:id",
+    name: "EventsDetail",
+    component: EventsDetail,
+  },
 
   // Admin
   {
@@ -110,6 +115,7 @@ const router = createRouter({
 });
 
 import { useUserStore } from "../store/userStore";
+import EventsDetail from "../views/EventsDetail.vue";
 
 router.beforeEach(async (to, from, next) => {
   const userStore = useUserStore();

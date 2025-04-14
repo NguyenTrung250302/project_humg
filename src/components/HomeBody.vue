@@ -1,6 +1,6 @@
 <template>
   <div class="home-body">
-    <!-- 📢 Thông báo tài liệu (hiển thị lớn ở đầu) -->
+    <!-- 📢 Thông báo tài liệu -->
     <div
       v-if="eventStore.documentList && eventStore.documentList.length > 0"
       class="document-banner"
@@ -29,17 +29,14 @@
     <h1 class="page-title">🎉 NHỮNG SỰ KIỆN NỔI BẬT GẦN ĐÂY</h1>
 
     <div class="content-frame">
-      <!-- Hiển thị lỗi nếu có -->
       <div v-if="eventStore.error" class="error-box">
         <p>{{ eventStore.error }}</p>
       </div>
 
-      <!-- Loading -->
       <div v-else-if="isLoading" class="loading-box">
         <p>⏳ Đang tải dữ liệu sự kiện...</p>
       </div>
 
-      <!-- Danh sách sự kiện -->
       <div
         v-else-if="eventStore.eventList && eventStore.eventList.length > 0"
         class="event-grid"
@@ -48,6 +45,8 @@
           class="event-card"
           v-for="event in eventStore.eventList"
           :key="event.id"
+          @click="goToEventDetail(event.id)"
+          style="cursor: pointer"
         >
           <img :src="event.urlAvatar" alt="Ảnh sự kiện" class="event-image" />
           <div class="event-info">
@@ -65,7 +64,6 @@
         </div>
       </div>
 
-      <!-- Không có sự kiện -->
       <div v-else class="no-event">
         <p>😕 Hiện tại không có sự kiện nào để hiển thị.</p>
       </div>
@@ -75,10 +73,12 @@
 
 <script setup>
 import { onMounted, ref } from "vue";
+import { useRouter } from "vue-router";
 import { useEventStore } from "../store/EventStore";
 
 const eventStore = useEventStore();
 const isLoading = ref(true);
+const router = useRouter();
 
 onMounted(async () => {
   isLoading.value = true;
@@ -90,7 +90,12 @@ const formatDate = (dateStr) => {
   const date = new Date(dateStr);
   return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
 };
+
+const goToEventDetail = (id) => {
+  router.push(`/EventsDetail/${id}`);
+};
 </script>
+
 
 <style scoped>
 .home-body {
@@ -197,6 +202,11 @@ const formatDate = (dateStr) => {
   font-size: 14px;
   color: #555;
   margin-bottom: 10px;
+  display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .event-detail {

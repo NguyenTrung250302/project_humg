@@ -33,6 +33,8 @@ export const useEventStore = defineStore("event", () => {
         { headers }
       );
 
+      console.log("event list", response.data);
+
       if (response.status === 200 && response.data.items) {
         eventList.value = response.data.items;
         error.value = null;

@@ -199,7 +199,7 @@ export const useUserStore = defineStore("user", () => {
                 "https://localhost:7244/api/Controller_MemberInfo/Get_Menber_Info",
                 { headers: getAuthHeaders() } 
             );
-            console.log(response.data);
+            console.log("Member Info", response.data);
             
             if (response.data.status === 200) {
                 memberInfo.value = response.data.data; 
