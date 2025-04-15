@@ -93,11 +93,52 @@ export const useEventStore = defineStore("event", () => {
     }
   };
 
+  // Đăng ký tham gia sự kiện
+  const signUpForEvent = async (eventId) => {
+    try {
+      const headers = getAuthHeaders();
+  
+      if (!headers) {
+        error.value = "🔒 Bạn cần đăng nhập để đăng ký sự kiện.";
+        return;
+      }
+  
+      const formData = new FormData();
+      formData.append("eventId", eventId); 
+  
+      const response = await axios.post(
+        "https://localhost:7244/api/Controller_Event/Sign_up_for_the_activity",
+        formData,
+        { headers }
+      );
+  
+      if (response.data.status === 200) {
+        return {
+          success: true,
+          message: response.data.message || "Đăng ký sự kiện thành công!",
+        };
+      } else {
+        return {
+          success: false,
+          message: response.data.message || "Đăng ký sự kiện thất bại!",
+        };
+      }
+    } catch (err) {
+      return {
+        success: false,
+        message: err.response?.data?.message || "Không thể kết nối tới server!",
+      };
+    }
+  };
+  
+
   return {
     eventList,
     getEventList,
     documentList,
     getDocumentList,
+    signUpForEvent,
+    signUpForEvent,
     error,
   };
 });
