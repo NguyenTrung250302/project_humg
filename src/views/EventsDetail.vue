@@ -20,9 +20,14 @@
     </div>
 
     <!-- Nút đăng ký sự kiện -->
-    <div class="register-button-box">
-      <button class="register-button" @click="handleRegister">🎉 Đăng ký tham gia sự kiện</button>
-    </div>
+     <div style="display: flex; justify-content: center;">
+       <div class="register-button-box">
+         <button class="register-button" @click="">📌 Hủy tham gia sự kiện</button>
+       </div>
+       <div class="register-button-box">
+         <button class="register-button" @click="handleRegister">🎉 Đăng ký tham gia sự kiện</button>
+       </div>
+     </div>
   </div>
 
   <div v-else class="loading-box">
@@ -115,6 +120,7 @@ const handleRegister = async () => {
   display: flex;
   justify-content: center;
   margin: 30px 0;
+  margin-right: 10px;
 }
 
 .register-button {
