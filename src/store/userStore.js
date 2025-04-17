@@ -3,6 +3,8 @@ import { ref } from "vue";
 import axios from "axios";
 
 export const useUserStore = defineStore("user", () => {
+  // const urlHost = "https://qldvhumg.up.railway.app"
+  const urlHost = "https://localhost:7244"
   const loading = ref(false);
   const error = ref(null);
   const user = ref(null);
@@ -26,7 +28,7 @@ export const useUserStore = defineStore("user", () => {
       formData.append("Email", email);
 
       const response = await axios.put(
-        "https://localhost:7244/api/Controller_Authenic/Forget_Password",
+        urlHost + "/api/Controller_Authenic/Forget_Password",
         formData,
         {
           headers: { "Content-Type": "multipart/form-data" },
@@ -64,7 +66,7 @@ export const useUserStore = defineStore("user", () => {
       formData.append("code", code);
 
       const response = await axios.put(
-        `https://localhost:7244/api/Controller_Authenic/Activate_Password?email=${encodeURIComponent(
+        urlHost + `/api/Controller_Authenic/Activate_Password?email=${encodeURIComponent(
           email
         )}`,
         formData,
@@ -111,7 +113,7 @@ export const useUserStore = defineStore("user", () => {
       formData.append("FullName", fullName);
 
       const response = await axios.post(
-        "https://localhost:7244/api/Controller_Authenic/Register",
+        urlHost + "/api/Controller_Authenic/Register",
         formData,
         {
           headers: { "Content-Type": "multipart/form-data" },
@@ -151,7 +153,7 @@ export const useUserStore = defineStore("user", () => {
       formData.append("Opt", otp);
 
       const response = await axios.put(
-        `https://localhost:7244/api/Controller_Authenic/Active_Account?email=${encodeURIComponent(
+        urlHost + `/api/Controller_Authenic/Active_Account?email=${encodeURIComponent(
           email
         )}`,
         formData,
@@ -189,7 +191,7 @@ export const useUserStore = defineStore("user", () => {
       formData.append("Password", password);
 
       const response = await axios.post(
-        "https://localhost:7244/api/Controller_Authenic/Login",
+        urlHost + "/api/Controller_Authenic/Login",
         formData,
         {
           headers: { "Content-Type": "multipart/form-data" },
@@ -234,7 +236,7 @@ export const useUserStore = defineStore("user", () => {
 
     try {
       const response = await axios.get(
-        "https://localhost:7244/api/Controller_MemberInfo/Get_Menber_Info",
+        urlHost + "/api/Controller_MemberInfo/Get_Menber_Info",
         { headers: getAuthHeaders() }
       );
 
@@ -268,7 +270,7 @@ export const useUserStore = defineStore("user", () => {
       formData.append("renewpassword", renewpassword);
 
       const response = await axios.put(
-        "https://localhost:7244/api/Controller_Authenic/Change_Password",
+        urlHost + "/api/Controller_Authenic/Change_Password",
         formData,
         {
           headers: {
@@ -322,7 +324,7 @@ export const useUserStore = defineStore("user", () => {
       if (placeOfJoining) formData.append("PlaceOfJoining", placeOfJoining);
 
       const response = await axios.put(
-        "https://localhost:7244/api/Controller_MemberInfo/Update_member_info",
+        urlHost + "/api/Controller_MemberInfo/Update_member_info",
         formData,
         {
           headers: {
@@ -356,7 +358,7 @@ export const useUserStore = defineStore("user", () => {
       formData.append("UrlAvatar", urlAvatar);
 
       const response = await axios.put(
-        "https://localhost:7244/api/Controller_MemberInfo/Update_user_img",
+        urlHost + "/api/Controller_MemberInfo/Update_user_img",
         formData,
         {
           headers: {

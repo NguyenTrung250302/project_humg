@@ -140,7 +140,7 @@ export const useEventStore = defineStore("event", () => {
 
 
   // Hủy đăng ký tham gia sự kiện
-  const unsubscribeFromEvent = async (eventJoinId) => {
+  const unsubscribeFromEvent = async (eventId) => {
     try {
       const headers = getAuthHeaders();
   
@@ -152,7 +152,7 @@ export const useEventStore = defineStore("event", () => {
       }
   
       const formData = new FormData();
-      formData.append("eventJoinId", eventJoinId);
+      formData.append("eventId", eventId);
   
       const response = await axios.delete(
         "https://localhost:7244/api/Controller_Event/Unsubscribe_from_activities",
