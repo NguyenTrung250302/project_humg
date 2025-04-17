@@ -2,7 +2,7 @@ import { defineStore } from "pinia";
 import { ref } from "vue";
 import axios from "axios";
 
-export const useApproveStore = defineStore("approve", () => {
+export const useApproveStore = defineStore("approveAdmin", () => {
   const approveList = ref([]);
   const error = ref(null);
   const getAuthHeaders = () => {
