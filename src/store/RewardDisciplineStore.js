@@ -9,6 +9,18 @@ export const useRewardDisciplineStore = defineStore(
     const listDiscipline = ref([]);
     const listApprovalHistory = ref([]);
     const error = ref(null);
+    
+    const rewardPagination = {
+      totalItems: ref(0),
+      totalPages: ref(0),
+      currentPage: ref(1),
+    };
+    
+    const disciplinePagination = {
+      totalItems: ref(0),
+      totalPages: ref(0),
+      currentPage: ref(1),
+    };
 
     const getAuthHeaders = () => {
       const token = localStorage.getItem("accessToken");
@@ -20,7 +32,7 @@ export const useRewardDisciplineStore = defineStore(
         : null;
     };
     //Lấy danh sách khen thưởng
-    const GetListReward = async () => {
+    const GetListReward = async (pageNumber = 1) => {
       const headers = getAuthHeaders();
 
       if (!headers) {
@@ -31,11 +43,14 @@ export const useRewardDisciplineStore = defineStore(
 
       try {
         const response = await axios.get(
-          "https://localhost:7244/api/Controller_RewardDiscipline/Get_List_Reward?pageSize=10&pageNumber=1",
+          `https://localhost:7244/api/Controller_RewardDiscipline/Get_List_Reward?pageSize=3&pageNumber=${pageNumber}`,
           { headers }
         );
 
         listReward.value = response.data.items;
+        rewardPagination.totalItems.value = response.data.totalItems;
+        rewardPagination.totalPages.value = response.data.totalPages;
+        rewardPagination.currentPage.value = response.data.currentPage;
         console.log("✅ Lấy danh sách khen thưởng thành công:", response.data);
       } catch (err) {
         console.error("❌ Lỗi khi lấy danh sách khen thưởng:", err);
@@ -44,7 +59,7 @@ export const useRewardDisciplineStore = defineStore(
     };
 
     //Lấy danh sách kỷ luật
-    const GetListDiscipline = async () => {
+    const GetListDiscipline = async (pageNumber = 1) => {
       const headers = getAuthHeaders();
 
       if (!headers) {
@@ -55,11 +70,14 @@ export const useRewardDisciplineStore = defineStore(
 
       try {
         const response = await axios.get(
-          "https://localhost:7244/api/Controller_RewardDiscipline/Get_List_Discipline?pageSize=10&pageNumber=1",
+          `https://localhost:7244/api/Controller_RewardDiscipline/Get_List_Discipline?pageSize=3&pageNumber=${pageNumber}`,
           { headers }
         );
 
         listDiscipline.value = response.data.items;
+        disciplinePagination.totalItems.value = response.data.totalItems;
+        disciplinePagination.totalPages.value = response.data.totalPages;
+        disciplinePagination.currentPage.value = response.data.currentPage;
         console.log("✅ Lấy danh sách kỷ luật thành công:", response.data);
       } catch (err) {
         console.error("❌ Lỗi khi lấy danh sách kỷ luật:", err);
@@ -147,6 +165,19 @@ export const useRewardDisciplineStore = defineStore(
       }
     };
 
+    // Chuyển trang
+    const goToPageReward = (page) => {
+      if (page >= 1 && page <= rewardPagination.totalPages.value) {
+        GetListReward(page);
+      }
+    };
+    
+    const goToPageDiscipline = (page) => {
+      if (page >= 1 && page <= disciplinePagination.totalPages.value) {
+        GetListDiscipline(page);
+      }
+    };
+
     return {
       GetListReward,
       GetListDiscipline,
@@ -157,6 +188,10 @@ export const useRewardDisciplineStore = defineStore(
       listDiscipline,
       listApprovalHistory,
       error,
+      rewardPagination,
+      disciplinePagination,
+      goToPageReward,
+      goToPageDiscipline,
     };
   }
 );

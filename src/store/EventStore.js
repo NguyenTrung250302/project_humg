@@ -6,6 +6,10 @@ export const useEventStore = defineStore("event", () => {
   const eventList = ref([]);
   const documentList = ref([]);
   const error = ref(null);
+  const totalItems = ref(0);
+  const totalPages = ref(0);
+  const currentPage = ref(1);
+
 
   const getAuthHeaders = () => {
     const token = localStorage.getItem("accessToken");
@@ -18,7 +22,7 @@ export const useEventStore = defineStore("event", () => {
   };
 
   // Get danh sách sự kiện
-  const getEventList = async () => {
+  const getEventList = async (pageNumber = 1) => {
     try {
       const headers = getAuthHeaders();
 
@@ -29,7 +33,7 @@ export const useEventStore = defineStore("event", () => {
       }
 
       const response = await axios.get(
-        "https://localhost:7244/api/Controller_Event/Get_List_Event?pageSize=10&pageNumber=1",
+        `https://localhost:7244/api/Controller_Event/Get_List_Event?pageSize=10&pageNumber=${pageNumber}`,
         { headers }
       );
 
@@ -37,6 +41,9 @@ export const useEventStore = defineStore("event", () => {
 
       if (response.status === 200 && response.data.items) {
         eventList.value = response.data.items;
+        totalItems.value = response.data.totalItems;
+        totalPages.value = response.data.totalPages;
+        currentPage.value = response.data.currentPage;
         error.value = null;
       } else {
         error.value = "⚠️ Không thể tải danh sách sự kiện từ máy chủ.";
@@ -57,7 +64,7 @@ export const useEventStore = defineStore("event", () => {
   };
 
   // Get danh sách tài liệu
-  const getDocumentList = async () => {
+  const getDocumentList = async (pageNumber = 1) => {
     try {
       const headers = getAuthHeaders();
 
@@ -68,7 +75,7 @@ export const useEventStore = defineStore("event", () => {
       }
 
       const response = await axios.get(
-        "https://localhost:7244/api/Controller_Document/Get_List_Document?pageSize=10&pageNumber=1",
+        `https://localhost:7244/api/Controller_Document/Get_List_Document?pageSize=10&pageNumber=${pageNumber}`,
         { headers }
       );
 
@@ -130,7 +137,57 @@ export const useEventStore = defineStore("event", () => {
       };
     }
   };
+
+
+  // Hủy đăng ký tham gia sự kiện
+  const unsubscribeFromEvent = async (eventJoinId) => {
+    try {
+      const headers = getAuthHeaders();
   
+      if (!headers) {
+        return {
+          success: false,
+          message: "🔒 Bạn cần đăng nhập để hủy tham gia sự kiện.",
+        };
+      }
+  
+      const formData = new FormData();
+      formData.append("eventJoinId", eventJoinId);
+  
+      const response = await axios.delete(
+        "https://localhost:7244/api/Controller_Event/Unsubscribe_from_activities",
+        {
+          headers,
+          data: formData,   
+        }
+      );
+  
+      if (response.data.status === 200) {
+        return {
+          success: true,
+          message: response.data.message || "Hủy tham gia thành công!",
+        };
+      } else {
+        return {
+          success: false,
+          message: response.data.message || "Hủy tham gia thất bại!",
+        };
+      }
+    } catch (err) {
+      return {
+        success: false,
+        message: err.response?.data?.message || "Không thể kết nối tới server!",
+      };
+    }
+  };
+  
+
+  // Chuyển trang
+  const goToPage = (page) => {
+    if (page >= 1 && page <= totalPages.value) {
+      getEventList(page);
+    }
+  };
 
   return {
     eventList,
@@ -139,6 +196,11 @@ export const useEventStore = defineStore("event", () => {
     getDocumentList,
     signUpForEvent,
     signUpForEvent,
+    unsubscribeFromEvent,
     error,
+    totalItems,
+    totalPages,
+    currentPage,
+    goToPage,
   };
 });

@@ -1,6 +1,7 @@
 <template>
   <Header />
   <NavHeader />
+  <div></div>
 
   <div class="main-content">
     <div
@@ -17,18 +18,43 @@
     <section class="section">
       <h2 class="section-title">🎖️ KHEN THƯỞNG</h2>
       <div class="card-list">
-        <div class="card" v-for="(reward, index) in rewards" :key="index">
+        <div class="card" v-for="(reward, index) in RewardDisciplineStore.listReward" :key="index">
           <h3>Đoàn viên: {{ reward.recipientName }}</h3>
           <p>Mã SV: {{ reward.recipientMaSV }}</p>
           <p>Lý do: {{ reward.description }}</p>
-          <p>Ngày duyệt: {{ reward.createDate }}</p>
+          <p>Ngày duyệt: {{ reward.createDate.split("T")[0] }}</p>
           <p>Đề xuất bởi: {{ reward.proposerName }}</p>
           <p v-if="reward.rejectReason">
             Lý do từ chối: {{ reward.rejectReason }}
           </p>
         </div>
       </div>
+      <div class="pagination">
+        <button
+          @click="goToPageReward(RewardDisciplineStore.rewardPagination.currentPage - 1)"
+          :disabled="RewardDisciplineStore.rewardPagination.currentPage === 1"
+        >
+          Trang trước
+        </button>
+  
+        <span
+          v-for="page in RewardDisciplineStore.rewardPagination.totalPages"
+          :key="page"
+          @click="goToPageReward(page)"
+          :class="{ active: RewardDisciplineStore.rewardPagination.currentPage === page }"
+        >
+          {{ page }}
+        </span>
+  
+        <button
+          @click="goToPageReward(RewardDisciplineStore.rewardPagination.currentPage + 1)"
+          :disabled="RewardDisciplineStore.rewardPagination.currentPage === RewardDisciplineStore.rewardPagination.totalPages"
+        >
+          Trang sau
+        </button>
+      </div>
     </section>
+
 
     <!-- Kỷ luật -->
     <section class="section">
@@ -36,19 +62,47 @@
       <div class="card-list">
         <div
           class="card warning"
-          v-for="(penalty, index) in penalties"
+          v-for="(penalty, index) in RewardDisciplineStore.listDiscipline"
           :key="index"
         >
           <h3>Đoàn viên: {{ penalty.recipientName }}</h3>
+          <p>Mã SV: {{ penalty.recipientMaSV }}</p>
           <p>Lý do: {{ penalty.description }}</p>
-          <p>Ngày duyệt: {{ penalty.createDate }}</p>
+          <p>Ngày duyệt: {{ penalty.createDate.split("T")[0] }}</p>
           <p>Đề xuất bởi: {{ penalty.proposerName }}</p>
           <p v-if="penalty.rejectReason">
             Lý do từ chối: {{ penalty.rejectReason }}
           </p>
+          
         </div>
       </div>
+      <div class="pagination">
+        <button
+          @click="goToPageDiscipline(RewardDisciplineStore.disciplinePagination.currentPage - 1)"
+          :disabled="RewardDisciplineStore.disciplinePagination.currentPage === 1"
+        >
+          Trang trước
+        </button>
+  
+        <span
+          v-for="page in RewardDisciplineStore.disciplinePagination.totalPages"
+          :key="page"
+          @click="goToPageDiscipline(page)"
+          :class="{ active: RewardDisciplineStore.disciplinePagination.currentPage === page }"
+        >
+          {{ page }}
+        </span>
+  
+        <button
+          @click="goToPageDiscipline(RewardDisciplineStore.disciplinePagination.currentPage + 1)"
+          :disabled="RewardDisciplineStore.disciplinePagination.currentPage === RewardDisciplineStore.disciplinePagination.totalPages"
+        >
+          Trang sau
+        </button>
+      </div>
     </section>
+
+
   </div>
 
   <Footer />
@@ -62,27 +116,30 @@ import { onMounted, ref } from "vue";
 import { useRewardDisciplineStore } from "../store/RewardDisciplineStore";
 
 const RewardDisciplineStore = useRewardDisciplineStore();
-const rewards = ref([]);
-const penalties = ref([]);
 
 onMounted(async () => {
   await RewardDisciplineStore.GetListReward();
   await RewardDisciplineStore.GetListDiscipline();
-
-  rewards.value = RewardDisciplineStore.listReward.map((item) => ({
-    ...item,
-    createDate: item.createDate.split("T")[0],
-  }));
-
-  penalties.value = RewardDisciplineStore.listDiscipline.map((item) => ({
-    ...item,
-    createDate: item.createDate.split("T")[0],
-  }));
 });
+
+const goToPageReward = async (page) => {
+  if (page >= 1 && page <= RewardDisciplineStore.rewardPagination.totalPages) {
+    await RewardDisciplineStore.goToPageReward(page); 
+  }
+};
+
+const goToPageDiscipline = async (page) => {
+  if (page >= 1 && page <= RewardDisciplineStore.disciplinePagination.totalPages) {
+    await RewardDisciplineStore.goToPageDiscipline(page); 
+  }
+};
 </script>
 
 <style scoped>
 .main-content {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
   padding: 20px;
   background-color: #f9f9f9;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
@@ -150,13 +207,6 @@ onMounted(async () => {
   margin-bottom: 0;
 }
 
-/* Responsive cho mobile */
-@media (max-width: 768px) {
-  .card {
-    flex: 1 1 100%;
-  }
-}
-
 .auth-error-box {
   text-align: center;
   padding: 20px;
@@ -165,5 +215,44 @@ onMounted(async () => {
   color: #856404;
   font-weight: bold;
   margin-bottom: 20px;
+}
+
+.pagination {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.pagination button {
+  margin: 0 5px;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.pagination button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.pagination span {
+  margin: 0 5px;
+  padding: 10px 15px;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+}
+
+.pagination span:hover {
+  background-color: #f0f0f0;
+}
+
+.pagination .active {
+  font-weight: bold;
+  color: #007bff;
+  background-color: #e7f1ff;
 }
 </style>

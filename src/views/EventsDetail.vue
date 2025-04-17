@@ -22,10 +22,10 @@
     <!-- Nút đăng ký sự kiện -->
      <div style="display: flex; justify-content: center;">
        <div class="register-button-box">
-         <button class="register-button" @click="">📌 Hủy tham gia sự kiện</button>
+         <button class="register-button" @click="handleUnsubscribeEvent">📌 Hủy tham gia sự kiện</button>
        </div>
        <div class="register-button-box">
-         <button class="register-button" @click="handleRegister">🎉 Đăng ký tham gia sự kiện</button>
+         <button class="register-button" @click="handleRegisterEvent">🎉 Đăng ký tham gia sự kiện</button>
        </div>
      </div>
   </div>
@@ -62,10 +62,22 @@ onMounted(async () => {
   event.value = eventStore.eventList.find((e) => e.id.toString() === id);
 });
 
-const handleRegister = async () => {
+const handleRegisterEvent = async () => {
   const eventId = event.value?.id;
 
   const result = await eventStore.signUpForEvent(eventId);
+
+  if (result.success) {
+    window.$dialog.success(result.message);
+  } else {
+    window.$dialog.fail(result.message);
+  }
+};
+
+const handleUnsubscribeEvent = async () => {
+  const eventId = event.value?.id;
+
+  const result = await eventStore.unsubscribeFromEvent(eventId);
 
   if (result.success) {
     window.$dialog.success(result.message);

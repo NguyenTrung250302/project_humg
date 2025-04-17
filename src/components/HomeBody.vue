@@ -42,15 +42,13 @@
 
       <div
         v-else-if="eventStore.eventList && eventStore.eventList.length > 0"
-        class="event-grid"
-      >
+        class="event-grid">
         <div
           class="event-card"
           v-for="event in eventStore.eventList"
           :key="event.id"
           @click="goToEventDetail(event.id)"
-          style="cursor: pointer"
-        >
+          style="cursor: pointer">
           <img :src="event.urlAvatar" alt="Ảnh sự kiện" class="event-image" />
           <div class="event-info">
             <h2 class="event-name">{{ event.eventName }}</h2>
@@ -66,10 +64,36 @@
           </div>
         </div>
       </div>
+      
 
       <div v-else class="no-event">
         <p>😕 Hiện tại không có sự kiện nào để hiển thị.</p>
       </div>
+    </div>
+    
+    <div class="pagination">
+      <button
+        @click="goToPage(eventStore.currentPage - 1)"
+        :disabled="eventStore.currentPage === 1"
+      >
+        Trang trước
+      </button>
+  
+      <span
+        v-for="page in eventStore.totalPages"
+        :key="page"
+        @click="goToPage(page)"
+        :class="{ active: eventStore.currentPage === page }"
+      >
+        {{ page }}
+      </span>
+  
+      <button
+        @click="goToPage(eventStore.currentPage + 1)"
+        :disabled="eventStore.currentPage === eventStore.totalPages"
+      >
+        Trang sau
+      </button>
     </div>
   </div>
 </template>
@@ -96,6 +120,13 @@ const formatDate = (dateStr) => {
 
 const goToEventDetail = (id) => {
   router.push(`/EventsDetail/${id}`);
+};
+
+// Chuyển trang
+const goToPage = async (page) => {
+  if (page >= 1 && page <= eventStore.totalPages) {
+    await eventStore.goToPage(page);
+  }
 };
 </script>
 
@@ -226,5 +257,44 @@ const goToEventDetail = (id) => {
   color: #856404;
   font-weight: bold;
   margin-top: 20px;
+}
+
+.pagination {
+  margin-top: 100px;
+  text-align: center;
+}
+
+.pagination button {
+  margin: 0 5px;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.pagination button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.pagination span {
+  margin: 0 5px;
+  padding: 10px 15px;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+}
+
+.pagination span:hover {
+  background-color: #f0f0f0;
+}
+
+.pagination .active {
+  font-weight: bold;
+  color: #007bff;
+  background-color: #e7f1ff;
 }
 </style>

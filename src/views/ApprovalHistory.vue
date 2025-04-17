@@ -22,7 +22,7 @@
         v-for="(history, index) in approvalHistory"
         :key="index"
       >
-        <h3>ID: {{ history.id }}</h3>
+        <h3>Mã Phê Duyệt: {{ history.id }}</h3>
         <p>
           Loại:
           {{
@@ -34,7 +34,7 @@
         <p>Nội dung: {{ history.description }}</p>
         <p>Phê duyệt bởi: {{ history.approvedByName }}</p>
         <p>Thời gian phê duyệt: {{ history.approvedDate }}</p>
-        <p>Mã ID đề xuất: {{ history.rewardDisciplineId }}</p>
+        <p>Mã đề xuất: {{ history.rewardDisciplineId }}</p>
         <p>
           Trạng thái:
           <span :class="history.isAccept ? 'status accept' : 'status reject'">
