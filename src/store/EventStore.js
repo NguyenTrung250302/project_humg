@@ -138,7 +138,6 @@ export const useEventStore = defineStore("event", () => {
     documentList,
     getDocumentList,
     signUpForEvent,
-    signUpForEvent,
     error,
   };
 });

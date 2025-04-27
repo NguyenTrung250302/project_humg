@@ -3,25 +3,30 @@
     <!-- 📢 Thông báo tài liệu -->
     <div
       v-if="eventStore.documentList && eventStore.documentList.length > 0"
-      class="document-banner"
+      class="document-banner-list"
     >
-      <div class="document-banner-inner">
-        <img
-          :src="eventStore.documentList[0].urlAvatar"
-          alt="Ảnh tài liệu"
-          class="banner-image"
-        />
-        <div class="banner-text">
-          <h2 class="banner-title">
-            📢 {{ eventStore.documentList[0].documentTitle }}
-          </h2>
-          <p class="banner-content">
-            {{ eventStore.documentList[0].documentContent }}
-          </p>
-          <p class="banner-meta">
-            🧑 {{ eventStore.documentList[0].userName }} -
-            {{ formatDate(eventStore.documentList[0].createAt) }}
-          </p>
+      <div
+        class="document-banner"
+        v-for="(document, index) in eventStore.documentList"
+        :key="index"
+      >
+        <div class="document-banner-inner">
+          <img
+            :src="document.urlAvatar"
+            alt="Ảnh tài liệu"
+            class="banner-image"
+          />
+          <div class="banner-text">
+            <h2 class="banner-title">
+              📢 {{ document.documentTitle }}
+            </h2>
+            <p class="banner-content">
+              {{ document.documentContent }}
+            </p>
+            <p class="banner-meta">
+              🧑 {{ document.userName }} - {{ formatDate(document.createAt) }}
+            </p>
+          </div>
         </div>
       </div>
     </div>
@@ -85,7 +90,8 @@ const router = useRouter();
 
 onMounted(async () => {
   isLoading.value = true;
-  await eventStore.getEventList(), eventStore.getDocumentList();
+  await eventStore.getEventList();
+  await eventStore.getDocumentList();
   isLoading.value = false;
 });
 
@@ -108,12 +114,16 @@ const goToEventDetail = (id) => {
 }
 
 /* Thông báo tài liệu lớn */
+.document-banner-list {
+  margin-bottom: 30px;
+}
+
 .document-banner {
   background-color: #fffbe6;
   border: 2px solid #ffe58f;
   border-radius: 12px;
   padding: 24px;
-  margin-bottom: 30px;
+  margin-bottom: 20px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
