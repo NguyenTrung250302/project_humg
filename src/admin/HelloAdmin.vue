@@ -4,7 +4,7 @@ import Dashboard from "../admin/Dashboard.vue";
 </script>
 
 <template>
-  <div class="container-dashboard">
+ <div class="container-dashboard">
     <Dashboard></Dashboard>
     <div class="main">
       <div class="welcome-box">
@@ -16,7 +16,7 @@ import Dashboard from "../admin/Dashboard.vue";
         <h1 class="greeting-text">Xin chào Quản Trị Viên</h1>
       </div>
     </div>
-  </div>
+  </div> 
 </template>
 
 <style scoped>
