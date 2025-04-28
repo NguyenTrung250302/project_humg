@@ -7,9 +7,19 @@ export const useEventStore = defineStore("event", () => {
   const eventList = ref([]);
   const documentList = ref([]);
   const error = ref(null);
-  const totalItems = ref(0);
-  const totalPages = ref(0);
-  const currentPage = ref(1);
+  // Pagination cho Event
+  const eventPagination = {
+    totalItems: ref(0),
+    totalPages: ref(0),
+    currentPage: ref(1),
+  };
+
+  // Pagination cho Document
+  const documentPagination = {
+    totalItems: ref(0),
+    totalPages: ref(0),
+    currentPage: ref(1),
+  };
 
 
   const getAuthHeaders = () => {
@@ -42,9 +52,9 @@ export const useEventStore = defineStore("event", () => {
 
       if (response.status === 200 && response.data.items) {
         eventList.value = response.data.items;
-        totalItems.value = response.data.totalItems;
-        totalPages.value = response.data.totalPages;
-        currentPage.value = response.data.currentPage;
+        eventPagination.totalItems.value = response.data.totalItems;
+        eventPagination.totalPages.value = response.data.totalPages;
+        eventPagination.currentPage.value = response.data.currentPage;
         error.value = null;
       } else {
         error.value = "⚠️ Không thể tải danh sách sự kiện từ máy chủ.";
@@ -76,12 +86,15 @@ export const useEventStore = defineStore("event", () => {
       }
 
       const response = await axios.get(
-        urlHost + `/api/Controller_Document/Get_List_Document?pageSize=10&pageNumber=${pageNumber}`,
+        urlHost + `/api/Controller_Document/Get_List_Document?pageSize=1&pageNumber=${pageNumber}`,
         { headers }
       );
 
       if (response.status === 200 && response.data.items) {
         documentList.value = response.data.items;
+        documentPagination.totalItems.value = response.data.totalItems;
+        documentPagination.totalPages.value = response.data.totalPages;
+        documentPagination.currentPage.value = response.data.currentPage;
         error.value = null;
       } else {
         error.value = "⚠️ Không thể tải danh sách tài liệu từ máy chủ.";
@@ -183,10 +196,17 @@ export const useEventStore = defineStore("event", () => {
   };
   
 
-  // Chuyển trang
-  const goToPage = (page) => {
-    if (page >= 1 && page <= totalPages.value) {
+  // Chuyển trang cho Event
+  const goToEventPage = (page) => {
+    if (page >= 1 && page <= eventPagination.totalPages.value) {
       getEventList(page);
+    }
+  };
+
+  // Chuyển trang cho Document
+  const goToDocumentPage = (page) => {
+    if (page >= 1 && page <= documentPagination.totalPages.value) {
+      getDocumentList(page);
     }
   };
 
@@ -199,9 +219,9 @@ export const useEventStore = defineStore("event", () => {
     signUpForEvent,
     unsubscribeFromEvent,
     error,
-    totalItems,
-    totalPages,
-    currentPage,
-    goToPage,
+    goToEventPage,
+    goToDocumentPage,
+    eventPagination,
+    documentPagination,
   };
 });

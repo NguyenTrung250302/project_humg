@@ -28,8 +28,34 @@
             </p>
           </div>
         </div>
+        <div class="pagination">
+          <!-- Phân trang cho tài liệu -->
+          <button
+            @click="goToPageDocument(eventStore.documentPagination.currentPage - 1)"
+            :disabled="eventStore.documentPagination.currentPage === 1"
+          >
+            Trang trước
+          </button>
+    
+          <span
+            v-for="page in eventStore.documentPagination.totalPages"
+            :key="page"
+            @click="goToPageDocument(page)"
+            :class="{ active: eventStore.documentPagination.currentPage === page }"
+          >
+            {{ page }}
+          </span>
+    
+          <button
+            @click="goToPageDocument(eventStore.documentPagination.currentPage + 1)"
+            :disabled="eventStore.documentPagination.currentPage === eventStore.documentPagination.totalPages"
+          >
+            Trang sau
+          </button>
+        </div>
       </div>
     </div>
+    
 
     <h1 class="page-title">🎉 NHỮNG SỰ KIỆN NỔI BẬT GẦN ĐÂY</h1>
 
@@ -77,25 +103,26 @@
     </div>
     
     <div class="pagination">
+      <!-- Phân trang cho sự kiện -->
       <button
-        @click="goToPageEvent(eventStore.currentPage - 1)"
-        :disabled="eventStore.currentPage === 1"
+        @click="goToPageEvent(eventStore.eventPagination.currentPage - 1)"
+        :disabled="eventStore.eventPagination.currentPage === 1"
       >
         Trang trước
       </button>
-  
+
       <span
-        v-for="page in eventStore.totalPages"
+        v-for="page in eventStore.eventPagination.totalPages"
         :key="page"
         @click="goToPageEvent(page)"
-        :class="{ active: eventStore.currentPage === page }"
+        :class="{ active: eventStore.eventPagination.currentPage === page }"
       >
         {{ page }}
       </span>
-  
+
       <button
-        @click="goToPageEvent(eventStore.currentPage + 1)"
-        :disabled="eventStore.currentPage === eventStore.totalPages"
+        @click="goToPageEvent(eventStore.eventPagination.currentPage + 1)"
+        :disabled="eventStore.eventPagination.currentPage === eventStore.eventPagination.totalPages"
       >
         Trang sau
       </button>
@@ -130,8 +157,13 @@ const goToEventDetail = (id) => {
 
 // Chuyển trang
 const goToPageEvent = async (page) => {
-  if (page >= 1 && page <= eventStore.totalPages) {
-    await eventStore.goToPage(page);
+  if (page >= 1 && page <= eventStore.eventPagination.totalPages) {
+    await eventStore.goToEventPage(page);
+  }
+};
+const goToPageDocument = async (page) => {
+  if (page >= 1 && page <= eventStore.documentPagination.totalPages) {
+    await eventStore.goToDocumentPage(page);
   }
 };
 </script>
@@ -227,7 +259,7 @@ const goToPageEvent = async (page) => {
 
 .event-image {
   width: 100%;
-  height: 180px;
+  height: 300px;
   object-fit: cover;
 }
 
