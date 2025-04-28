@@ -15,12 +15,15 @@ const toggleSidebar = () => {
     <RouterLink to="/" v-if="isSidebarOpen" class="sidebar-link">
       <i class="bx bx-home"></i> Trang chủ
     </RouterLink>
-    <RouterLink to="/EliteMember" v-if="isSidebarOpen" class="sidebar-link">
-      <i class="bx bx-book"></i>
-      Đoàn viên ưu tú
+    <RouterLink to="/Documents" v-if="isSidebarOpen" class="sidebar-link">
+      <i class="bx bx-user"></i> Ban hành văn bản
     </RouterLink>
     <RouterLink to="/EventManager" v-if="isSidebarOpen" class="sidebar-link">
       <i class="bx bx-user"></i> Quản lý sự kiện
+    </RouterLink>
+    <RouterLink to="/EliteMember" v-if="isSidebarOpen" class="sidebar-link">
+      <i class="bx bx-book"></i>
+      Đoàn viên ưu tú
     </RouterLink>
     <RouterLink to="/Approve" v-if="isSidebarOpen" class="sidebar-link">
       <i class="bx bx-book"></i>

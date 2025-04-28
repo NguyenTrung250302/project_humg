@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
 import axios from "axios";
+import { urlHost } from '../UrlApiHostStore/ApiHostStore';
 
 export const useEventAdminStore = defineStore("eventAdmin", () => {
   const error = ref(null);
@@ -43,7 +44,7 @@ export const useEventAdminStore = defineStore("eventAdmin", () => {
       formData.append("UrlAvatar", imageFile || "");
 
       const response = await axios.post(
-        "https://localhost:7244/api/Controller_Event/Add_Event",
+        urlHost + "/api/Controller_Event/Add_Event",
         formData,
         { headers }
       );
@@ -91,7 +92,7 @@ export const useEventAdminStore = defineStore("eventAdmin", () => {
       formData.append("UrlImg", eventData.urlImg || ""); // Add urlImg to the form data
 
       const response = await axios.put(
-        "https://localhost:7244/api/Controller_Event/Update_event",
+        urlHost + "/api/Controller_Event/Update_event",
         formData,
         { headers }
       );
@@ -125,7 +126,7 @@ export const useEventAdminStore = defineStore("eventAdmin", () => {
       formData.append("eventId", eventId);
 
       const response = await axios.delete(
-        "https://localhost:7244/api/Controller_Event/Delete_Event",
+        urlHost + "/api/Controller_Event/Delete_Event",
         {
           headers,
           data: formData, // 💡 axios cần `data` trong options khi gửi body cho DELETE

@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
 import axios from "axios";
+import { urlHost } from '../UrlApiHostStore/ApiHostStore';
 
 export const useManagerStore = defineStore("manager", () => {
   const loading = ref(false);
@@ -35,7 +36,7 @@ export const useManagerStore = defineStore("manager", () => {
       }
 
       const response = await axios.get(
-        `https://localhost:7244/api/Controller_MemberInfo/Get_List_Menber_Info?pageSize=12&pageNumber=${pageNumber}`,
+        urlHost + `/api/Controller_MemberInfo/Get_List_Menber_Info?pageSize=12&pageNumber=${pageNumber}`,
         { headers }
       );
 
@@ -101,7 +102,7 @@ export const useManagerStore = defineStore("manager", () => {
       if (searchParams.Status) params.append("Status", searchParams.Status);
 
       const response = await axios.get(
-        `https://localhost:7244/api/Controller_MemberInfo/Search_Member?${params.toString()}`,
+        urlHost + `/api/Controller_MemberInfo/Search_Member?${params.toString()}`,
         { headers }
       );
 

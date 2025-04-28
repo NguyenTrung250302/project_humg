@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
 import axios from "axios";
+import { urlHost } from '../UrlApiHostStore/ApiHostStore';
 
 export const useApproveStore = defineStore("approveAdmin", () => {
   const approveList = ref([]);
@@ -27,7 +28,7 @@ export const useApproveStore = defineStore("approveAdmin", () => {
       }
 
       const response = await axios.get(
-        "https://localhost:7244/api/Controller_RewardDiscipline/Get_List_Waiting?pageSize=10&pageNumber=1",
+        urlHost + "/api/Controller_RewardDiscipline/Get_List_Waiting?pageSize=10&pageNumber=1",
         { headers }
       );
 
@@ -66,7 +67,7 @@ export const useApproveStore = defineStore("approveAdmin", () => {
       formData.append("proposeId", proposeId);
 
       const response = await axios.put(
-        "https://localhost:7244/api/Controller_RewardDiscipline/Accept_Propose",
+        urlHost + "/api/Controller_RewardDiscipline/Accept_Propose",
         formData,
         { headers }
       );
@@ -95,7 +96,7 @@ export const useApproveStore = defineStore("approveAdmin", () => {
       formData.append("proposeId", proposeId);
 
       const response = await axios.put(
-        `https://localhost:7244/api/Controller_RewardDiscipline/Reject_Propose?reject=${encodeURIComponent(
+        urlHost + `/api/Controller_RewardDiscipline/Reject_Propose?reject=${encodeURIComponent(
           rejectReason
         )}`,
         formData,

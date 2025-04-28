@@ -115,7 +115,7 @@ const updateProfile = async () => {
     religion: userInfo.value.religion || undefined,
     dateOfJoining: userInfo.value.dateOfJoining || undefined,
     phoneNumber: userInfo.value.phoneNumber || undefined,
-    class: userInfo.value.class || undefined,
+    classValue: userInfo.value.class || undefined,
     fullName: userInfo.value.fullName || undefined,
     placeOfJoining: userInfo.value.placeOfJoining || undefined,
   });

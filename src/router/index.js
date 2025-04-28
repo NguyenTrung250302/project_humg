@@ -16,6 +16,7 @@ import RewardDiscipline from "../views/RewardDiscipline.vue";
 import ApprovalHistory from "../views/ApprovalHistory.vue";
 import Approve from "../admin/Approve.vue";
 import EliteMember from "../admin/EliteMember.vue";
+import PromulgateDocuments from "../admin/PromulgateDocuments.vue";
 
 const routes = [
   // HomeView
@@ -113,6 +114,11 @@ const routes = [
     name: "EliteMember",
     component: EliteMember,
   },
+  {
+    path: "/Documents",
+    name: "Documents",
+    component: PromulgateDocuments,
+  },
 ];
 
 const router = createRouter({
@@ -133,6 +139,7 @@ router.beforeEach(async (to, from, next) => {
     "/AdminProfile",
     "/Approve",
     "/EliteMember",
+    "Documents"
   ];
   const isAdminRoute = adminRoutes.includes(to.path);
 

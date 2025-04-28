@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
 import axios from "axios";
+import { urlHost } from '../UrlApiHostStore/ApiHostStore';
 
 export const useEventStore = defineStore("event", () => {
   const eventList = ref([]);
@@ -33,7 +34,7 @@ export const useEventStore = defineStore("event", () => {
       }
 
       const response = await axios.get(
-        `https://localhost:7244/api/Controller_Event/Get_List_Event?pageSize=10&pageNumber=${pageNumber}`,
+        urlHost + `/api/Controller_Event/Get_List_Event?pageSize=10&pageNumber=${pageNumber}`,
         { headers }
       );
 
@@ -75,7 +76,7 @@ export const useEventStore = defineStore("event", () => {
       }
 
       const response = await axios.get(
-        `https://localhost:7244/api/Controller_Document/Get_List_Document?pageSize=10&pageNumber=${pageNumber}`,
+        urlHost + `/api/Controller_Document/Get_List_Document?pageSize=10&pageNumber=${pageNumber}`,
         { headers }
       );
 
@@ -114,7 +115,7 @@ export const useEventStore = defineStore("event", () => {
       formData.append("eventId", eventId); 
   
       const response = await axios.post(
-        "https://localhost:7244/api/Controller_Event/Sign_up_for_the_activity",
+        urlHost + "/api/Controller_Event/Sign_up_for_the_activity",
         formData,
         { headers }
       );
@@ -155,7 +156,7 @@ export const useEventStore = defineStore("event", () => {
       formData.append("eventId", eventId);
   
       const response = await axios.delete(
-        "https://localhost:7244/api/Controller_Event/Unsubscribe_from_activities",
+        urlHost + "/api/Controller_Event/Unsubscribe_from_activities",
         {
           headers,
           data: formData,   

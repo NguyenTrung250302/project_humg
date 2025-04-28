@@ -1,6 +1,8 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
 import axios from "axios";
+import { urlHost } from '../UrlApiHostStore/ApiHostStore';
+
 
 export const useEliteMemberStore = defineStore("eliteMemberAdmin", () => {
   const error = ref(null);

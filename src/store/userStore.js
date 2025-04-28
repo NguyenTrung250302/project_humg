@@ -1,10 +1,9 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
 import axios from "axios";
+import { urlHost } from '../UrlApiHostStore/ApiHostStore';
 
 export const useUserStore = defineStore("user", () => {
-  // const urlHost = "https://qldvhumg.up.railway.app"
-  const urlHost = "https://localhost:7244"
   const loading = ref(false);
   const error = ref(null);
   const user = ref(null);

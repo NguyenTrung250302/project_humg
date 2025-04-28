@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
 import axios from "axios";
+import { urlHost } from '../UrlApiHostStore/ApiHostStore';
 
 export const useRewardDisciplineStore = defineStore(
   "rewardDisciplineStore",
@@ -43,7 +44,7 @@ export const useRewardDisciplineStore = defineStore(
 
       try {
         const response = await axios.get(
-          `https://localhost:7244/api/Controller_RewardDiscipline/Get_List_Reward?pageSize=3&pageNumber=${pageNumber}`,
+          urlHost + `/api/Controller_RewardDiscipline/Get_List_Reward?pageSize=3&pageNumber=${pageNumber}`,
           { headers }
         );
 
@@ -70,7 +71,7 @@ export const useRewardDisciplineStore = defineStore(
 
       try {
         const response = await axios.get(
-          `https://localhost:7244/api/Controller_RewardDiscipline/Get_List_Discipline?pageSize=3&pageNumber=${pageNumber}`,
+          urlHost + `/api/Controller_RewardDiscipline/Get_List_Discipline?pageSize=3&pageNumber=${pageNumber}`,
           { headers }
         );
 
@@ -100,7 +101,7 @@ export const useRewardDisciplineStore = defineStore(
         formData.append("RecipientMaSV", recipientMaSV);
 
         const response = await axios.post(
-          "https://localhost:7244/api/Controller_RewardDiscipline/Propose_Reward",
+          urlHost + "/api/Controller_RewardDiscipline/Propose_Reward",
           formData,
           { headers }
         );
@@ -128,7 +129,7 @@ export const useRewardDisciplineStore = defineStore(
         formData.append("RecipientMaSV", recipientMaSV);
 
         const response = await axios.post(
-          "https://localhost:7244/api/Controller_RewardDiscipline/Propose_Discipline",
+          urlHost + "/api/Controller_RewardDiscipline/Propose_Discipline",
           formData,
           { headers }
         );
@@ -153,7 +154,7 @@ export const useRewardDisciplineStore = defineStore(
 
       try {
         const response = await axios.get(
-          "https://localhost:7244/api/Controller_ApprovalHistory/Get_List_ApprovalHistories?pageSize=10&pageNumber=1",
+          urlHost + "/api/Controller_ApprovalHistory/Get_List_ApprovalHistories?pageSize=10&pageNumber=1",
           { headers }
         );
 
