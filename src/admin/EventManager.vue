@@ -294,145 +294,141 @@ const handleEditImageUpload = (event) => {
 </script>
 
 <style scoped>
+.add-btn{
+  background-color: #00695c;
+  color: #fff;
+  padding: 14px 24px;
+  border: none;
+  border-radius: 50px;
+  font-weight: bold;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.add-btn:hover {
+  background-color: #004d40;
+  transform: scale(1.05);
+}
+
+.event-form {
+  padding: 20px;
+  border-radius: 12px;
+  background: #f9f9f9;
+  box-shadow: 0px 6px 18px rgba(0, 105, 92, 0.2);
+}
+
+.event-form h3 {
+  color: #00796b;
+  margin-bottom: 16px;
+}
+
+.event-form input,
+.event-form textarea,
+.event-form .url-input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid #ccc;
+  border-radius: 12px;
+  font-size: 15px;
+  background: #f9f9f9;
+  margin-bottom: 12px;
+  transition: border 0.3s, box-shadow 0.3s;
+}
+
+.event-form input:focus,
+.event-form textarea:focus {
+  border: 1px solid #00796b;
+  box-shadow: 0 0 8px rgba(0, 105, 92, 0.4);
+  outline: none;
+}
+
 .event-list {
   list-style: none;
   padding: 0;
-  margin-top: 20px;
+  margin-top: 24px;
 }
 
 .event-item {
-  background: #f8f8f8;
-  padding: 16px;
-  border-radius: 8px;
-  margin-bottom: 16px;
-  box-shadow: 0 0 8px rgba(0, 0, 0, 0.05);
+  background: #fafafa;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 16px;
 }
 
 .event-image {
-  width: 120px;
-  height: 80px;
+  width: 150px;  /* Tăng kích thước hình ảnh */
+  height: 150px; /* Tăng kích thước hình ảnh */
+  border-radius: 16px;
   object-fit: cover;
-  border-radius: 8px;
-  margin-right: 16px;
+  background: #eee;
+  flex-shrink: 0;
+  margin: auto;    /* Căn giữa */
+  display: block;  /* Căn giữa */
 }
 
 .event-content {
   flex: 1;
-  min-width: 250px;
+  text-align: justify;
+  line-height: 1.8rem;
 }
 
 .event-actions {
   display: flex;
   gap: 10px;
-  margin-top: 10px;
+  flex-direction: column;
 }
 
-.btn {
-  padding: 6px 12px;
+.edit-btn, .delete-btn {
+  padding: 8px 14px;
   border: none;
-  border-radius: 6px;
+  border-radius: 12px;
+  font-weight: bold;
   font-size: 14px;
   cursor: pointer;
-  transition: 0.2s ease;
-}
-
-.add-btn {
-  background-color: #2196f3;
-  color: white;
-  margin-bottom: 16px;
-}
-
-.add-btn:hover {
-  background-color: #1976d2;
+  transition: all 0.3s ease;
 }
 
 .edit-btn {
-  background-color: #4caf50;
-  color: white;
+  background-color: #0288d1;
+  color: #fff;
 }
 
 .edit-btn:hover {
-  background-color: #45a049;
+  background-color: #0277bd;
+  transform: scale(1.05);
 }
 
 .delete-btn {
-  background-color: #f44336;
-  color: white;
+  background-color: #e53935;
+  color: #fff;
 }
 
 .delete-btn:hover {
   background-color: #d32f2f;
-}
-
-.save-btn {
-  background-color: #2196f3;
-  color: white;
-  margin-top: 10px;
-}
-
-.save-btn:hover {
-  background-color: #1e88e5;
-}
-
-.event-form {
-  background: #f0f0f0;
-  padding: 16px;
-  border-radius: 8px;
-  margin-bottom: 24px;
-  max-width: 600px;
-}
-
-.event-form input,
-.event-form textarea {
-  display: block;
-  width: 100%;
-  padding: 8px;
-  margin-top: 8px;
-  margin-bottom: 12px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-}
-
-.image-upload-label {
-  display: inline-block;
-  background-color: #2196f3;
-  color: white;
-  padding: 8px 12px;
-  border-radius: 6px;
-  cursor: pointer;
-  margin-top: 10px;
-}
-
-.image-upload-input {
-  display: none;
+  transform: scale(1.05);
 }
 
 .image-preview {
   margin-top: 10px;
+  max-width: 200px;
 }
 
 .preview-img {
-  width: 150px;
-  height: 100px;
-  object-fit: cover;
-  border-radius: 8px;
-}
-
-.url-input {
-  margin-top: 10px;
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
   width: 100%;
+  height: auto;
+  border-radius: 12px;
 }
 
 .error-message {
   color: red;
   font-weight: bold;
-  margin-top: 10px;
+  margin-top: 12px;
 }
+
 </style>

@@ -1,3 +1,52 @@
+<script setup>
+import { ref, onMounted } from "vue";
+import { useApproveStore } from "../StoreAdmin/StoreApprove";
+import Dashboard from "./Dashboard.vue";
+import "../assets/css/Dashboard.css";
+
+const approveStore = useApproveStore();
+
+onMounted(() => {
+  approveStore.getApproveList();
+});
+
+// dialog logic
+const actionDialog = ref(null);
+const actionId = ref(null);
+const isRejectMode = ref(false);
+const rejectReason = ref("");
+
+const openRejectDialog = (id) => {
+  isRejectMode.value = true;
+  actionId.value = id;
+  rejectReason.value = "";
+  actionDialog.value.showModal();
+};
+
+const openApproveDialog = (id) => {
+  isRejectMode.value = false;
+  actionId.value = id;
+  actionDialog.value.showModal();
+};
+
+const closeActionDialog = () => {
+  actionDialog.value.close();
+};
+
+const handleConfirm = async () => {
+  if (isRejectMode.value) {
+    if (!rejectReason.value.trim()) {
+      alert("Vui lòng nhập lý do từ chối.");
+      return;
+    }
+    await approveStore.rejectProposal(actionId.value, rejectReason.value);
+  } else {
+    await approveStore.acceptProposal(actionId.value);
+  }
+  closeActionDialog();
+};
+</script>
+
 <template>
   <div class="container-dashboard">
     <Dashboard></Dashboard>
@@ -71,124 +120,82 @@
   </div>
 </template>
 
-<script setup>
-import { ref, onMounted } from "vue";
-import { useApproveStore } from "../StoreAdmin/StoreApprove";
-import Dashboard from "./Dashboard.vue";
-import "../assets/css/Dashboard.css";
-
-const approveStore = useApproveStore();
-
-onMounted(() => {
-  approveStore.getApproveList();
-});
-
-// dialog logic
-const actionDialog = ref(null);
-const actionId = ref(null);
-const isRejectMode = ref(false);
-const rejectReason = ref("");
-
-const openRejectDialog = (id) => {
-  isRejectMode.value = true;
-  actionId.value = id;
-  rejectReason.value = "";
-  actionDialog.value.showModal();
-};
-
-const openApproveDialog = (id) => {
-  isRejectMode.value = false;
-  actionId.value = id;
-  actionDialog.value.showModal();
-};
-
-const closeActionDialog = () => {
-  actionDialog.value.close();
-};
-
-const handleConfirm = async () => {
-  if (isRejectMode.value) {
-    if (!rejectReason.value.trim()) {
-      alert("Vui lòng nhập lý do từ chối.");
-      return;
-    }
-    await approveStore.rejectProposal(actionId.value, rejectReason.value);
-  } else {
-    await approveStore.acceptProposal(actionId.value);
-  }
-  closeActionDialog();
-};
-</script>
 
 <style scoped>
+/* Căn chỉnh và giãn đều các phần tử */
 .approve-list {
-  margin-top: 20px;
+  margin-top: 40px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 30px; /* Tăng khoảng cách giữa các phần tử */
+  align-items: flex-start; /* Đặt các phần tử sát trái để không bị thu hẹp */
+
 }
 
 .approve-item {
-  padding: 16px;
-  border-radius: 10px;
+  width: 100%; /* Sử dụng 100% chiều rộng */
+  max-width: 1200px; /* Tăng chiều rộng tối đa */
+  padding: 20px;
+  line-height: 2.2rem;
+  border-radius: 12px;
   border: 2px solid transparent;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
+  background-color: #fff;
+  margin-bottom: 20px; /* Tăng khoảng cách dưới mỗi item */
 }
 
-/* Khen thưởng */
 .approve-item.reward {
   background-color: #e6f7ff;
   border-color: #91d5ff;
 }
 
-/* Kỷ luật */
 .approve-item.discipline {
   background-color: #fff1f0;
   border-color: #ffa39e;
 }
 
 .tag {
-  padding: 4px 8px;
-  border-radius: 4px;
+  padding: 2px 12px;
+  border-radius: 8px;
   font-weight: bold;
   color: white;
+  margin-bottom: 10px;
+  display: inline-block;
 }
 
 .reward .tag {
-  background-color: #1890ff;
+  background-color: #188fffc9;
 }
 
 .discipline .tag {
-  background-color: #f5222d;
+  background-color: #f5222db9;
 }
 
 .action-buttons {
-  margin-top: 12px;
+  margin-top: 20px;
   display: flex;
-  gap: 10px;
+  justify-content: space-evenly; /* Giãn đều các nút */
+  width: 100%;
 }
 
-.btn-approve {
-  padding: 6px 12px;
+.btn-approve, .btn-reject {
+  padding: 10px 20px;
   background-color: #4caf50;
   border: none;
   color: white;
-  border-radius: 4px;
+  border-radius: 6px;
   cursor: pointer;
+  font-size: 14px;
+  min-width: 120px; /* Đảm bảo các nút có cùng chiều rộng */
 }
 
 .btn-reject {
-  padding: 6px 12px;
-  background-color: #f44336;
-  border: none;
-  color: white;
-  border-radius: 4px;
-  cursor: pointer;
+  background-color: #f44336e1;
 }
 
 .btn-approve:hover {
-  background-color: #45a049;
+  background-color: #45a049d0;
 }
 
 .btn-reject:hover {
@@ -200,46 +207,50 @@ const handleConfirm = async () => {
   font-weight: bold;
 }
 
-/* Dialog căn giữa */
+/* Căn giữa dialog */
 dialog {
-  width: 400px;
+  width: 600px;
+  max-width: 100%;
   border: none;
-  border-radius: 8px;
-  padding: 20px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
-  margin: auto;
-  position: absolute;
+  border-radius: 12px;
+  padding: 30px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+  position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+  background-color: #fff;
 }
 
 dialog h3 {
-  margin-top: 0;
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 20px; /* Tăng khoảng cách dưới tiêu đề */
 }
 
 textarea {
   width: 100%;
   resize: none;
-  margin-top: 10px;
-  margin-bottom: 16px;
-  padding: 8px;
-  font-size: 14px;
-  border-radius: 4px;
+  margin-top: 15px;
+  margin-bottom: 20px;
+  padding: 12px;
+  font-size: 16px;
+  border-radius: 8px;
   border: 1px solid #ccc;
 }
 
 .dialog-actions {
   display: flex;
-  justify-content: flex-end;
-  gap: 10px;
+  justify-content: space-evenly; /* Giãn đều các nút */
+  gap: 20px;
 }
 
 .dialog-actions button {
-  padding: 6px 12px;
+  padding: 10px 20px;
   border: none;
-  border-radius: 4px;
+  border-radius: 8px;
   cursor: pointer;
+  font-size: 16px;
 }
 
 .dialog-actions button:first-child {
@@ -251,4 +262,14 @@ textarea {
   background-color: #ccc;
   color: black;
 }
+
+.dialog-actions button:first-child:hover {
+  background-color: #45a049;
+}
+
+.dialog-actions button:last-child:hover {
+  background-color: #b0b0b0;
+}
+
+
 </style>

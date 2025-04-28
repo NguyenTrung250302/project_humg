@@ -139,7 +139,7 @@ router.beforeEach(async (to, from, next) => {
     "/AdminProfile",
     "/Approve",
     "/EliteMember",
-    "Documents"
+    "/Documents"
   ];
   const isAdminRoute = adminRoutes.includes(to.path);
 

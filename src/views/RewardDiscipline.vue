@@ -1,3 +1,30 @@
+<script setup>
+import Header from "../components/Header.vue";
+import NavHeader from "../components/NavHeader.vue";
+import Footer from "../components/Footer.vue";
+import { onMounted, ref } from "vue";
+import { useRewardDisciplineStore } from "../store/RewardDisciplineStore";
+
+const RewardDisciplineStore = useRewardDisciplineStore();
+
+onMounted(async () => {
+  await RewardDisciplineStore.GetListReward();
+  await RewardDisciplineStore.GetListDiscipline();
+});
+
+const goToPageReward = async (page) => {
+  if (page >= 1 && page <= RewardDisciplineStore.rewardPagination.totalPages) {
+    await RewardDisciplineStore.goToPageReward(page); 
+  }
+};
+
+const goToPageDiscipline = async (page) => {
+  if (page >= 1 && page <= RewardDisciplineStore.disciplinePagination.totalPages) {
+    await RewardDisciplineStore.goToPageDiscipline(page); 
+  }
+};
+</script>
+
 <template>
   <Header />
   <NavHeader />
@@ -17,15 +44,15 @@
     <!-- Khen thưởng -->
     <section class="section">
       <h2 class="section-title">🎖️ KHEN THƯỞNG</h2>
-      <div class="card-list">
+      <div class="card-grid">
         <div class="card" v-for="(reward, index) in RewardDisciplineStore.listReward" :key="index">
-          <h3>Đoàn viên: {{ reward.recipientName }}</h3>
-          <p>Mã SV: {{ reward.recipientMaSV }}</p>
-          <p>Lý do: {{ reward.description }}</p>
-          <p>Ngày duyệt: {{ reward.createDate.split("T")[0] }}</p>
-          <p>Đề xuất bởi: {{ reward.proposerName }}</p>
+          <h3>{{ reward.recipientName }}</h3>
+          <p><strong>Mã SV:</strong> {{ reward.recipientMaSV }}</p>
+          <p><strong>Lý do:</strong> {{ reward.description }}</p>
+          <p><strong>Ngày duyệt:</strong> {{ reward.createDate.split("T")[0] }}</p>
+          <p><strong>Đề xuất bởi:</strong> {{ reward.proposerName }}</p>
           <p v-if="reward.rejectReason">
-            Lý do từ chối: {{ reward.rejectReason }}
+            <strong>Lý do từ chối:</strong> {{ reward.rejectReason }}
           </p>
         </div>
       </div>
@@ -55,25 +82,23 @@
       </div>
     </section>
 
-
     <!-- Kỷ luật -->
     <section class="section">
       <h2 class="section-title">⚠️ KỶ LUẬT</h2>
-      <div class="card-list">
+      <div class="card-grid">
         <div
           class="card warning"
           v-for="(penalty, index) in RewardDisciplineStore.listDiscipline"
           :key="index"
         >
-          <h3>Đoàn viên: {{ penalty.recipientName }}</h3>
-          <p>Mã SV: {{ penalty.recipientMaSV }}</p>
-          <p>Lý do: {{ penalty.description }}</p>
-          <p>Ngày duyệt: {{ penalty.createDate.split("T")[0] }}</p>
-          <p>Đề xuất bởi: {{ penalty.proposerName }}</p>
+          <h3>{{ penalty.recipientName }}</h3>
+          <p><strong>Mã SV:</strong> {{ penalty.recipientMaSV }}</p>
+          <p><strong>Lý do:</strong> {{ penalty.description }}</p>
+          <p><strong>Ngày duyệt:</strong> {{ penalty.createDate.split("T")[0] }}</p>
+          <p><strong>Đề xuất bởi:</strong> {{ penalty.proposerName }}</p>
           <p v-if="penalty.rejectReason">
-            Lý do từ chối: {{ penalty.rejectReason }}
+            <strong>Lý do từ chối:</strong> {{ penalty.rejectReason }}
           </p>
-          
         </div>
       </div>
       <div class="pagination">
@@ -101,44 +126,15 @@
         </button>
       </div>
     </section>
-
-
   </div>
 
   <Footer />
 </template>
 
-<script setup>
-import Header from "../components/Header.vue";
-import NavHeader from "../components/NavHeader.vue";
-import Footer from "../components/Footer.vue";
-import { onMounted, ref } from "vue";
-import { useRewardDisciplineStore } from "../store/RewardDisciplineStore";
-
-const RewardDisciplineStore = useRewardDisciplineStore();
-
-onMounted(async () => {
-  await RewardDisciplineStore.GetListReward();
-  await RewardDisciplineStore.GetListDiscipline();
-});
-
-const goToPageReward = async (page) => {
-  if (page >= 1 && page <= RewardDisciplineStore.rewardPagination.totalPages) {
-    await RewardDisciplineStore.goToPageReward(page); 
-  }
-};
-
-const goToPageDiscipline = async (page) => {
-  if (page >= 1 && page <= RewardDisciplineStore.disciplinePagination.totalPages) {
-    await RewardDisciplineStore.goToPageDiscipline(page); 
-  }
-};
-</script>
-
 <style scoped>
 .main-content {
   display: flex;
-  justify-content: space-evenly;
+  flex-direction: column;
   align-items: center;
   padding: 20px;
   background-color: #f9f9f9;
@@ -146,56 +142,47 @@ const goToPageDiscipline = async (page) => {
 }
 
 .section {
+  width: 100%;
   margin-bottom: 40px;
 }
 
 .section-title {
-  font-size: 26px;
+  font-size: 28px;
   font-weight: bold;
+  text-align: center;
   margin-bottom: 20px;
-  border-left: 6px solid #1890ff;
-  padding-left: 12px;
   color: #222;
 }
 
-.card-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
 }
 
 .card {
-  background-color: #e8f5e9; /* xanh nhạt cho khen thưởng */
+  background-color: #e8f5e9;
   padding: 16px;
   border-radius: 12px;
-  border-left: 4px solid #28a745; /* viền xanh cho khen thưởng */
+  border-left: 4px solid #28a745;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  flex: 1 1 calc(33.333% - 16px);
-  min-width: 250px;
   transition: transform 0.3s, box-shadow 0.3s;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
 }
 
 .card.warning {
-  background-color: #fff1f0; /* đỏ nhạt cho kỷ luật */
+  background-color: #fff1f0;
   border-left: 4px solid #ff4d4f;
-}
-
-.card:hover {
-  transform: translateY(-5px);
-}
-
-.card:not(.warning):hover {
-  box-shadow: 0 8px 16px rgba(40, 167, 69, 0.3); /* hiệu ứng hover khen thưởng */
-}
-
-.card.warning:hover {
-  box-shadow: 0 8px 16px rgba(255, 77, 79, 0.3); /* hiệu ứng hover kỷ luật */
 }
 
 .card h3 {
   margin: 0 0 8px;
-  font-size: 18px;
+  font-size: 20px;
   color: #007bff;
+  font-weight: bold;
 }
 
 .card p {
@@ -203,8 +190,20 @@ const goToPageDiscipline = async (page) => {
   color: #555;
 }
 
-.card p:last-child {
-  margin-bottom: 0;
+.card p strong {
+  color: #222;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+}
+
+.card:not(.warning):hover {
+  box-shadow: 0 8px 16px rgba(40, 167, 69, 0.3);
+}
+
+.card.warning:hover {
+  box-shadow: 0 8px 16px rgba(255, 77, 79, 0.3);
 }
 
 .auth-error-box {
@@ -256,3 +255,4 @@ const goToPageDiscipline = async (page) => {
   background-color: #e7f1ff;
 }
 </style>
+

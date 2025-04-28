@@ -44,7 +44,7 @@ export const useRewardDisciplineStore = defineStore(
 
       try {
         const response = await axios.get(
-          urlHost + `/api/Controller_RewardDiscipline/Get_List_Reward?pageSize=3&pageNumber=${pageNumber}`,
+          urlHost + `/api/Controller_RewardDiscipline/Get_List_Reward?pageSize=4&pageNumber=${pageNumber}`,
           { headers }
         );
 
@@ -71,7 +71,7 @@ export const useRewardDisciplineStore = defineStore(
 
       try {
         const response = await axios.get(
-          urlHost + `/api/Controller_RewardDiscipline/Get_List_Discipline?pageSize=3&pageNumber=${pageNumber}`,
+          urlHost + `/api/Controller_RewardDiscipline/Get_List_Discipline?pageSize=4&pageNumber=${pageNumber}`,
           { headers }
         );
 
@@ -106,7 +106,7 @@ export const useRewardDisciplineStore = defineStore(
           { headers }
         );
 
-        alert("✅ Gửi đề xuất thành công!");
+        // alert("✅ Gửi đề xuất thành công!");
         return response.data;
       } catch (err) {
         alert("❌ Lỗi khi gửi đề xuất:", err);
@@ -134,7 +134,7 @@ export const useRewardDisciplineStore = defineStore(
           { headers }
         );
 
-        alert("✅ Gửi đề xuất kỷ luật thành công!");
+        // alert("✅ Gửi đề xuất kỷ luật thành công!");
         return response.data;
       } catch (err) {
         alert("❌ Lỗi khi gửi đề xuất kỷ luật:", err);

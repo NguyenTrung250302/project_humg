@@ -250,182 +250,239 @@ const resetEditForm = () => {
 </script>
 
 <style scoped>
-/* Style cho form container */
-.form-container {
-  margin-top: 20px;
-  max-width: 600px;
-  background: #fff;
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
+.open-modal-button {
+  background-color: #00695c;
+  color: #fff;
+  padding: 14px 24px;
+  border: none;
+  border-radius: 50px;
+  font-weight: bold;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
-.form-group {
-  margin-bottom: 16px;
+.open-modal-button:hover {
+  background-color: #004d40;
+  transform: scale(1.05);
+}
+
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 5000;
+  pointer-events: none; /* Ngăn không cho click ra ngoài */
+}
+
+.modal-container {
+  background: #fefefe;
+  padding: 40px 35px;
+  border-radius: 24px;
+  width: 90%;
+  max-width: 600px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+  animation: slideUp 0.4s ease;
+  pointer-events: all; /* Cho phép click vào modal */
+}
+
+@keyframes slideUp {
+  from { transform: translateY(100px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+h2 {
+  margin-bottom: 24px;
+  font-size: 28px;
+  text-align: center;
+  color: #004d40;
+}
+
+.form-container {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
 }
 
 .form-group label {
-  display: block;
-  font-weight: bold;
+  font-size: 15px;
+  font-weight: 600;
   margin-bottom: 6px;
+  color: #555;
 }
 
 .form-group input,
 .form-group textarea {
   width: 100%;
-  padding: 8px;
+  padding: 12px 14px;
   border: 1px solid #ccc;
-  border-radius: 8px;
+  border-radius: 12px;
+  font-size: 15px;
+  background: #f9f9f9;
+  transition: border 0.3s, box-shadow 0.3s;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  border: 1px solid #00695c;
+  box-shadow: 0 0 8px rgba(0, 105, 92, 0.4);
+  outline: none;
 }
 
 textarea {
-  resize: vertical;
+  resize: both;
+  min-height: 120px;
+  max-width: 530px;
+}
+
+/* Submit and Cancel Buttons */
+.submit-button, .cancel-button {
+  padding: 12px 18px;
+  border: none;
+  border-radius: 50px;
+  font-weight: bold;
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
 .submit-button {
-  background-color: #4caf50;
-  color: white;
-  padding: 10px 16px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
+  background-color: #00796b;
+  color: #fff;
 }
 
 .submit-button:hover {
-  background-color: #45a049;
+  background-color: #004d40;
+  transform: translateY(-2px);
 }
 
 .cancel-button {
-  background-color: #f44336;
-  color: white;
-  padding: 10px 16px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  margin-left: 10px;
+  background-color: #d32f2f;
+  color: #fff;
 }
 
 .cancel-button:hover {
-  background-color: #e53935;
+  background-color: #b71c1c;
+  transform: translateY(-2px);
 }
 
-/* Modal Styles */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 9999;
-}
-
-.modal-container {
-  background-color: #fff;
-  padding: 20px;
-  border-radius: 8px;
-  width: 500px;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-}
-
+/* Messages */
 .message {
   margin-top: 20px;
-  font-weight: bold;
-  color: green;
+  padding: 14px;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  background: #e0f2f1;
+  color: #00695c;
 }
 
-.error {
-  color: red;
+.message.error {
+  background: #ffebee;
+  color: #c62828;
 }
 
-/* Styles for document list */
+/* Document List */
 .document-banner-list {
   margin-top: 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
 }
 
 .document-banner {
-  display: flex;
-  border: 1px solid #ddd;
-  padding: 12px;
-  margin-bottom: 10px;
-  border-radius: 8px;
-  background-color: #f9f9f9;
+  background: #fafafa;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+}
+
+.document-banner:hover {
+  transform: translateY(-5px);
 }
 
 .document-banner-inner {
   display: flex;
-  width: 100%;
+  align-items: flex-start;
+  padding: 20px;
+  gap: 16px;
 }
 
 .banner-image {
-  max-width: 200px;
-  height: auto;
-  margin-right: 16px;
+  width: 120px;  /* Tăng kích thước hình ảnh */
+  height: 120px; /* Tăng kích thước hình ảnh */
+  border-radius: 16px;
+  object-fit: cover;
+  background: #eee;
+  flex-shrink: 0;
+  margin: auto;    /* Căn giữa */
+  display: block;  /* Căn giữa */
 }
 
 .banner-text {
-  flex-grow: 1;
+  flex: 1;
 }
 
 .banner-title {
-  font-size: 20px;
+  font-size: 22px;
   font-weight: bold;
+  color: #00695c;
+  margin-bottom: 6px;
 }
 
 .banner-content {
-  margin-top: 8px;
+  font-size: 16px;
+  text-align: justify;
+  line-height: 2rem;
+  color: #666;
+  margin-bottom: 8px;
 }
 
 .banner-meta {
-  margin-top: 16px;
-  font-size: 14px;
-  color: gray;
+  font-size: 13px;
+  color: #aaa;
 }
 
-/* Căn chỉnh các nút Sửa và Xóa sát nhau */
+/* Edit and Delete Buttons */
 .banner-actions {
   display: flex;
-  flex-direction: row; /* Đặt các nút ngang */
-  align-items: center; /* Căn giữa các nút theo chiều dọc */
-  justify-content: flex-start; /* Căn trái các nút */
-  gap: 10px; /* Khoảng cách giữa các nút */
+  flex-direction: column;
+  gap: 10px;
 }
 
-.edit-button,
-.delete-button {
-  background-color: #4caf50;
-  color: white;
-  padding: 8px 12px;
-  border-radius: 8px;
-  cursor: pointer;
+.edit-button, .delete-button {
+  padding: 8px 14px;
   border: none;
+  border-radius: 12px;
+  font-weight: bold;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.edit-button {
+  background-color: #0288d1;
+  color: #fff;
 }
 
 .edit-button:hover {
-  background-color: #45a049;
+  background-color: #0277bd;
+  transform: scale(1.05);
 }
 
 .delete-button {
-  background-color: #f44336;
+  background-color: #e53935;
+  color: #fff;
 }
 
 .delete-button:hover {
-  background-color: #e53935;
+  background-color: #d32f2f;
+  transform: scale(1.05);
 }
 
-.open-modal-button {
-  background-color: #4caf50;
-  color: white;
-  padding: 10px 20px;
-  border-radius: 8px;
-  cursor: pointer;
-  margin-top: 20px;
-}
-
-.open-modal-button:hover {
-  background-color: #45a049;
-}
 </style>

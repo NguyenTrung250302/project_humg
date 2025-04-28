@@ -78,7 +78,7 @@
     
     <div class="pagination">
       <button
-        @click="goToPage(eventStore.currentPage - 1)"
+        @click="goToPageEvent(eventStore.currentPage - 1)"
         :disabled="eventStore.currentPage === 1"
       >
         Trang trước
@@ -87,14 +87,14 @@
       <span
         v-for="page in eventStore.totalPages"
         :key="page"
-        @click="goToPage(page)"
+        @click="goToPageEvent(page)"
         :class="{ active: eventStore.currentPage === page }"
       >
         {{ page }}
       </span>
   
       <button
-        @click="goToPage(eventStore.currentPage + 1)"
+        @click="goToPageEvent(eventStore.currentPage + 1)"
         :disabled="eventStore.currentPage === eventStore.totalPages"
       >
         Trang sau
@@ -129,7 +129,7 @@ const goToEventDetail = (id) => {
 };
 
 // Chuyển trang
-const goToPage = async (page) => {
+const goToPageEvent = async (page) => {
   if (page >= 1 && page <= eventStore.totalPages) {
     await eventStore.goToPage(page);
   }
@@ -185,6 +185,7 @@ const goToPage = async (page) => {
   font-size: 15px;
   color: #444;
   margin-bottom: 8px;
+  line-height: 2rem;
 }
 
 .banner-meta {

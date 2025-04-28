@@ -96,11 +96,13 @@ const submitProposal = async () => {
       description.value,
       selectedMemberMSV.value
     );
+    window.$dialog.success("✉ Gửi đề xuất khen thưởng thành công!");
   } else if (dialogType.value === "ky-luat") {
     await RewardDisciplineStore.PostListDiscipline(
       description.value,
       selectedMemberMSV.value
     );
+    window.$dialog.success("✉ Gửi đề xuất kỷ luật thành công!");
   }
   closeDialog(); // Close the dialog after submission
 };
@@ -331,7 +333,7 @@ th {
 }
 
 .pagination {
-  margin-top: 20px;
+  margin: 20px 0;
   text-align: center;
 }
 
@@ -391,17 +393,19 @@ th {
 }
 
 /* dialog  */
+/* dialog  */
 .dialog-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.4);
+  background-color: rgba(0, 0, 0, 0.7); /* Tối hơn để rõ ràng */
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 999;
+  pointer-events: none; /* Cho phép click vào overlay */
 }
 
 .dialog-box {
@@ -411,6 +415,7 @@ th {
   width: 400px;
   max-width: 90%;
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  pointer-events: auto; /* Cho phép click vào nội dung bên trong dialog */
 }
 
 .dialog-box h3 {
