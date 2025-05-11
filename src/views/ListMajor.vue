@@ -158,7 +158,6 @@ onMounted(async () => {
 
 header {
   text-align: center;
-  padding: 20px 0;
   background: #f8f9fa;
   border-radius: 0;
   margin-bottom: 0;
@@ -200,8 +199,8 @@ h1 {
   color: #2c3e50;
   font-size: 1.8rem;
   font-weight: 600;
-  margin: 0;
-  padding: 0 20px;
+  margin: 20px;
+  padding: 20px 20px;
   line-height: 1.4;
 }
 

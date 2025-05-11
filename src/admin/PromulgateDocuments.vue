@@ -250,24 +250,61 @@ const resetEditForm = () => {
 </script>
 
 <style scoped>
+.container-dashboard {
+  display: flex;
+  min-height: 100vh;
+  background-color: #f5f7fa;
+}
+
+.main {
+  flex: 1;
+  padding: 40px;
+  max-width: 1200px;
+}
+
+h1 {
+  color: #1a237e;
+  font-size: 32px;
+  font-weight: 700;
+  margin-bottom: 35px;
+  position: relative;
+  padding-bottom: 15px;
+  letter-spacing: 0.5px;
+}
+
+h1::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 80px;
+  height: 4px;
+  background: linear-gradient(90deg, #1a237e, #3949ab);
+  border-radius: 4px;
+}
+
 .open-modal-button {
-  background-color: #00695c;
+  background: linear-gradient(135deg, #1a237e, #3949ab);
   color: #fff;
-  padding: 14px 24px;
+  padding: 14px 28px;
   border: none;
-  border-radius: 50px;
-  font-weight: bold;
+  border-radius: 10px;
+  font-weight: 600;
   font-size: 16px;
   cursor: pointer;
   transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 4px 15px rgba(26, 35, 126, 0.2);
 }
 
 .open-modal-button:hover {
-  background-color: #004d40;
-  transform: scale(1.05);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(26, 35, 126, 0.3);
 }
 
-/* Modal */
+/* Modal Styles */
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -276,213 +313,255 @@ const resetEditForm = () => {
   justify-content: center;
   align-items: center;
   z-index: 5000;
-  pointer-events: none; /* Ngăn không cho click ra ngoài */
+  backdrop-filter: blur(5px);
 }
 
 .modal-container {
-  background: #fefefe;
-  padding: 40px 35px;
-  border-radius: 24px;
+  background: #fff;
+  padding: 35px;
+  border-radius: 20px;
   width: 90%;
-  max-width: 600px;
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+  max-width: 650px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
   animation: slideUp 0.4s ease;
-  pointer-events: all; /* Cho phép click vào modal */
 }
 
 @keyframes slideUp {
-  from { transform: translateY(100px); opacity: 0; }
+  from { transform: translateY(30px); opacity: 0; }
   to { transform: translateY(0); opacity: 1; }
 }
 
-h2 {
-  margin-bottom: 24px;
-  font-size: 28px;
+.modal-container h2 {
+  color: #1a237e;
+  font-size: 26px;
+  font-weight: 700;
+  margin-bottom: 30px;
   text-align: center;
-  color: #004d40;
+  letter-spacing: 0.5px;
 }
 
 .form-container {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 20px;
+  gap: 25px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .form-group label {
   font-size: 15px;
   font-weight: 600;
-  margin-bottom: 6px;
-  color: #555;
+  color: #1a237e;
 }
 
 .form-group input,
 .form-group textarea {
   width: 100%;
-  padding: 12px 14px;
-  border: 1px solid #ccc;
+  padding: 14px 18px;
+  border: 2px solid #e8eaf6;
   border-radius: 12px;
   font-size: 15px;
-  background: #f9f9f9;
-  transition: border 0.3s, box-shadow 0.3s;
+  background: #fff;
+  transition: all 0.3s ease;
 }
 
 .form-group input:focus,
 .form-group textarea:focus {
-  border: 1px solid #00695c;
-  box-shadow: 0 0 8px rgba(0, 105, 92, 0.4);
+  border-color: #3949ab;
+  box-shadow: 0 0 0 4px rgba(57, 73, 171, 0.1);
   outline: none;
 }
 
 textarea {
-  resize: both;
-  min-height: 120px;
-  max-width: 530px;
+  min-height: 150px;
+  resize: vertical;
 }
 
-/* Submit and Cancel Buttons */
-.submit-button, .cancel-button {
-  padding: 12px 18px;
+/* Buttons */
+.submit-button,
+.cancel-button {
+  padding: 14px 28px;
   border: none;
-  border-radius: 50px;
-  font-weight: bold;
+  border-radius: 12px;
+  font-weight: 600;
   font-size: 15px;
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
 .submit-button {
-  background-color: #00796b;
+  background: linear-gradient(135deg, #1a237e, #3949ab);
   color: #fff;
+  box-shadow: 0 4px 15px rgba(26, 35, 126, 0.2);
 }
 
 .submit-button:hover {
-  background-color: #004d40;
   transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(26, 35, 126, 0.3);
 }
 
 .cancel-button {
-  background-color: #d32f2f;
-  color: #fff;
+  background: #f5f7fa;
+  color: #1a237e;
+  border: 2px solid #e8eaf6;
 }
 
 .cancel-button:hover {
-  background-color: #b71c1c;
+  background: #e8eaf6;
   transform: translateY(-2px);
 }
 
 /* Messages */
 .message {
-  margin-top: 20px;
-  padding: 14px;
+  padding: 18px;
   border-radius: 12px;
   font-size: 15px;
   font-weight: 600;
-  background: #e0f2f1;
-  color: #00695c;
+  margin-bottom: 25px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.message:not(.error) {
+  background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+  color: #1b5e20;
 }
 
 .message.error {
-  background: #ffebee;
-  color: #c62828;
+  background: linear-gradient(135deg, #ffebee, #ffcdd2);
+  color: #b71c1c;
 }
 
 /* Document List */
 .document-banner-list {
-  margin-top: 40px;
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
+  margin-top: 35px;
+  display: grid;
+  gap: 25px;
 }
 
 .document-banner {
-  background: #fafafa;
+  background: #fff;
   border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   transition: all 0.3s ease;
+  border: 1px solid #e8eaf6;
 }
 
 .document-banner:hover {
-  transform: translateY(-5px);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
 }
 
 .document-banner-inner {
   display: flex;
-  align-items: flex-start;
-  padding: 20px;
-  gap: 16px;
+  padding: 30px;
+  gap: 30px;
+  position: relative;
 }
 
 .banner-image {
-  width: 120px;  /* Tăng kích thước hình ảnh */
-  height: 120px; /* Tăng kích thước hình ảnh */
+  width: 160px;
+  height: 160px;
   border-radius: 16px;
   object-fit: cover;
-  background: #eee;
-  flex-shrink: 0;
-  margin: auto;    /* Căn giữa */
-  display: block;  /* Căn giữa */
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
 }
 
 .banner-text {
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
 }
 
 .banner-title {
   font-size: 22px;
-  font-weight: bold;
-  color: #00695c;
-  margin-bottom: 6px;
+  font-weight: 700;
+  color: #1a237e;
+  margin: 0;
+  letter-spacing: 0.3px;
 }
 
 .banner-content {
-  font-size: 16px;
-  text-align: justify;
-  line-height: 2rem;
-  color: #666;
-  margin-bottom: 8px;
+  font-size: 15px;
+  line-height: 1.7;
+  color: #455a64;
+  margin: 0;
 }
 
 .banner-meta {
-  font-size: 13px;
-  color: #aaa;
-}
-
-/* Edit and Delete Buttons */
-.banner-actions {
+  font-size: 14px;
+  color: #78909c;
   display: flex;
-  flex-direction: column;
+  align-items: center;
   gap: 10px;
 }
 
-.edit-button, .delete-button {
-  padding: 8px 14px;
+.banner-actions {
+  display: flex;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.edit-button,
+.delete-button {
+  padding: 10px 20px;
   border: none;
-  border-radius: 12px;
-  font-weight: bold;
+  border-radius: 10px;
+  font-weight: 600;
   font-size: 14px;
   cursor: pointer;
   transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .edit-button {
-  background-color: #0288d1;
-  color: #fff;
+  background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+  color: #1565c0;
 }
 
 .edit-button:hover {
-  background-color: #0277bd;
-  transform: scale(1.05);
+  background: linear-gradient(135deg, #bbdefb, #90caf9);
+  transform: translateY(-2px);
 }
 
 .delete-button {
-  background-color: #e53935;
-  color: #fff;
+  background: linear-gradient(135deg, #ffebee, #ffcdd2);
+  color: #c62828;
 }
 
 .delete-button:hover {
-  background-color: #d32f2f;
-  transform: scale(1.05);
+  background: linear-gradient(135deg, #ffcdd2, #ef9a9a);
+  transform: translateY(-2px);
 }
 
+@media (max-width: 768px) {
+  .main {
+    padding: 25px;
+    margin-left: 0;
+  }
+
+  .document-banner-inner {
+    flex-direction: column;
+    padding: 20px;
+  }
+
+  .banner-image {
+    width: 100%;
+    height: 220px;
+  }
+
+  .banner-actions {
+    flex-direction: row;
+    justify-content: flex-end;
+  }
+}
 </style>
