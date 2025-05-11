@@ -17,6 +17,7 @@ import ApprovalHistory from "../views/ApprovalHistory.vue";
 import Approve from "../admin/Approve.vue";
 import EliteMember from "../admin/EliteMember.vue";
 import PromulgateDocuments from "../admin/PromulgateDocuments.vue";
+import ListMajor from "../views/ListMajor.vue";
 
 const routes = [
   // HomeView
@@ -76,6 +77,11 @@ const routes = [
     path: "/EventsDetail/:id",
     name: "EventsDetail",
     component: EventsDetail,
+  },
+  {
+    path: "/ListMajor",
+    name: "ListMajor",
+    component: ListMajor,
   },
 
   // Admin

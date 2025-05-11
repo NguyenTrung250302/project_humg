@@ -6,7 +6,7 @@
       </RouterLink>
     </ul>
     <ul class="nav-header-ul">
-      <RouterLink to="/MemberList">
+      <RouterLink to="/ListMajor">
         <li class="nav-header-item" tabindex="0">Danh sách đoàn viên</li>
       </RouterLink>
     </ul>
