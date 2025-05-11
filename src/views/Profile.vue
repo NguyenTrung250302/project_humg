@@ -109,15 +109,17 @@ const submitPasswordChange = async () => {
 // Hàm cập nhật thông tin member
 const updateProfile = async () => {
   const result = await userStore.updateProfile({
-    politicalTheory: userInfo.value.politicalTheory || undefined,
-    nation: userInfo.value.nation || undefined,
-    birthdate: userInfo.value.birthdate || undefined,
-    religion: userInfo.value.religion || undefined,
-    dateOfJoining: userInfo.value.dateOfJoining || undefined,
-    phoneNumber: userInfo.value.phoneNumber || undefined,
-    classValue: userInfo.value.class || undefined,
-    fullName: userInfo.value.fullName || undefined,
-    placeOfJoining: userInfo.value.placeOfJoining || undefined,
+    politicalTheory: userInfo.value.politicalTheory || null,
+    nation: userInfo.value.nation || null,
+    birthdate: userInfo.value.birthdate || null,
+    religion: userInfo.value.religion || null,
+    dateOfJoining: userInfo.value.dateOfJoining || null,
+    phoneNumber: userInfo.value.phoneNumber || null,
+    classValue: userInfo.value.class || null,
+    fullName: userInfo.value.fullName || null,
+    placeOfJoining: userInfo.value.placeOfJoining || null,
+    gender: userInfo.value.gender || null,
+    major: userInfo.value.major || null,
   });
 
   if (result.success) {
@@ -177,169 +179,181 @@ const logout = () => {
           style="text-decoration: none"
           >Thay đổi ảnh đại diện</label
         >
+        <div v-if="isAvatarChanged" class="confirm-avatar-change">
+          <button @click="updateAvatar" class="btn-confirm-avatar-change">
+            Xác nhận
+          </button>
+        </div>
       </div>
-
-      <div v-if="isAvatarChanged" class="confirm-avatar-change">
-        <button @click="updateAvatar" class="btn-confirm-avatar-change">
-          Xác nhận thay đổi ảnh
-        </button>
-      </div>
-
       <div class="profile-details">
-        <div class="profile-item">
-          <div class="profile-label">Họ Tên:</div>
-          <input v-model="userInfo.fullName" class="profile-input" />
+        <div class="profile-fields">
+          <div class="profile-item">
+            <div class="profile-row">
+              <div class="profile-label">Họ Tên:</div>
+              <input v-model="userInfo.fullName" class="profile-input" />
+              <div class="profile-label">Email:</div>
+              <input
+                type="email"
+                :value="userInfo?.email || ''"
+                class="profile-input"
+                disabled
+              />
+            </div>
+          </div>
+          <div class="profile-item">
+            <div class="profile-row">
+              <div class="profile-label">Số điện thoại:</div>
+              <input
+                v-model="userInfo.phoneNumber"
+                type="email"
+                class="profile-input"
+              />
+              <div class="profile-label">Mã sinh viên:</div>
+              <input :value="userInfo?.maSV || ''" class="profile-input" disabled />
+            </div>
+          </div>
+          <div class="profile-item">
+            <div class="profile-row">
+              <div class="profile-label">Ngày sinh:</div>
+              <input
+                v-model="userInfo.birthdate"
+                type="text"
+                class="profile-input"
+              />
+              <div class="profile-label">Lớp:</div>
+              <input v-model="userInfo.class" type="text" class="profile-input" />
+            </div>
+          </div>
+          <div class="profile-item">
+            <div class="profile-row">
+              <div class="profile-label">Giới tính</div>
+              <input
+                v-model="userInfo.gender"
+                type="text"
+                class="profile-input"
+              />
+              <div class="profile-label">Chuyên ngành</div>
+              <input v-model="userInfo.major" type="text" class="profile-input" />
+            </div>
+          </div>
+          <div class="profile-item">
+            <div class="profile-row">
+              <div class="profile-label">Quốc tịch:</div>
+              <input v-model="userInfo.nation" type="text" class="profile-input" />
+              <div class="profile-label">Dân tộc:</div>
+              <input
+                v-model="userInfo.religion"
+                type="text"
+                class="profile-input"
+              />
+            </div>
+          </div>
+          <div class="profile-item">
+            <div class="profile-row">
+              <div class="profile-label">Chức vụ:</div>
+              <input
+                v-model="userInfo.roleName"
+                type="text"
+                class="profile-input"
+                disabled
+              />
+              <div class="profile-label">Ngày gia nhập đoàn:</div>
+              <input
+                v-model="userInfo.dateOfJoining"
+                type="text"
+                class="profile-input"
+              />
+            </div>
+          </div>
+          <div class="profile-item">
+            <div class="profile-row">
+              <div class="profile-label">Nơi gia nhập đoàn:</div>
+              <input
+                v-model="userInfo.placeOfJoining"
+                type="text"
+                class="profile-input"
+              />
+              <div class="profile-label">Chính trị:</div>
+              <input
+                v-model="userInfo.politicalTheory"
+                type="text"
+                class="profile-input"
+              />
+            </div>
+          </div>
         </div>
-        <div class="profile-item">
-          <div class="profile-label">Email:</div>
-          <input
-            type="email"
-            :value="userInfo?.email || ''"
-            class="profile-input"
-            disabled
-          />
-        </div>
-        <div class="profile-item">
-          <div class="profile-label">Số điện thoại:</div>
-          <input
-            v-model="userInfo.phoneNumber"
-            type="email"
-            class="profile-input"
-          />
-        </div>
-        <div class="profile-item">
-          <div class="profile-label">Mã sinh viên:</div>
-          <input :value="userInfo?.maSV || ''" class="profile-input" disabled />
-        </div>
-        <div class="profile-item">
-          <div class="profile-label">Ngày sinh:</div>
-          <input
-            v-model="userInfo.birthdate"
-            type="text"
-            class="profile-input"
-          />
-        </div>
-        <div class="profile-item">
-          <div class="profile-label">Lớp:</div>
-          <input v-model="userInfo.class" type="text" class="profile-input" />
-        </div>
-        <div class="profile-item">
-          <div class="profile-label">Quốc tịch:</div>
-          <input v-model="userInfo.nation" type="text" class="profile-input" />
-        </div>
-        <div class="profile-item">
-          <div class="profile-label">Dân tộc:</div>
-          <input
-            v-model="userInfo.religion"
-            type="text"
-            class="profile-input"
-          />
-        </div>
-        <div class="profile-item">
-          <div class="profile-label">Chức vụ:</div>
-          <input
-            v-model="userInfo.roleName"
-            type="text"
-            class="profile-input"
-            disabled
-          />
-        </div>
-        <div class="profile-item">
-          <div class="profile-label">Ngày gia nhập đoàn:</div>
-          <input
-            v-model="userInfo.dateOfJoining"
-            type="text"
-            class="profile-input"
-          />
-        </div>
-        <div class="profile-item">
-          <div class="profile-label">Nơi gia nhập đoàn:</div>
-          <input
-            v-model="userInfo.placeOfJoining"
-            type="text"
-            class="profile-input"
-          />
-        </div>
-        <div class="profile-item">
-          <div class="profile-label">Chính trị:</div>
-          <input
-            v-model="userInfo.politicalTheory"
-            type="text"
-            class="profile-input"
-          />
-        </div>
-      </div>
-
-      <div class="btn-logout">
-        <button @click="updateProfile" class="btn-action">
-          Xác nhận cập nhật thông tin
-        </button>
-      </div>
-
-      <div class="action-buttons">
-        <div class="btn-change-password">
-          <button @click="togglePasswordForm" class="btn-action">
-            Đổi mật khẩu
-          </button>
-        </div>
-
         <div class="btn-logout">
-          <button @click="logout" class="btn-action">Đăng xuất</button>
+          <button @click="updateProfile" class="btn-action">
+            Xác nhận cập nhật thông tin
+          </button>
         </div>
-      </div>
 
-      <div v-if="showPasswordForm" class="password-form">
-        <div class="input-container">
-          <input
-            v-model="oldPassword"
-            :type="isOldPasswordVisible ? 'text' : 'password'"
-            placeholder="Mật khẩu cũ"
-            class="input-field"
-          />
-          <button
-            @click="toggleOldPasswordVisibility"
-            class="btn-toggle-password"
-          >
-            {{ isOldPasswordVisible ? "🙈" : "👁️" }}
+        <div class="action-buttons">
+          <div class="btn-change-password">
+            <button @click="togglePasswordForm" class="btn-action">
+              Đổi mật khẩu
+            </button>
+          </div>
+
+          <div class="btn-logout">
+            <button @click="logout" class="btn-action">Đăng xuất</button>
+          </div>
+        </div>
+
+        <div v-if="showPasswordForm" class="password-form">
+          <div class="input-container">
+            <input
+              v-model="oldPassword"
+              :type="isOldPasswordVisible ? 'text' : 'password'"
+              placeholder="Mật khẩu cũ"
+              class="input-field"
+            />
+            <button
+              @click="toggleOldPasswordVisibility"
+              class="btn-toggle-password"
+            >
+              {{ isOldPasswordVisible ? "🙈" : "👁️" }}
+            </button>
+          </div>
+          <div class="input-container">
+            <input
+              v-model="newPassword"
+              :type="isNewPasswordVisible ? 'text' : 'password'"
+              placeholder="Mật khẩu mới"
+              class="input-field"
+            />
+            <button
+              @click="toggleNewPasswordVisibility"
+              class="btn-toggle-password"
+            >
+              {{ isNewPasswordVisible ? "🙈" : "👁️" }}
+            </button>
+          </div>
+          <div class="input-container">
+            <input
+              v-model="confirmPassword"
+              :type="isConfirmPasswordVisible ? 'text' : 'password'"
+              placeholder="Nhập lại mật khẩu mới"
+              class="input-field"
+            />
+            <button
+              @click="toggleConfirmPasswordVisibility"
+              class="btn-toggle-password"
+            >
+              {{ isConfirmPasswordVisible ? "🙈" : "👁️" }}
+            </button>
+          </div>
+          <button @click="submitPasswordChange" class="btn-submit">
+            Xác nhận
           </button>
         </div>
-        <div class="input-container">
-          <input
-            v-model="newPassword"
-            :type="isNewPasswordVisible ? 'text' : 'password'"
-            placeholder="Mật khẩu mới"
-            class="input-field"
-          />
-          <button
-            @click="toggleNewPasswordVisibility"
-            class="btn-toggle-password"
-          >
-            {{ isNewPasswordVisible ? "🙈" : "👁️" }}
-          </button>
-        </div>
-        <div class="input-container">
-          <input
-            v-model="confirmPassword"
-            :type="isConfirmPasswordVisible ? 'text' : 'password'"
-            placeholder="Nhập lại mật khẩu mới"
-            class="input-field"
-          />
-          <button
-            @click="toggleConfirmPasswordVisibility"
-            class="btn-toggle-password"
-          >
-            {{ isConfirmPasswordVisible ? "🙈" : "👁️" }}
-          </button>
-        </div>
-        <button @click="submitPasswordChange" class="btn-submit">
-          Xác nhận
-        </button>
       </div>
     </div>
   </div>
 
   <Footer></Footer>
 </template>
+
 
 <style scoped>
 .profile-layout {
@@ -353,14 +367,18 @@ const logout = () => {
 
 .profile-info {
   width: 100%;
-  max-width: 750px;
-  background-color: #fff;
+  max-width: 1300px;
+  background: linear-gradient(90deg, #ffffff, rgba(236, 236, 236, 0.034));
   padding: 30px;
   border-radius: 10px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: flex-start;
+  gap: 30px;
 }
 
 .profile-avatar {
+  flex: 0 0 170px;
   text-align: center;
   margin-bottom: 20px;
   position: relative;
@@ -407,7 +425,8 @@ const logout = () => {
 
 .btn-confirm-avatar-change {
   padding: 12px 25px;
-  background-color: #28a745;
+  background-color: #2fb74f;
+  box-shadow: 0 10px 10px rgba(0, 0, 0, 0.3);
   color: white;
   font-size: 16px;
   border: none;
@@ -421,26 +440,39 @@ const logout = () => {
 
 .profile-details {
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
+  flex: 1;
+}
+
+.profile-fields {
+  display: flex;
+  flex-direction: column;
   gap: 15px;
-  justify-content: space-between;
 }
 
 .profile-item {
   display: flex;
   flex-direction: column;
-  width: calc(50% - 10px);
+}
+
+.profile-row {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 15px;
+  align-items: center;
 }
 
 .profile-label {
   font-weight: 600;
   color: #333;
   margin-bottom: 5px;
+  flex: 0 0 150px;
 }
 
 .profile-input {
   font-size: 14px;
   width: 100%;
+  max-width: 500px;
   padding: 15px;
   border: 1px solid #ccc;
   border-radius: 5px;
