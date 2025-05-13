@@ -38,22 +38,24 @@
     </ul>
     <div class="nav-header-login">
       <div v-if="userInfo">
-        <RouterLink
-          :to="
-            userInfo && userInfo.roleName === 'Liên chi đoàn khoa'
-              ? '/HelloAdmin'
+      <RouterLink
+        :to="
+          userInfo.roleName === 'Liên chi đoàn khoa'
+            ? '/HelloAdmin'
+            : userInfo.roleName === 'Bí thư đoàn viên'
+              ? '/SecretaryProfile'
               : '/Profile'
-          "
-        >
-          <div class="user-info">
-            <img
-              :src="userInfo.urlAvatar"
-              alt="User Avatar"
-              class="user-avatar"
-            />
-            <p class="user-name">{{ userInfo.fullName }}</p>
-          </div>
-        </RouterLink>
+        "
+      >
+        <div class="user-info">
+          <img
+            :src="userInfo.urlAvatar"
+            alt="User Avatar"
+            class="user-avatar"
+          />
+          <p class="user-name">{{ userInfo.fullName }}</p>
+        </div>
+      </RouterLink>
       </div>
       <div v-else>
         <RouterLink to="/Login">

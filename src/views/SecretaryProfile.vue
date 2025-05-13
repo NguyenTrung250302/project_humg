@@ -177,19 +177,21 @@ const logout = () => {
               <i class="fas fa-camera"></i>
             </div>
           </label>
-          <label
-            for="avatar-upload"
-            class="change-avatar-text"
-            >Thay đổi ảnh đại diện</label
-          >
+          <label for="avatar-upload" class="change-avatar-text">
+            Thay đổi ảnh đại diện
+          </label>
           <div v-if="isAvatarChanged" class="confirm-avatar-change">
             <button @click="updateAvatar" class="btn-confirm-avatar-change">
               <i class="fas fa-check"></i> Xác nhận
             </button>
           </div>
         </div>
+
         <div class="profile-details">
-          <h2 class="profile-title">{{userInfo.roleName}}: {{ userInfo.fullName }}</h2>
+          <h2 class="profile-title">
+            {{ userInfo.roleName }}: {{ userInfo.fullName }}
+          </h2>
+
           <div class="profile-fields">
             <div class="profile-item">
               <div class="profile-row">
@@ -208,24 +210,17 @@ const logout = () => {
                 </div>
               </div>
             </div>
+
             <div class="profile-item">
               <div class="profile-row">
                 <div class="profile-field">
                   <label class="profile-label">Số điện thoại:</label>
                   <input
                     v-model="userInfo.phoneNumber"
-                    type="email"
+                    type="text"
                     class="profile-input"
                   />
                 </div>
-                <div class="profile-field">
-                  <label class="profile-label">Mã sinh viên:</label>
-                  <input :value="userInfo?.maSV || ''" class="profile-input" disabled />
-                </div>
-              </div>
-            </div>
-            <div class="profile-item">
-              <div class="profile-row">
                 <div class="profile-field">
                   <label class="profile-label">Ngày sinh:</label>
                   <input
@@ -234,16 +229,13 @@ const logout = () => {
                     class="profile-input"
                   />
                 </div>
-                <div class="profile-field">
-                  <label class="profile-label">Lớp:</label>
-                  <input v-model="userInfo.class" type="text" class="profile-input" />
-                </div>
               </div>
             </div>
+
             <div class="profile-item">
               <div class="profile-row">
                 <div class="profile-field">
-                  <label class="profile-label">Giới tính</label>
+                  <label class="profile-label">Giới tính:</label>
                   <input
                     v-model="userInfo.gender"
                     type="text"
@@ -251,23 +243,18 @@ const logout = () => {
                   />
                 </div>
                 <div class="profile-field">
-                  <label class="profile-label">Chuyên ngành</label>
-                  <select v-model="userInfo.major" class="profile-input">
-                    <option value="CongNghePhanMem">Công Nghệ Phần Mềm</option>
-                    <option value="TinHocKinhTe">Tin Học Kinh Tế</option>
-                    <option value="TinHocTracDia">Tin Học Trắc Địa</option>
-                    <option value="MangMayTinh">Mạng Máy Tính</option>
-                    <option value="HeThongThongTinVaTriThuc">Hệ Thống Thông Tin Và Tri Thức</option>
-                  </select>
+                  <label class="profile-label">Quốc tịch:</label>
+                  <input
+                    v-model="userInfo.nation"
+                    type="text"
+                    class="profile-input"
+                  />
                 </div>
               </div>
             </div>
+
             <div class="profile-item">
               <div class="profile-row">
-                <div class="profile-field">
-                  <label class="profile-label">Quốc tịch:</label>
-                  <input v-model="userInfo.nation" type="text" class="profile-input" />
-                </div>
                 <div class="profile-field">
                   <label class="profile-label">Dân tộc:</label>
                   <input
@@ -276,10 +263,6 @@ const logout = () => {
                     class="profile-input"
                   />
                 </div>
-              </div>
-            </div>
-            <div class="profile-item">
-              <div class="profile-row">
                 <div class="profile-field">
                   <label class="profile-label">Chức vụ:</label>
                   <input
@@ -289,6 +272,11 @@ const logout = () => {
                     disabled
                   />
                 </div>
+              </div>
+            </div>
+
+            <div class="profile-item">
+              <div class="profile-row">
                 <div class="profile-field">
                   <label class="profile-label">Ngày gia nhập đoàn:</label>
                   <input
@@ -297,10 +285,6 @@ const logout = () => {
                     class="profile-input"
                   />
                 </div>
-              </div>
-            </div>
-            <div class="profile-item">
-              <div class="profile-row">
                 <div class="profile-field">
                   <label class="profile-label">Nơi gia nhập đoàn:</label>
                   <input
@@ -309,6 +293,11 @@ const logout = () => {
                     class="profile-input"
                   />
                 </div>
+              </div>
+            </div>
+
+            <div class="profile-item">
+              <div class="profile-row">
                 <div class="profile-field">
                   <label class="profile-label">Chính trị:</label>
                   <input
@@ -320,12 +309,12 @@ const logout = () => {
               </div>
             </div>
           </div>
-          
+
           <div class="profile-actions">
             <button @click="updateProfile" class="btn-update">
               <i class="fas fa-save"></i> Cập nhật thông tin
             </button>
-            
+
             <div class="secondary-actions">
               <button @click="togglePasswordForm" class="btn-change-password">
                 <i class="fas fa-key"></i> Đổi mật khẩu
@@ -393,6 +382,7 @@ const logout = () => {
 
   <Footer></Footer>
 </template>
+
 
 <style scoped>
 .profile-layout {
