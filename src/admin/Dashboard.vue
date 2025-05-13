@@ -19,16 +19,16 @@ const toggleSidebar = () => {
       <i class="bx bx-user"></i> Ban hành văn bản
     </RouterLink>
     <RouterLink to="/EventManager" v-if="isSidebarOpen" class="sidebar-link">
-      <i class="bx bx-user"></i> Quản lý sự kiện
+      <i class="bx bx-user"></i> Quản lí sự kiện
     </RouterLink>
     <RouterLink to="/EliteMember" v-if="isSidebarOpen" class="sidebar-link">
       <i class="bx bx-book"></i>
       Đoàn viên ưu tú
     </RouterLink>
-    <RouterLink to="/Approve" v-if="isSidebarOpen" class="sidebar-link">
+    <!-- <RouterLink to="/Approve" v-if="isSidebarOpen" class="sidebar-link">
       <i class="bx bx-book"></i>
       Phê Duyệt
-    </RouterLink>
+    </RouterLink> -->
     <RouterLink to="/AdminProfile" v-if="isSidebarOpen" class="sidebar-link">
       <i class="bx bx-cog"></i> Tài khoản Admin
     </RouterLink>

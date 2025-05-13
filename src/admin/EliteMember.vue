@@ -2,7 +2,7 @@
   <div class="container-dashboard">
     <Dashboard></Dashboard>
     <div class="main">
-      <h1>Quản lý đoàn viên ưu tú</h1>
+      <h1>QUẢN LÍ ĐOÀN VIÊN ƯU TỨU</h1>
     </div>
   </div>
 </template>

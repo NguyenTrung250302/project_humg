@@ -2,7 +2,7 @@
   <div class="container-dashboard">
     <Dashboard />
     <div class="main">
-      <h1>Quản lý sự kiện</h1>
+      <h1>QUẢN LÍ SỰ KIỆN</h1>
 
       <!-- Nút Thêm sự kiện -->
       <button class="btn add-btn" @click="showForm = !showForm">
