@@ -183,6 +183,9 @@ const goToPageDocument = async (page) => {
   margin-bottom: 20px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: pre-wrap;
 }
 
 .document-banner:hover {
@@ -192,7 +195,8 @@ const goToPageDocument = async (page) => {
 
 .document-banner-inner {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
+  justify-content: center;
   gap: 24px;
 }
 
@@ -207,6 +211,7 @@ const goToPageDocument = async (page) => {
 .banner-text {
   flex: 1;
   padding: 8px 0;
+  min-width: 0;
 }
 
 .banner-title {
@@ -220,7 +225,7 @@ const goToPageDocument = async (page) => {
   font-size: 15px;
   color: #495057;
   margin-bottom: 12px;
-  line-height: 1.6;
+  line-height: 2.5;
 }
 
 .banner-meta {

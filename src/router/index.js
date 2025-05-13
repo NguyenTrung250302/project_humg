@@ -125,6 +125,13 @@ const routes = [
     name: "Documents",
     component: PromulgateDocuments,
   },
+
+  // Secretary
+   {
+    path: "/SecretaryProfile",
+    name: "SecretaryProfile",
+    component: SecretaryProfile,
+  },
 ];
 
 const router = createRouter({
@@ -134,6 +141,7 @@ const router = createRouter({
 
 import { useUserStore } from "../store/userStore";
 import EventsDetail from "../views/EventsDetail.vue";
+import SecretaryProfile from "../views/SecretaryProfile.vue";
 
 router.beforeEach(async (to, from, next) => {
   const userStore = useUserStore();
