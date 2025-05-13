@@ -187,40 +187,54 @@ watch(searchQuery, () => {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.6);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1000;
-  backdrop-filter: blur(4px);
+  backdrop-filter: blur(8px);
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 .dialog-box {
   background: white;
-  border-radius: 12px;
+  border-radius: 16px;
   width: 90%;
   max-width: 1000px;
   max-height: 85vh;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  animation: slideUp 0.3s ease;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
 }
 
 .dialog-header {
-  padding: 20px 24px;
+  padding: 24px 28px;
   border-bottom: 1px solid #eee;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #f8f9fa;
-  border-radius: 12px 12px 0 0;
+  background: linear-gradient(to right, #f8f9fa, #ffffff);
+  border-radius: 16px 16px 0 0;
 }
 
 .dialog-header h3 {
   margin: 0;
-  color: #2c3e50;
-  font-size: 1.4rem;
-  font-weight: 600;
+  color: #1a237e;
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: 0.3px;
 }
 
 .close-icon {
@@ -229,19 +243,26 @@ watch(searchQuery, () => {
   font-size: 1.2rem;
   cursor: pointer;
   color: #666;
-  padding: 8px;
+  padding: 10px;
   border-radius: 50%;
   transition: all 0.3s;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .close-icon:hover {
-  background: #eee;
-  color: #333;
+  background: #f0f0f0;
+  color: #1a237e;
+  transform: rotate(90deg);
 }
 
 .search-section {
-  padding: 20px 24px;
+  padding: 24px 28px;
   border-bottom: 1px solid #eee;
+  background: #fff;
 }
 
 .search-box {
@@ -252,27 +273,35 @@ watch(searchQuery, () => {
 
 .search-icon {
   position: absolute;
-  left: 12px;
-  color: #666;
+  left: 16px;
+  color: #9fa8da;
+  font-size: 1.1rem;
 }
 
 .search-box input {
   width: 100%;
-  padding: 12px 12px 12px 40px;
-  border: 2px solid #e9ecef;
-  border-radius: 8px;
-  font-size: 14px;
+  padding: 14px 16px 14px 48px;
+  border: 2px solid #e8eaf6;
+  border-radius: 12px;
+  font-size: 15px;
   transition: all 0.3s;
+  color: #1a237e;
+  background: #f8f9fa;
 }
 
 .search-box input:focus {
-  border-color: #007bff;
+  border-color: #3949ab;
   outline: none;
-  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+  box-shadow: 0 0 0 4px rgba(57, 73, 171, 0.1);
+  background: #fff;
+}
+
+.search-box input::placeholder {
+  color: #9fa8da;
 }
 
 .members-list {
-  padding: 0 24px;
+  padding: 0 28px;
   overflow-y: auto;
   flex: 1;
 }
@@ -281,138 +310,184 @@ table {
   width: 100%;
   border-collapse: separate;
   border-spacing: 0;
+  margin: 8px 0;
 }
 
 th, td {
-  padding: 16px;
+  padding: 18px 16px;
   text-align: left;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid #e8eaf6;
 }
 
 th {
   background-color: #f8f9fa;
   font-weight: 600;
-  color: #495057;
+  color: #1a237e;
   position: sticky;
   top: 0;
   z-index: 1;
+  font-size: 0.95rem;
+  letter-spacing: 0.3px;
+}
+
+tr {
+  transition: all 0.3s ease;
 }
 
 tr:hover {
-  background-color: #f8f9fa;
+  background-color: #f5f7ff;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .member-name {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
 }
 
 .member-avatar {
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   object-fit: cover;
   border: 2px solid #fff;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+tr:hover .member-avatar {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .status-badge {
-  padding: 6px 12px;
+  padding: 8px 16px;
   border-radius: 20px;
   font-size: 0.85em;
-  font-weight: 500;
+  font-weight: 600;
   display: inline-block;
+  letter-spacing: 0.3px;
+  transition: all 0.3s ease;
 }
 
 .status-badge.outstanding {
-  background-color: #28a745;
+  background: linear-gradient(135deg, #28a745, #20c997);
   color: white;
+  box-shadow: 0 2px 8px rgba(40, 167, 69, 0.2);
 }
 
 .status-badge.normal {
-  background-color: #6c757d;
+  background: linear-gradient(135deg, #6c757d, #495057);
   color: white;
+  box-shadow: 0 2px 8px rgba(108, 117, 125, 0.2);
 }
 
 .pagination {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 20px;
-  gap: 8px;
+  padding: 24px;
+  gap: 10px;
 }
 
 .page-btn, .page-number {
-  padding: 8px 12px;
-  border: 1px solid #dee2e6;
+  padding: 10px 16px;
+  border: 2px solid #e8eaf6;
   background: white;
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
   transition: all 0.3s;
-  min-width: 36px;
+  min-width: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
+  font-weight: 600;
+  color: #1a237e;
+}
+
+.page-btn:hover:not(:disabled) {
+  background: #f5f7ff;
+  border-color: #3949ab;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(57, 73, 171, 0.1);
 }
 
 .page-btn:disabled {
   background: #f8f9fa;
   cursor: not-allowed;
   color: #adb5bd;
+  border-color: #e8eaf6;
 }
 
 .page-number.active {
-  background-color: #007bff;
+  background: linear-gradient(135deg, #1a237e, #3949ab);
   color: white;
-  border-color: #007bff;
+  border-color: #1a237e;
+  box-shadow: 0 4px 12px rgba(26, 35, 126, 0.2);
 }
 
 .page-number:hover:not(.active) {
-  background-color: #f8f9fa;
+  background: #f5f7ff;
+  border-color: #3949ab;
+  transform: translateY(-2px);
 }
 
 .dialog-footer {
-  padding: 20px 24px;
-  border-top: 1px solid #eee;
+  padding: 24px 28px;
+  border-top: 1px solid #e8eaf6;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #f8f9fa;
-  border-radius: 0 0 12px 12px;
+  background: linear-gradient(to right, #ffffff, #f8f9fa);
+  border-radius: 0 0 16px 16px;
 }
 
 .total-count {
-  color: #495057;
-  font-size: 0.95em;
-  font-weight: 500;
+  color: #1a237e;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.3px;
 }
 
 .close-btn {
-  padding: 8px 20px;
-  background-color: #6c757d;
+  padding: 12px 28px;
+  background: linear-gradient(135deg, #1a237e, #3949ab);
   color: white;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
   transition: all 0.3s;
-  font-weight: 500;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  box-shadow: 0 4px 12px rgba(26, 35, 126, 0.2);
 }
 
 .close-btn:hover {
-  background-color: #5a6268;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(26, 35, 126, 0.3);
 }
 
 .no-members {
   text-align: center;
-  padding: 60px 20px;
-  color: #6c757d;
+  padding: 80px 20px;
+  color: #1a237e;
+  background: #f8f9fa;
+  border-radius: 12px;
+  margin: 20px 0;
 }
 
 .no-data-icon {
-  font-size: 48px;
-  color: #dee2e6;
-  margin-bottom: 16px;
+  font-size: 56px;
+  color: #e8eaf6;
+  margin-bottom: 20px;
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
 }
 
 @media (max-width: 768px) {
@@ -422,26 +497,70 @@ tr:hover {
     max-height: 90vh;
   }
 
+  .dialog-header {
+    padding: 20px;
+  }
+
+  .dialog-header h3 {
+    font-size: 1.3rem;
+  }
+
+  .search-section {
+    padding: 20px;
+  }
+
+  .search-box input {
+    padding: 12px 12px 12px 40px;
+    font-size: 14px;
+  }
+
+  .members-list {
+    padding: 0 20px;
+  }
+
   .member-name {
     flex-direction: column;
     align-items: flex-start;
     gap: 8px;
   }
 
-  .search-box {
-    flex-direction: column;
-  }
-
-  .pagination {
-    flex-wrap: wrap;
+  .member-avatar {
+    width: 36px;
+    height: 36px;
   }
 
   th, td {
     padding: 12px 8px;
+    font-size: 0.9rem;
   }
 
-  .dialog-header h3 {
-    font-size: 1.2rem;
+  .status-badge {
+    padding: 6px 12px;
+    font-size: 0.8em;
+  }
+
+  .pagination {
+    padding: 16px;
+    gap: 6px;
+  }
+
+  .page-btn, .page-number {
+    padding: 8px 12px;
+    min-width: 32px;
+    font-size: 0.9rem;
+  }
+
+  .dialog-footer {
+    padding: 16px 20px;
+  }
+
+  .total-count {
+    font-size: 0.9rem;
+  }
+
+  .close-btn {
+    padding: 10px 20px;
+    font-size: 0.9rem;
   }
 }
 </style> 

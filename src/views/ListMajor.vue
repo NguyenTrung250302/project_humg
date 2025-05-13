@@ -2,22 +2,21 @@
   <Header />
   <NavHeader />
   <div class="container">
-    <header>
+    <div class="page-header">
       <div v-if="store.error" class="auth-error-box">
         <i class="fas fa-exclamation-circle"></i>
         <p>{{ store.error }}</p>
       </div>
-      <!-- <div class="search-box">
+      <h1>DANH SÁCH ĐOÀN VIÊN THEO CHUYÊN NGÀNH</h1>
+      <div class="search-box">
         <i class="fas fa-search search-icon"></i>
         <input
           type="text"
-          placeholder="Tìm kiếm theo tên ngành học..."
+          placeholder="Tìm kiếm ngành học..."
           v-model="searchQuery"
-          @input="searchMajors"
         />
-      </div> -->
-      <h1>XEM DANH SÁCH ĐOÀN VIÊN THEO CHUYÊN NGÀNH</h1>
-    </header>
+      </div>
+    </div>
 
     <div class="table-container">
       <div v-if="!store.majors.length && !store.error" class="loading">
@@ -30,30 +29,28 @@
         <p>Không tìm thấy ngành học nào</p>
       </div>
 
-      <table v-else>
-        <thead>
-          <tr>
-            <th>STT</th>
-            <th>Tên ngành</th>
-            <th>Thao tác</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(major, index) in filteredMajors" :key="major.value" :class="{ 'even-row': index % 2 === 1 }">
-            <td>{{ index + 1 }}</td>
-            <td class="major-name">
-              <i class="fas fa-book-open major-icon"></i>
-              <span>{{ formatMajorName(major.name) }}</span>
-            </td>
-            <td>
-              <button class="view-btn" @click="viewMembers(major.name)">
-                <i class="fas fa-users"></i>
-                <span>Xem đoàn viên</span>
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <div v-else class="majors-grid">
+        <div 
+          v-for="(major, index) in filteredMajors" 
+          :key="major.value" 
+          class="major-card"
+          :class="{ 'even-row': index % 2 === 1 }"
+        >
+          <div class="major-info">
+            <div class="major-icon">
+              <i class="fas fa-book-open"></i>
+            </div>
+            <div class="major-details">
+              <h3>{{ formatMajorName(major.name) }}</h3>
+              <span class="major-code">Mã ngành: {{ major.value }}</span>
+            </div>
+          </div>
+          <button class="view-btn" @click="viewMembers(major.name)">
+            <i class="fas fa-users"></i>
+            <span>Xem đoàn viên</span>
+          </button>
+        </div>
+      </div>
     </div>
 
     <!-- Dialog hiển thị danh sách thành viên -->
@@ -84,36 +81,11 @@ const selectedMajor = ref('');
 const formatMajorName = (code) => {
   const nameMap = {
     'CongNghePhanMem': 'Công Nghệ Phần Mềm',
-    'HeThongThongTin': 'Hệ Thống Thông Tin',
-    'KhoaHocMayTinh': 'Khoa Học Máy Tính',
-    'KyThuatMayTinh': 'Kỹ Thuật Máy Tính',
-    'MangVaTruyenThongDuLieu': 'Mạng và Truyền Thông Dữ Liệu',
     'CongNgheThongTin': 'Công Nghệ Thông Tin',
-    'KyThuatPhanMem': 'Kỹ Thuật Phần Mềm',
-    'AnToanThongTin': 'An Toàn Thông Tin',
-    'TruyenThongVaMangMayTinh': 'Truyền Thông và Mạng Máy Tính',
-    'CongNgheWeb': 'Công Nghệ Web',
-    'TriTueNhanTao': 'Trí Tuệ Nhân Tạo',
-    'KhoaHocDuLieu': 'Khoa Học Dữ Liệu',
-    'CongNgheDiDong': 'Công Nghệ Di Động',
-    'LapTrinhGame': 'Lập Trình Game',
-    'CongNgheThucTeAo': 'Công Nghệ Thực Tế Ảo',
-    'InternetVaVatLieu': 'Internet và Vạn Vật',
-    'Blockchain': 'Blockchain',
-    'MayHoc': 'Máy Học',
-    'XuLyNgonNguTuNhien': 'Xử Lý Ngôn Ngữ Tự Nhiên',
-    'ThiKeWeb': 'Thiết Kế Web',
-    'LapTrinhUngDung': 'Lập Trình Ứng Dụng',
-    'QuanTriHeThong': 'Quản Trị Hệ Thống',
-    'BaoMatHeThong': 'Bảo Mật Hệ Thống',
-    'KhoaHocMayTinhVaTruyenThong': 'Khoa Học Máy Tính và Truyền Thông',
-    'CongNgheThongTinVaTruyenThong': 'Công Nghệ Thông Tin và Truyền Thông',
-    'KyThuatPhanMemVaHeThongThongTin': 'Kỹ Thuật Phần Mềm và Hệ Thống Thông Tin',
-    'CongNgheThongTinVaTruyenThongDuLieu': 'Công Nghệ Thông Tin và Truyền Thông Dữ Liệu',
-    'CongNgheThongTinVaTruyenThongDuLieuVaMang': 'Công Nghệ Thông Tin và Truyền Thông Dữ Liệu và Mạng',
-    'CongNgheThongTinVaTruyenThongDuLieuVaMangVaBaoMat': 'Công Nghệ Thông Tin và Truyền Thông Dữ Liệu và Mạng và Bảo Mật',
-    'CongNgheThongTinVaTruyenThongDuLieuVaMangVaBaoMatVaAnToan': 'Công Nghệ Thông Tin và Truyền Thông Dữ Liệu và Mạng và Bảo Mật và An Toàn',
-    'CongNgheThongTinVaTruyenThongDuLieuVaMangVaBaoMatVaAnToanVaHeThong': 'Công Nghệ Thông Tin và Truyền Thông Dữ Liệu và Mạng và Bảo Mật và An Toàn và Hệ Thống'
+    'MangMayTinh' : "Mạng Máy Tính",
+    'TinHocTracDia' : "Tin Học Trắc Địa",
+    'TinHocKinhTe':"Tin Học Kinh Tế",
+    'HeThongThongTinVaTriThuc' : "Hệ Thống Thông Tin Và Tri Thức"
   };
   return nameMap[code] || code;
 };
@@ -127,9 +99,6 @@ const filteredMajors = computed(() => {
   );
 });
 
-// const searchMajors = () => {
-//   // The filtering is handled by the computed property
-// };
 
 const viewMembers = async (majorName) => {
   selectedMajor.value = majorName;
@@ -152,129 +121,176 @@ onMounted(async () => {
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 20px;
-  margin-top: 0;
+  padding: 40px 20px;
+  min-height: calc(100vh - 200px);
 }
 
-header {
+.page-header {
   text-align: center;
-  background: #f8f9fa;
-  border-radius: 0;
-  margin-bottom: 0;
-  box-shadow: none;
+  margin-bottom: 40px;
+  background: linear-gradient(135deg, #1a237e, #3949ab);
+  padding: 40px 20px;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(26, 35, 126, 0.15);
+}
+
+h1 {
+  color: #ffffff;
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0 0 30px;
+  letter-spacing: 0.5px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .search-box {
   position: relative;
   width: 100%;
   max-width: 600px;
-  margin: 0 auto 20px;
+  margin: 0 auto;
 }
 
 .search-icon {
   position: absolute;
-  left: 16px;
+  left: 20px;
   top: 50%;
   transform: translateY(-50%);
-  color: #6c757d;
-  font-size: 1.1rem;
+  color: #9fa8da;
+  font-size: 1.2rem;
 }
 
 .search-box input {
   width: 100%;
-  padding: 14px 14px 14px 45px;
-  font-size: 1rem;
-  border: 2px solid #e9ecef;
-  border-radius: 8px;
-  transition: all 0.3s;
+  padding: 16px 20px 16px 50px;
+  font-size: 1.1rem;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  transition: all 0.3s ease;
+}
+
+.search-box input::placeholder {
+  color: rgba(255, 255, 255, 0.7);
 }
 
 .search-box input:focus {
-  border-color: #007bff;
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
   outline: none;
-  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
-}
-
-h1 {
-  color: #2c3e50;
-  font-size: 1.8rem;
-  font-weight: 600;
-  margin: 20px;
-  padding: 20px 20px;
-  line-height: 1.4;
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.1);
 }
 
 .table-container {
   background: white;
-  border-radius: 0;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  padding: 20px;
+}
+
+.majors-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+  padding: 10px;
+}
+
+.major-card {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  transition: all 0.3s ease;
+  border: 1px solid #e8eaf6;
+  position: relative;
   overflow: hidden;
 }
 
-table {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
+.major-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: linear-gradient(to bottom, #1a237e, #3949ab);
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
 
-th, td {
-  padding: 16px 20px;
-  text-align: left;
+.major-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 24px rgba(26, 35, 126, 0.12);
 }
 
-th {
-  background-color: #f8f9fa;
-  font-weight: 600;
-  color: #495057;
-  border-bottom: 2px solid #e9ecef;
+.major-card:hover::before {
+  opacity: 1;
 }
 
-tr {
-  transition: background-color 0.3s;
-}
-
-tr:hover {
-  background-color: #f8f9fa;
-}
-
-.even-row {
-  background-color: #f8f9fa;
-}
-
-.major-name {
+.major-info {
   display: flex;
-  align-items: center;
-  gap: 12px;
-  font-weight: 500;
-  color: #2c3e50;
+  align-items: flex-start;
+  gap: 16px;
 }
 
 .major-icon {
-  color: #007bff;
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, #e8eaf6, #c5cae9);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #1a237e;
+  font-size: 1.4rem;
+  flex-shrink: 0;
+}
+
+.major-details {
+  flex: 1;
+}
+
+.major-details h3 {
+  color: #1a237e;
   font-size: 1.2rem;
+  font-weight: 600;
+  margin: 0 0 8px;
+  line-height: 1.4;
+}
+
+.major-code {
+  color: #6c757d;
+  font-size: 0.9rem;
+  display: block;
 }
 
 .view-btn {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px 16px;
-  background-color: #28a745;
+  justify-content: center;
+  gap: 10px;
+  padding: 12px 20px;
+  background: linear-gradient(135deg, #1a237e, #3949ab);
   color: white;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
-  transition: all 0.3s;
-  font-weight: 500;
+  transition: all 0.3s ease;
+  font-weight: 600;
+  font-size: 0.95rem;
+  width: 100%;
 }
 
 .view-btn:hover {
-  background-color: #218838;
-  transform: translateY(-1px);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(26, 35, 126, 0.2);
 }
 
 .view-btn i {
-  font-size: 1rem;
+  font-size: 1.1rem;
 }
 
 .loading {
@@ -282,47 +298,52 @@ tr:hover {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 60px 20px;
-  color: #6c757d;
+  padding: 80px 20px;
+  color: #1a237e;
 }
 
 .spinner {
-  width: 40px;
-  height: 40px;
-  border: 3px solid #f3f3f3;
-  border-top: 3px solid #007bff;
+  width: 48px;
+  height: 48px;
+  border: 4px solid #e8eaf6;
+  border-top: 4px solid #1a237e;
   border-radius: 50%;
   animation: spin 1s linear infinite;
-  margin-bottom: 16px;
+  margin-bottom: 20px;
 }
 
 .no-data {
   text-align: center;
-  padding: 60px 20px;
-  color: #6c757d;
+  padding: 80px 20px;
+  color: #1a237e;
+  background: #f8f9fa;
+  border-radius: 12px;
+  margin: 20px 0;
 }
 
 .no-data-icon {
-  font-size: 48px;
-  color: #dee2e6;
-  margin-bottom: 16px;
+  font-size: 56px;
+  color: #e8eaf6;
+  margin-bottom: 20px;
+  animation: float 3s ease-in-out infinite;
 }
 
 .auth-error-box {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-  padding: 16px;
-  background-color: #fff3cd;
-  border-radius: 8px;
-  color: #856404;
+  gap: 12px;
+  padding: 16px 24px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  color: #ffffff;
   font-weight: 500;
-  margin-bottom: 20px;
+  margin-bottom: 30px;
+  backdrop-filter: blur(8px);
 }
 
 .auth-error-box i {
-  font-size: 1.2rem;
+  font-size: 1.4rem;
 }
 
 @keyframes spin {
@@ -330,41 +351,54 @@ tr:hover {
   100% { transform: rotate(360deg); }
 }
 
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
 @media (max-width: 768px) {
   .container {
-    padding: 15px;
+    padding: 20px 15px;
   }
 
-  header {
-    padding: 20px 15px;
+  .page-header {
+    padding: 30px 15px;
+    margin-bottom: 30px;
   }
 
   h1 {
     font-size: 1.5rem;
-  }
-
-  .search-box {
-    max-width: 100%;
+    margin-bottom: 20px;
   }
 
   .search-box input {
-    padding: 12px 12px 12px 40px;
-    font-size: 0.95rem;
+    padding: 14px 14px 14px 45px;
+    font-size: 1rem;
   }
 
-  th, td {
-    padding: 12px 15px;
+  .majors-grid {
+    grid-template-columns: 1fr;
+    gap: 15px;
   }
 
-  .major-name {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
+  .major-card {
+    padding: 20px;
+  }
+
+  .major-icon {
+    width: 40px;
+    height: 40px;
+    font-size: 1.2rem;
+  }
+
+  .major-details h3 {
+    font-size: 1.1rem;
   }
 
   .view-btn {
-    width: 100%;
-    justify-content: center;
+    padding: 10px 16px;
+    font-size: 0.9rem;
   }
 }
 </style>
