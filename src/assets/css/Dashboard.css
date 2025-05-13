@@ -122,10 +122,24 @@
 }
 
 .main h1 {
-  color: #1f2937;
+  color: #1a237e;
   font-size: 32px;
-  font-weight: 800;
-  margin-bottom: 30px;
+  font-weight: 700;
+  margin-bottom: 35px;
+  position: relative;
+  padding-bottom: 15px;
+  letter-spacing: 0.5px;
+}
+
+.main h1::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 80px;
+  height: 4px;
+  background: linear-gradient(90deg, #1a237e, #3949ab);
+  border-radius: 4px;
 }
 
 /* SCROLLBAR (optional) */

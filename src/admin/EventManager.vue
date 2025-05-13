@@ -351,39 +351,6 @@ const handleEditImageUpload = (event) => {
 </script>
 
 <style scoped>
-.container-dashboard {
-  display: flex;
-  min-height: 100vh;
-  background-color: #f5f7fa;
-}
-
-.main {
-  flex: 1;
-  padding: 40px;
-  max-width: 1200px;
-}
-
-h1 {
-  color: #1a237e;
-  font-size: 32px;
-  font-weight: 700;
-  margin-bottom: 35px;
-  position: relative;
-  padding-bottom: 15px;
-  letter-spacing: 0.5px;
-}
-
-h1::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 80px;
-  height: 4px;
-  background: linear-gradient(90deg, #1a237e, #3949ab);
-  border-radius: 4px;
-}
-
 .add-btn {
   background: linear-gradient(135deg, #1a237e, #3949ab);
   color: #fff;
