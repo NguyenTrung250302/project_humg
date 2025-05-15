@@ -15,7 +15,7 @@
         <li class="nav-header-item" tabindex="0">Khen thưởng / Kỉ luật</li>
       </RouterLink>
     </ul>
-    <ul class="nav-header-ul">
+    <ul class="nav-header-ul" v-if="userInfo && userInfo.roleName !== 'Đoàn viên'">
       <RouterLink to="/ApprovalHistory">
         <li class="nav-header-item" tabindex="0">Lịch sử phê duyệt</li>
       </RouterLink>
