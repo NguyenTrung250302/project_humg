@@ -306,6 +306,7 @@ export const useUserStore = defineStore("user", () => {
     placeOfJoining,
     gender,
     major,
+    courseIntake,
   }) => {
     loading.value = true;
     error.value = null;
@@ -325,6 +326,7 @@ export const useUserStore = defineStore("user", () => {
       if (placeOfJoining) formData.append("PlaceOfJoining", placeOfJoining);
       if (gender) formData.append("Gender", gender);
       if (major) formData.append("Major", major);
+      if (courseIntake) formData.append("CourseIntake", courseIntake);
 
       const response = await axios.put(
         urlHost + "/api/Controller_MemberInfo/Update_member_info",

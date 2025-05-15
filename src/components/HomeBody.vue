@@ -64,7 +64,7 @@ const goToPageDocument = async (page) => {
               <div class="document-meta">
                 <div class="meta-item">
                   <span class="icon">👤</span>
-                  {{ document.userName }}
+                  {{ document.userName == "admin" ? "Liên chi đoàn khoa" : "Liên chi đoàn khoa" }} 
                 </div>
                 <div class="meta-item">
                   <span class="icon">📅</span>

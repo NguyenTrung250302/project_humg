@@ -283,7 +283,7 @@ const retryLoading = () => {
           :key="reward.id" 
           class="card"
         >
-          <h3>{{ reward.proposerName }}</h3>
+          <!-- <h3>{{ reward.proposerName }}</h3> -->
           <p><strong>Mô tả:</strong> {{ reward.description }}</p>
           <p><strong>Ngày tạo:</strong> {{ formatDate(reward.createDate) }}</p>
           <p><strong>Trạng thái:</strong> {{ getStatusLabel(reward.status) }}</p>
@@ -360,7 +360,7 @@ const retryLoading = () => {
           :key="discipline.id" 
           class="card warning"
         >
-          <h3>{{ discipline.proposerName }}</h3>
+          <!-- <h3>{{ discipline.proposerName }}</h3> -->
           <p><strong>Mô tả:</strong> {{ discipline.description }}</p>
           <p><strong>Ngày tạo:</strong> {{ formatDate(discipline.createDate) }}</p>
           <p><strong>Trạng thái:</strong> {{ getStatusLabel(discipline.status) }}</p>

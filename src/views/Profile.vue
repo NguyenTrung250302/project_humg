@@ -120,6 +120,7 @@ const updateProfile = async () => {
     placeOfJoining: userInfo.value.placeOfJoining || null,
     gender: userInfo.value.gender || null,
     major: userInfo.value.major || null,
+    courseIntake: userInfo.value.courseIntake || null,
   });
 
   if (result.success) {
@@ -328,6 +329,23 @@ const logout = () => {
                     type="text"
                     class="profile-input"
                   />
+                </div>
+              </div>
+            </div>
+            <div class="profile-item">
+              <div class="profile-row">
+                <div class="profile-field">
+                  <label class="profile-label">Khóa:</label>
+                  <select
+                    v-model="userInfo.courseIntake"
+                    class="profile-input"
+                  >
+                    <option value="66">66</option>
+                    <option value="67">67</option>
+                    <option value="68">68</option>
+                    <option value="69">69</option>
+                    <option value="70">70</option>
+                  </select>
                 </div>
               </div>
             </div>
