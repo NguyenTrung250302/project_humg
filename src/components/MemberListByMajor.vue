@@ -8,84 +8,122 @@
         </button>
       </div>
 
-      <div class="search-section">
-        <div class="search-box">
-          <i class="fas fa-search search-icon"></i>
-          <input
-            type="text"
-            placeholder="Tìm kiếm theo tên, mã sinh viên, email..."
-            v-model="searchQuery"
-            @input="handleSearch"
-          />
+      <!-- Course Intake Selection -->
+      <div v-if="!showMemberList" class="course-selection">
+        <h4>Chọn khóa để xem danh sách đoàn viên</h4>
+        <div class="course-grid">
+          <div 
+            v-for="intake in store.courseIntakes" 
+            :key="intake"
+            class="course-card"
+            @click="selectCourseIntake(intake)"
+          >
+            <div class="course-icon">
+              <i class="fas fa-graduation-cap"></i>
+            </div>
+            <div class="course-info">
+              <h3>Khóa {{ intake }}</h3>
+              <p>Niên khóa 20{{ intake - 50 }} - 20{{ intake - 46 }}</p>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div v-if="filteredMembers.length === 0" class="no-members">
-        <i class="fas fa-users no-data-icon"></i>
-        <p>Không tìm thấy đoàn viên nào</p>
-      </div>
-      <div v-else class="members-list">
-        <table>
-          <thead>
-            <tr>
-              <th>STT</th>
-              <th>Họ tên</th>
-              <th>Mã SV</th>
-              <th>Email</th>
-              <th>Lớp</th>
-              <th>Trạng thái</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="(member, index) in paginatedMembers" :key="member.id">
-              <td>{{ (currentPage - 1) * itemsPerPage + index + 1 }}</td>
-              <td class="member-name">
-                <img :src="member.urlAvatar" :alt="member.fullName" class="member-avatar" />
-                <span>{{ member.fullName }}</span>
-              </td>
-              <td>{{ member.maSV }}</td>
-              <td>{{ member.email }}</td>
-              <td>{{ member.class || 'Chưa cập nhật' }}</td>
-              <td>
-                <span :class="['status-badge', member.isOutstandingMember ? 'outstanding' : 'normal']">
-                  {{ member.isOutstandingMember ? 'Ưu tú' : 'Thường' }}
-                </span>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+      <!-- Member List -->
+      <div v-else>
+        <div class="selected-course">
+          <span>
+            <i class="fas fa-graduation-cap"></i>
+            Khóa {{ selectedCourseIntake }} 
+            (20{{ selectedCourseIntake - 50 }} - 20{{ selectedCourseIntake - 46 }})
+          </span>
+          <button class="change-course-btn" @click="showMemberList = false">
+            <i class="fas fa-exchange-alt"></i>
+            Đổi khóa
+          </button>
+        </div>
 
-      <!-- Pagination -->
-      <div class="pagination" v-if="totalPages > 1">
-        <button 
-          @click="changePage(currentPage - 1)"
-          :disabled="currentPage === 1"
-          class="page-btn"
-        >
-          <i class="fas fa-chevron-left"></i>
-        </button>
-        
-        <button
-          v-for="page in displayedPages"
-          :key="page"
-          @click="changePage(page)"
-          :class="['page-number', { active: currentPage === page }]"
-        >
-          {{ page }}
-        </button>
+        <div class="search-section">
+          <div class="search-box">
+            <i class="fas fa-search search-icon"></i>
+            <input
+              type="text"
+              placeholder="Tìm kiếm theo tên, mã sinh viên, email..."
+              v-model="searchQuery"
+              @input="handleSearch"
+            />
+          </div>
+        </div>
 
-        <button 
-          @click="changePage(currentPage + 1)"
-          :disabled="currentPage === totalPages"
-          class="page-btn"
-        >
-          <i class="fas fa-chevron-right"></i>
-        </button>
+        <div v-if="filteredMembers.length === 0" class="no-members">
+          <i class="fas fa-users no-data-icon"></i>
+          <p>Không tìm thấy đoàn viên nào</p>
+        </div>
+        <div v-else class="members-list">
+          <table>
+            <thead>
+              <tr>
+                <th>STT</th>
+                <th>Họ tên</th>
+                <th>Mã SV</th>
+                <th>Email</th>
+                <th>Lớp</th>
+                <th>Trạng thái</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(member, index) in paginatedMembers" :key="member.id">
+                <td>{{ (currentPage - 1) * itemsPerPage + index + 1 }}</td>
+                <td class="member-name">
+                  <img :src="member.urlAvatar" :alt="member.fullName" class="member-avatar" />
+                  <span>{{ member.fullName }}</span>
+                </td>
+                <td>{{ member.maSV }}</td>
+                <td>{{ member.email }}</td>
+                <td>{{ member.class || 'Chưa cập nhật' }}</td>
+                <td>
+                  <span :class="['status-badge', member.isOutstandingMember ? 'outstanding' : 'normal']">
+                    {{ member.isOutstandingMember ? 'Ưu tú' : 'Thường' }}
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Pagination -->
+        <div class="pagination" v-if="totalPages > 1">
+          <button 
+            @click="changePage(currentPage - 1)"
+            :disabled="currentPage === 1"
+            class="page-btn"
+          >
+            <i class="fas fa-chevron-left"></i>
+          </button>
+          
+          <button
+            v-for="page in displayedPages"
+            :key="page"
+            @click="changePage(page)"
+            :class="['page-number', { active: currentPage === page }]"
+          >
+            {{ page }}
+          </button>
+
+          <button 
+            @click="changePage(currentPage + 1)"
+            :disabled="currentPage === totalPages"
+            class="page-btn"
+          >
+            <i class="fas fa-chevron-right"></i>
+          </button>
+        </div>
       </div>
 
       <div class="dialog-footer">
-        <span class="total-count">Tổng số: {{ filteredMembers.length }} đoàn viên</span>
+        <span v-if="showMemberList" class="total-count">
+          Tổng số: {{ filteredMembers.length }} đoàn viên
+        </span>
         <button class="close-btn" @click="closeDialog">Đóng</button>
       </div>
     </div>
@@ -93,7 +131,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue';
+import { ref, computed, watch, onMounted } from 'vue';
 import { useMajorStore } from '../store/StoreMajor';
 
 const store = useMajorStore();
@@ -114,10 +152,36 @@ const emit = defineEmits(['close']);
 const searchQuery = ref('');
 const currentPage = ref(1);
 const itemsPerPage = 10;
+const selectedCourseIntake = ref(null);
+const showMemberList = ref(false);
+
+onMounted(async () => {
+  await store.getCourseIntakes();
+});
 
 // Computed properties
 const filteredMembers = computed(() => {
-  return store.membersByMajor;
+  if (!selectedCourseIntake.value) {
+    console.log("Chưa chọn khóa");
+    return [];
+  }
+
+  console.log("Khóa đã chọn:", selectedCourseIntake.value);
+  console.log("Tất cả đoàn viên:", store.membersByMajor);
+  
+  const filtered = store.membersByMajor.filter(member => {
+    console.log("Kiểm tra member:", {
+      name: member.fullName,
+      major: member.major,
+      courseIntake: member.courseIntake,
+      selectedCourse: selectedCourseIntake.value.toString(),
+      isMatch: member.courseIntake === selectedCourseIntake.value.toString()
+    });
+    return member.courseIntake === selectedCourseIntake.value.toString();
+  });
+  
+  console.log("Đoàn viên sau khi lọc theo khóa:", filtered);
+  return filtered;
 });
 
 const totalPages = computed(() => 
@@ -156,12 +220,21 @@ const displayedPages = computed(() => {
 
 // Methods
 const handleSearch = async () => {
+  console.log("Đang tìm kiếm với query:", searchQuery.value);
   currentPage.value = 1;
   if (searchQuery.value.trim()) {
     await store.searchMembersByMajor(props.majorName, searchQuery.value.trim());
   } else {
     await store.getMembersByMajor(props.majorName);
   }
+};
+
+const selectCourseIntake = async (courseIntake) => {
+  console.log("Đã chọn khóa:", courseIntake);
+  selectedCourseIntake.value = courseIntake;
+  showMemberList.value = true;
+  await store.getMembersByMajor(props.majorName);
+  console.log("Danh sách sau khi lấy từ API:", store.membersByMajor);
 };
 
 const changePage = (page) => {
@@ -490,6 +563,113 @@ tr:hover .member-avatar {
   100% { transform: translateY(0px); }
 }
 
+.course-selection {
+  padding: 24px;
+  text-align: center;
+}
+
+.course-selection h4 {
+  color: #1a237e;
+  font-size: 1.2rem;
+  margin-bottom: 20px;
+}
+
+.course-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+  padding: 20px;
+}
+
+.course-card {
+  background: #f8f9fa;
+  border-radius: 12px;
+  padding: 20px;
+  cursor: pointer;
+  transition: all 0.3s;
+  border: 2px solid #e8eaf6;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.course-card:hover {
+  background: #e8eaf6;
+  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(26, 35, 126, 0.1);
+  border-color: #3949ab;
+}
+
+.course-icon {
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, #1a237e, #3949ab);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1.4rem;
+}
+
+.course-info {
+  text-align: center;
+}
+
+.course-info h3 {
+  color: #1a237e;
+  margin: 0 0 4px;
+  font-size: 1.1rem;
+}
+
+.course-info p {
+  color: #6c757d;
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.selected-course {
+  padding: 16px 28px;
+  background: #f8f9fa;
+  border-bottom: 1px solid #e8eaf6;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.selected-course span {
+  color: #1a237e;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.selected-course i {
+  color: #3949ab;
+}
+
+.change-course-btn {
+  padding: 8px 16px;
+  background: white;
+  border: 2px solid #e8eaf6;
+  border-radius: 8px;
+  color: #1a237e;
+  cursor: pointer;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+}
+
+.change-course-btn:hover {
+  background: #f5f7ff;
+  border-color: #3949ab;
+  transform: translateY(-2px);
+}
+
 @media (max-width: 768px) {
   .dialog-box {
     width: 95%;
@@ -561,6 +741,41 @@ tr:hover .member-avatar {
   .close-btn {
     padding: 10px 20px;
     font-size: 0.9rem;
+  }
+
+  .course-grid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    padding: 10px;
+  }
+
+  .course-card {
+    padding: 16px;
+  }
+
+  .course-icon {
+    width: 40px;
+    height: 40px;
+    font-size: 1.2rem;
+  }
+
+  .course-info h3 {
+    font-size: 1rem;
+  }
+
+  .course-info p {
+    font-size: 0.8rem;
+  }
+
+  .selected-course {
+    padding: 12px 20px;
+    flex-direction: column;
+    gap: 12px;
+    align-items: flex-start;
+  }
+
+  .change-course-btn {
+    width: 100%;
+    justify-content: center;
   }
 }
 </style> 

@@ -13,11 +13,29 @@ const showProposalForm = ref(false);
 const formType = ref('reward'); // 'reward' or 'discipline'
 const roleNamelogin = ref("");
 
+// Search fields
+const rewardClassSearch = ref('');
+const disciplineClassSearch = ref('');
+
+// Filtered lists
+const filteredRewards = computed(() => {
+  return rewardDisciplineStore.listReward.filter(reward => {
+    return rewardClassSearch.value === '' || 
+      reward.class?.toLowerCase().includes(rewardClassSearch.value.toLowerCase());
+  });
+});
+
+const filteredDisciplines = computed(() => {
+  return rewardDisciplineStore.listDiscipline.filter(discipline => {
+    return disciplineClassSearch.value === '' || 
+      discipline.class?.toLowerCase().includes(disciplineClassSearch.value.toLowerCase());
+  });
+});
+
 // Form fields
 const description = ref('');
-const recipientMaSV = ref('');
 const classValue = ref('');
-const excelFile = ref(null); // Changed from url to file upload
+const excelFile = ref(null);
 
 // Document preview
 const showDocumentPreview = ref(false);
@@ -26,6 +44,10 @@ const originalUrl = ref('');
 const isDocLoading = ref(true);
 const isViewerFailed = ref(false);
 const fallbackContent = ref('');
+<<<<<<< HEAD
+=======
+const viewerType = ref('office'); 
+>>>>>>> 2a9420b3ebb420a893453efa13c3c9d62aaf4447
 const isEdgeBrowser = ref(false);
 
 // Check if user is Bí thư đoàn viên
@@ -38,7 +60,6 @@ onMounted(async () => {
   await rewardDisciplineStore.GetListReward();
   await rewardDisciplineStore.GetListDiscipline();
   
-  // Lấy thông tin user từ userStore giống như NavHeader.vue
   await userStore.getMemberInfo();
   roleNamelogin.value = userStore.memberInfo.roleName;
   console.log("Current roleName:", roleNamelogin.value);
@@ -239,9 +260,20 @@ const retryLoading = () => {
     <div v-if="activeTab === 'reward'" class="section">
       <div class="section-header">
         <h2 class="section-title">Danh sách khen thưởng</h2>
-        <button v-if="isBiThu" class="action-button" @click="openProposalForm('reward')">
-          <i class="fas fa-plus"></i> Đề xuất khen thưởng
-        </button>
+        <div class="header-actions">
+          <div class="search-box">
+            <i class="fas fa-search search-icon"></i>
+            <input
+              type="text"
+              v-model="rewardClassSearch"
+              placeholder="Tìm kiếm theo lớp..."
+              class="search-input"
+            />
+          </div>
+          <button v-if="isBiThu" class="action-button" @click="openProposalForm('reward')">
+            <i class="fas fa-plus"></i> Đề xuất khen thưởng
+          </button>
+        </div>
       </div>
       
       <div v-if="rewardDisciplineStore.listReward.length === 0" class="empty-state">
@@ -251,7 +283,7 @@ const retryLoading = () => {
       <!-- Rewards List -->
       <div v-else class="card-grid">
         <div 
-          v-for="reward in rewardDisciplineStore.listReward" 
+          v-for="reward in filteredRewards" 
           :key="reward.id" 
           class="card"
         >
@@ -305,9 +337,20 @@ const retryLoading = () => {
     <div v-if="activeTab === 'discipline'" class="section">
       <div class="section-header">
         <h2 class="section-title">Danh sách kỷ luật</h2>
-        <button v-if="isBiThu" class="action-button" @click="openProposalForm('discipline')">
-          <i class="fas fa-plus"></i> Đề xuất kỷ luật
-        </button>
+        <div class="header-actions">
+          <div class="search-box">
+            <i class="fas fa-search search-icon"></i>
+            <input
+              type="text"
+              v-model="disciplineClassSearch"
+              placeholder="Tìm kiếm theo lớp..."
+              class="search-input"
+            />
+          </div>
+          <button v-if="isBiThu" class="action-button" @click="openProposalForm('discipline')">
+            <i class="fas fa-plus"></i> Đề xuất kỷ luật
+          </button>
+        </div>
       </div>
       
       <div v-if="rewardDisciplineStore.listDiscipline.length === 0" class="empty-state">
@@ -317,7 +360,7 @@ const retryLoading = () => {
       <!-- Disciplines List -->
       <div v-else class="card-grid">
         <div 
-          v-for="discipline in rewardDisciplineStore.listDiscipline" 
+          v-for="discipline in filteredDisciplines" 
           :key="discipline.id" 
           class="card warning"
         >
@@ -1399,6 +1442,58 @@ textarea {
   
   .document-modal {
     max-width: 90%;
+  }
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.search-box {
+  position: relative;
+  min-width: 250px;
+}
+
+.search-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #6c757d;
+  font-size: 0.9rem;
+}
+
+.search-input {
+  width: 100%;
+  padding: 0.6rem 1rem 0.6rem 2.5rem;
+  border: 2px solid #e9ecef;
+  border-radius: 30px;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+  background-color: #fff;
+}
+
+.search-input:focus {
+  border-color: #80bdff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.15);
+  outline: none;
+}
+
+.search-input::placeholder {
+  color: #adb5bd;
+}
+
+@media (max-width: 768px) {
+  .header-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .search-box {
+    width: 100%;
+    min-width: unset;
   }
 }
 </style>

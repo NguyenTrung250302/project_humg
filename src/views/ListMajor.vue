@@ -81,10 +81,10 @@ const selectedMajor = ref('');
 const formatMajorName = (code) => {
   const nameMap = {
     'CongNghePhanMem': 'Công Nghệ Phần Mềm',
-    'CongNgheThongTin': 'Công Nghệ Thông Tin',
     'MangMayTinh' : "Mạng Máy Tính",
     'TinHocTracDia' : "Tin Học Trắc Địa",
     'TinHocKinhTe':"Tin Học Kinh Tế",
+    'KhoaHocMayTinh': "Khoa Học Máy Tính",
     'HeThongThongTinVaTriThuc' : "Hệ Thống Thông Tin Và Tri Thức"
   };
   return nameMap[code] || code;
