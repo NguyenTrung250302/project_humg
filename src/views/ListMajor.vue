@@ -42,7 +42,6 @@
             </div>
             <div class="major-details">
               <h3>{{ formatMajorName(major.name) }}</h3>
-              <span class="major-code">Mã ngành: {{ major.value }}</span>
             </div>
           </div>
           <button class="view-btn" @click="viewMembers(major.name)">

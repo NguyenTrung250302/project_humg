@@ -101,7 +101,7 @@ const handleFileChange = (event) => {
         file.name.endsWith('.xls')) {
       excelFile.value = file;
     } else {
-      alert('Vui lòng chọn file Excel (.xlsx hoặc .xls)');
+      window.$dialog.fail('Vui lòng chọn file Excel (.xlsx hoặc .xls)');
       event.target.value = null;
       excelFile.value = null;
     }
@@ -111,7 +111,7 @@ const handleFileChange = (event) => {
 // Submit proposal
 const submitProposal = async () => {
   if (!description.value || !classValue.value || !excelFile.value) {
-    alert('Vui lòng điền đầy đủ thông tin và chọn file Excel!');
+    window.$dialog.fail('Vui lòng điền đầy đủ thông tin và chọn file Excel!');
     return;
   }
   
@@ -147,10 +147,10 @@ const submitProposal = async () => {
     
     showProposalForm.value = false;
     
-    alert('Đề xuất đã được gửi thành công!');
+    window.$dialog.success('Đề xuất đã được gửi thành công!');
   } catch (error) {
     console.error('Lỗi khi gửi đề xuất:', error);
-    alert(rewardDisciplineStore.error || 'Có lỗi xảy ra khi gửi đề xuất!');
+    window.$dialog.fail(rewardDisciplineStore.error || 'Có lỗi xảy ra khi gửi đề xuất!');
   }
 };
 

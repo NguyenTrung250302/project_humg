@@ -5,19 +5,37 @@
       <h1>PHÊ DUYỆT ĐỀ XUẤT KHEN THƯỞNG KỶ LUẬT</h1>
       
       <div class="proposal-list-container">
+        <!-- Tab navigation -->
+        <div class="tab-navigation">
+          <button 
+            :class="['tab-button', { active: activeTab === 'reward' }]"
+            @click="activeTab = 'reward'"
+          >
+            <i class="fas fa-award"></i>
+            Khen thưởng
+          </button>
+          <button 
+            :class="['tab-button', { active: activeTab === 'discipline' }]"
+            @click="activeTab = 'discipline'"
+          >
+            <i class="fas fa-gavel"></i>
+            Kỷ luật
+          </button>
+        </div>
+
         <!-- Thông báo lỗi nếu có -->
         <div v-if="rewardDisciplineStore.error" class="error-message">
           {{ rewardDisciplineStore.error }}
         </div>
         
         <!-- Thông báo trống -->
-        <div v-else-if="rewardDisciplineStore.listWaiting.length === 0" class="empty-message">
-          Không có đề xuất nào đang chờ phê duyệt.
+        <div v-else-if="filteredProposals.length === 0" class="empty-message">
+          Không có đề xuất {{ activeTab === 'reward' ? 'khen thưởng' : 'kỷ luật' }} nào đang chờ phê duyệt.
         </div>
         
         <!-- Danh sách đề xuất -->
         <div v-else class="proposal-list">
-          <div v-for="item in rewardDisciplineStore.listWaiting" :key="item.id" class="proposal-card" :class="{ 'reward': item.rewardOrDiscipline, 'discipline': !item.rewardOrDiscipline }">
+          <div v-for="item in filteredProposals" :key="item.id" class="proposal-card" :class="{ 'reward': item.rewardOrDiscipline, 'discipline': !item.rewardOrDiscipline }">
             <div class="proposal-header">
               <h3>{{ item.rewardOrDiscipline ? 'Khen thưởng' : 'Kỷ luật' }}</h3>
               <span class="proposal-date">{{ formatDate(item.createDate) }}</span>
@@ -25,7 +43,7 @@
             
             <div class="proposal-body">
               <div class="proposal-info">
-                <p><strong>Người đề xuất:</strong> {{ item.proposerName }} ({{ item.proposerMaSV }})</p>
+                <p><strong>Người đề xuất:</strong> {{ item.proposerName }}</p>
                 <p><strong>Lớp:</strong> {{ item.class }}</p>
                 <p><strong>Mô tả:</strong> {{ item.description }}</p>
               </div>
@@ -96,7 +114,34 @@
           
           <div class="form-actions">
             <button class="cancel-button" @click="showRejectForm = false">Hủy</button>
-            <button class="submit-button" @click="confirmProposal(selectedProposalId, false)">Xác nhận từ chối và xóa</button>
+            <button class="submit-button" @click="showConfirmDialog">Xác nhận từ chối và xóa</button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Modal xác nhận xóa -->
+      <div v-if="showConfirmDelete" class="modal-overlay">
+        <div class="modal-content confirm-delete-modal">
+          <div class="modal-header">
+            <h2>Xác nhận xóa</h2>
+            <button class="close-button" @click="showConfirmDelete = false">&times;</button>
+          </div>
+          
+          <div class="confirm-delete-content">
+            <div class="warning-icon">
+              <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <p>Bạn có chắc chắn muốn từ chối và xóa đề xuất này?</p>
+            <p class="warning-text">Hành động này không thể hoàn tác!</p>
+          </div>
+          
+          <div class="form-actions">
+            <button class="cancel-button" @click="showConfirmDelete = false">
+              <i class="fas fa-times"></i> Hủy bỏ
+            </button>
+            <button class="delete-button" @click="handleConfirmDelete">
+              <i class="fas fa-trash-alt"></i> Xác nhận xóa
+            </button>
           </div>
         </div>
       </div>
@@ -122,7 +167,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import Dashboard from "./Dashboard.vue";
 import "../assets/css/Dashboard.css";
 import { useRewardDisciplineStore } from "../store/RewardDisciplineStore";
@@ -134,10 +179,20 @@ const rewardDisciplineStore = useRewardDisciplineStore();
 const showRejectForm = ref(false);
 const rejectReason = ref('');
 const selectedProposalId = ref(null);
+const showConfirmDelete = ref(false);
 
 // Biến cho modal xem tài liệu
 const showDocumentPreview = ref(false);
 const previewUrl = ref('');
+
+const activeTab = ref('reward');
+
+// Filter proposals based on active tab
+const filteredProposals = computed(() => {
+  return rewardDisciplineStore.listWaiting.filter(item => {
+    return activeTab.value === 'reward' ? item.rewardOrDiscipline : !item.rewardOrDiscipline;
+  });
+});
 
 // Format date
 const formatDate = (dateString) => {
@@ -164,6 +219,49 @@ const showDocumentModal = (url) => {
   showDocumentPreview.value = true;
 };
 
+// Hiện dialog xác nhận xóa
+const showConfirmDialog = () => {
+  if (!rejectReason.value.trim()) {
+    window.$dialog.fail('Vui lòng nhập lý do từ chối.');
+    return;
+  }
+  showConfirmDelete.value = true;
+};
+
+// Xử lý khi xác nhận xóa
+const handleConfirmDelete = async () => {
+  try {
+    const headers = {
+      'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
+      'accept': '*/*'
+    };
+
+    const formData = new FormData();
+    formData.append('proposeId', selectedProposalId.value);
+
+    const response = await fetch(`${urlHost}/api/Controller_RewardDiscipline/Delete_Reward_Discipline`, {
+      method: 'DELETE',
+      headers,
+      body: formData
+    });
+
+    if (response.ok) {
+      await rewardDisciplineStore.GetListWaiting();
+      showRejectForm.value = false;
+      showConfirmDelete.value = false;
+      rejectReason.value = '';
+      selectedProposalId.value = null;
+      window.$dialog.success('Đã từ chối và xóa đề xuất thành công!');
+    } else {
+      const errorData = await response.json();
+      window.$dialog.fail(`Có lỗi xảy ra: ${errorData.message || errorData.title || 'Vui lòng thử lại sau'}`);
+    }
+  } catch (error) {
+    console.error('Lỗi khi xử lý đề xuất:', error);
+    window.$dialog.fail('Có lỗi xảy ra. Vui lòng thử lại sau!');
+  }
+};
+
 // Xác nhận hoặc từ chối đề xuất
 const confirmProposal = async (proposalId, isApproved) => {
   try {
@@ -186,7 +284,7 @@ const confirmProposal = async (proposalId, isApproved) => {
     } else {
       // Gọi API xóa đề xuất (từ chối)
       if (!rejectReason.value.trim()) {
-        alert('Vui lòng nhập lý do từ chối.');
+        window.$dialog.fail('Vui lòng nhập lý do từ chối.');
         return;
       }
       
@@ -216,14 +314,14 @@ const confirmProposal = async (proposalId, isApproved) => {
       rejectReason.value = '';
       selectedProposalId.value = null;
       
-      alert(isApproved ? 'Đã phê duyệt đề xuất thành công!' : 'Đã từ chối và xóa đề xuất thành công!');
+      window.$dialog.success(isApproved ? 'Đã phê duyệt đề xuất thành công!' : 'Đã từ chối và xóa đề xuất thành công!');
     } else {
       const errorData = await response.json();
-      alert(`Có lỗi xảy ra: ${errorData.message || errorData.title || 'Vui lòng thử lại sau'}`);
+      window.$dialog.fail(`Có lỗi xảy ra: ${errorData.message || errorData.title || 'Vui lòng thử lại sau'}`);
     }
   } catch (error) {
     console.error('Lỗi khi xử lý đề xuất:', error);
-    alert('Có lỗi xảy ra. Vui lòng thử lại sau!');
+    window.$dialog.fail('Có lỗi xảy ra. Vui lòng thử lại sau!');
   }
 };
 
@@ -304,6 +402,7 @@ onMounted(async () => {
   position: relative;
   transform-style: preserve-3d;
   border: none;
+  animation: slideIn 0.5s ease-out;
 }
 
 .proposal-card:hover {
@@ -313,10 +412,12 @@ onMounted(async () => {
 
 .proposal-card.reward {
   border-top: 4px solid #28a745;
+  background: linear-gradient(to bottom right, #ffffff, #f8fff9);
 }
 
 .proposal-card.discipline {
   border-top: 4px solid #dc3545;
+  background: linear-gradient(to bottom right, #ffffff, #fff8f8);
 }
 
 .proposal-header {
@@ -726,8 +827,111 @@ textarea:focus {
   box-shadow: 0 6px 15px rgba(220, 53, 69, 0.35);
 }
 
-/* Responsive Styles */
+/* Tab Navigation Styles */
+.tab-navigation {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  padding: 0.5rem;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  backdrop-filter: blur(10px);
+}
+
+.tab-button {
+  flex: 1;
+  padding: 1rem 2rem;
+  border: none;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  color: #6c757d;
+  background: transparent;
+  position: relative;
+  overflow: hidden;
+}
+
+.tab-button i {
+  font-size: 1.2rem;
+  transition: transform 0.3s ease;
+}
+
+.tab-button:hover {
+  color: #495057;
+  background: rgba(255, 255, 255, 0.9);
+  transform: translateY(-2px);
+}
+
+.tab-button:hover i {
+  transform: scale(1.1) rotate(10deg);
+}
+
+.tab-button.active {
+  color: white;
+  transform: translateY(-2px);
+}
+
+.tab-button.active:first-child {
+  background: linear-gradient(135deg, #28a745, #20c997);
+  box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+}
+
+.tab-button.active:last-child {
+  background: linear-gradient(135deg, #dc3545, #c82333);
+  box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+}
+
+.tab-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(45deg, rgba(255,255,255,0.1), rgba(255,255,255,0.2));
+  transform: translateY(100%);
+  transition: transform 0.3s ease;
+}
+
+.tab-button:hover::before {
+  transform: translateY(0);
+}
+
+/* Update proposal card styles */
+.proposal-card {
+  animation: slideIn 0.5s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive styles for tabs */
 @media (max-width: 768px) {
+  .tab-navigation {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .tab-button {
+    width: 100%;
+    padding: 0.8rem;
+  }
+
   .main {
     padding: 1.5rem;
   }
@@ -776,6 +980,107 @@ textarea:focus {
 @media (min-width: 769px) and (max-width: 1200px) {
   .proposal-list {
     grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+  }
+}
+
+/* Modal xác nhận xóa */
+.confirm-delete-modal {
+  max-width: 450px;
+  text-align: center;
+}
+
+.confirm-delete-content {
+  padding: 1.5rem 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.warning-icon {
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, #ffecec, #fff5f5);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+  animation: pulse 2s infinite;
+}
+
+.warning-icon i {
+  font-size: 2.5rem;
+  color: #dc3545;
+}
+
+.confirm-delete-content p {
+  font-size: 1.1rem;
+  color: #495057;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.warning-text {
+  color: #dc3545 !important;
+  font-weight: 600;
+  font-size: 0.95rem !important;
+}
+
+.delete-button {
+  padding: 0.8rem 1.5rem;
+  background: linear-gradient(90deg, #dc3545, #c82333);
+  color: white;
+  border: none;
+  border-radius: 30px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 10px rgba(220, 53, 69, 0.25);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.delete-button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 15px rgba(220, 53, 69, 0.35);
+}
+
+.delete-button i {
+  font-size: 1rem;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 15px rgba(220, 53, 69, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(220, 53, 69, 0);
+  }
+}
+
+/* Responsive styles for confirm delete modal */
+@media (max-width: 768px) {
+  .confirm-delete-modal {
+    width: 90%;
+    margin: 0 auto;
+  }
+
+  .warning-icon {
+    width: 60px;
+    height: 60px;
+  }
+
+  .warning-icon i {
+    font-size: 2rem;
+  }
+
+  .confirm-delete-content p {
+    font-size: 1rem;
   }
 }
 </style>
