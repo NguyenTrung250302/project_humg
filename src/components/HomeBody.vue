@@ -39,7 +39,7 @@ const goToPageDocument = async (page) => {
 <template>
   <div class="home-body">
     <!-- Hero Section -->
-    <section class="hero-section">
+    <section class="hero-section" v-if="!eventStore.error">
       <div class="hero-overlay"></div>
       <div class="hero-content">
         <h1 class="hero-title">
@@ -108,87 +108,88 @@ const goToPageDocument = async (page) => {
 
       <!-- Events Section -->
       <section class="events-section">
-        <div class="section-header">
-          <h2 class="section-title">
-            <span class="icon">🎉</span>
-            Sự kiện nổi bật
-          </h2>
+        <!-- Error State -->
+        <div v-if="eventStore.error" class="state-message error">
+          <span class="icon">🔒</span>
+          <p>{{ eventStore.error }}</p>
         </div>
 
-        <div class="events-container">
-          <!-- Loading State -->
-          <div v-if="isLoading" class="state-message loading">
-            <div class="loading-spinner"></div>
-            <p>Đang tải dữ liệu sự kiện...</p>
+        <template v-else>
+          <div class="section-header">
+            <h2 class="section-title">
+              <span class="icon">🎉</span>
+              Sự kiện nổi bật
+            </h2>
           </div>
 
-          <!-- Error State -->
-          <div v-else-if="eventStore.error && eventStore.error.includes('🔒')" 
-            class="state-message error">
-            <span class="icon">🔒</span>
-            <p>{{ eventStore.error }}</p>
-          </div>
+          <div class="events-container">
+            <!-- Loading State -->
+            <div v-if="isLoading" class="state-message loading">
+              <div class="loading-spinner"></div>
+              <p>Đang tải dữ liệu sự kiện...</p>
+            </div>
 
-          <!-- Events Grid -->
-          <div v-else-if="eventStore.eventList && eventStore.eventList.length > 0" 
-            class="events-grid">
-            <div class="event-card" 
-              v-for="event in eventStore.eventList" 
-              :key="event.id" 
-              @click="goToEventDetail(event.id)">
-              <div class="card-media">
-                <img :src="event.urlAvatar" alt="Ảnh sự kiện" class="card-image" />
-                <div class="card-overlay"></div>
-              </div>
-              <div class="card-content">
-                <h3 class="card-title">{{ event.eventName }}</h3>
-                <p class="card-description">{{ event.description }}</p>
-                <div class="card-details">
-                  <div class="detail-item">
-                    <span class="icon">📍</span>
-                    {{ event.eventLocation }}
-                  </div>
-                  <div class="detail-item">
-                    <span class="icon">📅</span>
-                    {{ formatDate(event.eventStartDate) }} - {{ formatDate(event.eventEndDate) }}
+            <!-- Events Grid -->
+            <div v-else-if="eventStore.eventList && eventStore.eventList.length > 0" 
+              class="events-grid">
+              <div class="event-card" 
+                v-for="event in eventStore.eventList" 
+                :key="event.id" 
+                @click="goToEventDetail(event.id)">
+                <div class="card-media">
+                  <img :src="event.urlAvatar" alt="Ảnh sự kiện" class="card-image" />
+                  <div class="card-overlay"></div>
+                </div>
+                <div class="card-content">
+                  <h3 class="card-title">{{ event.eventName }}</h3>
+                  <p class="card-description">{{ event.description }}</p>
+                  <div class="card-details">
+                    <div class="detail-item">
+                      <span class="icon">📍</span>
+                      {{ event.eventLocation }}
+                    </div>
+                    <div class="detail-item">
+                      <span class="icon">📅</span>
+                      {{ formatDate(event.eventStartDate) }} - {{ formatDate(event.eventEndDate) }}
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          <!-- Empty State -->
-          <div v-else class="state-message empty">
-            <span class="icon">📭</span>
-            <p>Hiện tại không có sự kiện nào</p>
-          </div>
+            <!-- Empty State -->
+            <div v-else class="state-message empty">
+              <span class="icon">📭</span>
+              <p>Hiện tại không có sự kiện nào</p>
+            </div>
 
-          <!-- Events Pagination -->
-          <div class="events-pagination" v-if="eventStore.eventList && eventStore.eventList.length > 0">
-            <div class="pagination-wrapper">
-              <button class="page-btn" 
-                @click="goToPageEvent(eventStore.eventPagination.currentPage - 1)"
-                :disabled="eventStore.eventPagination.currentPage === 1">
-                <i class="fas fa-chevron-left"></i>
-              </button>
-              
-              <div class="page-numbers">
-                <button v-for="page in eventStore.eventPagination.totalPages" 
-                  :key="page"
-                  @click="goToPageEvent(page)"
-                  :class="['number-btn', { active: eventStore.eventPagination.currentPage === page }]">
-                  {{ page }}
+            <!-- Events Pagination -->
+            <div class="events-pagination" v-if="eventStore.eventList && eventStore.eventList.length > 0">
+              <div class="pagination-wrapper">
+                <button class="page-btn" 
+                  @click="goToPageEvent(eventStore.eventPagination.currentPage - 1)"
+                  :disabled="eventStore.eventPagination.currentPage === 1">
+                  <i class="fas fa-chevron-left"></i>
+                </button>
+                
+                <div class="page-numbers">
+                  <button v-for="page in eventStore.eventPagination.totalPages" 
+                    :key="page"
+                    @click="goToPageEvent(page)"
+                    :class="['number-btn', { active: eventStore.eventPagination.currentPage === page }]">
+                    {{ page }}
+                  </button>
+                </div>
+
+                <button class="page-btn"
+                  @click="goToPageEvent(eventStore.eventPagination.currentPage + 1)"
+                  :disabled="eventStore.eventPagination.currentPage === eventStore.eventPagination.totalPages">
+                  <i class="fas fa-chevron-right"></i>
                 </button>
               </div>
-
-              <button class="page-btn"
-                @click="goToPageEvent(eventStore.eventPagination.currentPage + 1)"
-                :disabled="eventStore.eventPagination.currentPage === eventStore.eventPagination.totalPages">
-                <i class="fas fa-chevron-right"></i>
-              </button>
             </div>
           </div>
-        </div>
+        </template>
       </section>
     </div>
   </div>
@@ -265,28 +266,25 @@ const goToPageDocument = async (page) => {
 
 /* Document Section */
 .document-section {
-  margin-bottom: 80px;
+  margin-bottom: 60px;
   position: relative;
-  padding-bottom: 20px;
 }
 
 .document-section::after {
   content: '';
   position: absolute;
-  bottom: -40px;
+  bottom: -30px;
   left: 50%;
   transform: translateX(-50%);
-  width: 85%;
-  height: 1px;
+  width: 80%;
+  height: 2px;
   background: linear-gradient(90deg, 
     transparent,
-    rgba(59, 130, 246, 0.1) 15%,
-    rgba(59, 130, 246, 0.2) 30%,
-    rgba(59, 130, 246, 0.3) 45%,
-    rgba(59, 130, 246, 0.4) 50%,
-    rgba(59, 130, 246, 0.3) 55%,
-    rgba(59, 130, 246, 0.2) 70%,
-    rgba(59, 130, 246, 0.1) 85%,
+    rgba(59, 130, 246, 0.1) 20%,
+    rgba(59, 130, 246, 0.3) 40%,
+    rgba(59, 130, 246, 0.5) 50%,
+    rgba(59, 130, 246, 0.3) 60%,
+    rgba(59, 130, 246, 0.1) 80%,
     transparent
   );
 }
@@ -294,13 +292,13 @@ const goToPageDocument = async (page) => {
 .document-section::before {
   content: '✦';
   position: absolute;
-  bottom: -49px;
+  bottom: -39px;
   left: 50%;
   transform: translateX(-50%);
   font-size: 24px;
   color: #3b82f6;
   background: #f8fafc;
-  padding: 0 25px;
+  padding: 0 20px;
   z-index: 1;
 }
 
@@ -486,7 +484,7 @@ const goToPageDocument = async (page) => {
 
 /* Events Section */
 .events-section {
-  padding: 10px 0 40px;
+  padding: 40px 0;
 }
 
 .section-header {
@@ -619,6 +617,7 @@ const goToPageDocument = async (page) => {
 }
 
 .state-message.error {
+  margin-top: 100px;
   background: #fee2e2;
   color: #991b1b;
 }
