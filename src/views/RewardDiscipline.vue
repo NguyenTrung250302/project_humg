@@ -346,7 +346,7 @@ const retryLoading = () => {
           <button v-if="isBiThu" class="action-button" @click="openProposalForm('discipline')">
             <i class="fas fa-plus"></i> Đề xuất kỷ luật
           </button>
-        </div>
+        </div> 
       </div>
       
       <div v-if="rewardDisciplineStore.listDiscipline.length === 0" class="empty-state">
