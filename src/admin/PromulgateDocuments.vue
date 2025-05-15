@@ -2,15 +2,15 @@
   <div class="container-dashboard">
     <Dashboard />
     <div class="main">
-      <h1>BAN HÀNH VĂN BẢN</h1>
+      <h1>BAN HÀNH THÔNG BÁO CHUNG</h1>
 
       <!-- Nút để mở form modal thêm tài liệu -->
-      <button @click="openAddModal" class="open-modal-button">Ban hành văn bản</button>
+      <button @click="openAddModal" class="open-modal-button">Thêm thông báo chung</button>
 
       <!-- Form Modal thêm tài liệu -->
       <div v-if="isAddModalOpen" class="modal-overlay" @click.self="closeAddModal">
         <div class="modal-container">
-          <h2>Ban hành văn bản</h2>
+          <h2>Ban hành thông báo chung</h2>
           
           <form @submit.prevent="submitAddDocument" class="form-container">
             <div class="form-group">
@@ -28,7 +28,7 @@
               <input type="file" id="file" @change="handleFileUpload" accept="image/*" />
             </div>
 
-            <button type="submit" class="submit-button">Ban hành văn bản</button>
+            <button type="submit" class="submit-button">Thêm thông báo</button>
             <button type="button" @click="closeAddModal" class="cancel-button">Hủy</button>
           </form>
         </div>
@@ -37,7 +37,7 @@
       <!-- Form Modal sửa tài liệu -->
       <div v-if="isEditModalOpen" class="modal-overlay" @click.self="closeEditModal">
         <div class="modal-container">
-          <h2>Chỉnh sửa văn bản</h2>
+          <h2>Chỉnh sửa thông báo</h2>
           
           <form @submit.prevent="submitEditDocument" class="form-container">
             <div class="form-group">
@@ -55,7 +55,7 @@
               <input type="file" id="editFile" @change="handleEditFileUpload" accept="image/*" />
             </div>
 
-            <button type="submit" class="submit-button">Cập nhật văn bản</button>
+            <button type="submit" class="submit-button">Cập nhật thông báo</button>
             <button type="button" @click="closeEditModal" class="cancel-button">Hủy</button>
           </form>
         </div>

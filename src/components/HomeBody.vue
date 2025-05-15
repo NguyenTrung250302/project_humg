@@ -44,9 +44,9 @@ const goToPageDocument = async (page) => {
       <div class="hero-content">
         <h1 class="hero-title">
           <span class="hero-icon">📢</span>
-          Thông tin mới nhất
+          Thông báo Chung
         </h1>
-        <p class="hero-subtitle">Cập nhật những thông báo và sự kiện quan trọng từ trường</p>
+        <p class="hero-subtitle">Về thông tin mới nhất của Đoàn Thanh Niên Trường</p>
       </div>
     </section>
 

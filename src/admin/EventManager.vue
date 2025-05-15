@@ -72,18 +72,6 @@
                 class="image-upload-input"
               />
             </div>
-
-            <div class="form-group">
-              <label for="urlAvatar">Hoặc nhập URL ảnh</label>
-              <input
-                id="urlAvatar"
-                v-model="newEvent.urlAvatar"
-                type="text"
-                placeholder="Nhập URL ảnh"
-                class="url-input"
-              />
-            </div>
-
             <div v-if="imagePreview || newEvent.urlAvatar" class="image-preview">
               <img
                 :src="imagePreview || newEvent.urlAvatar"
@@ -161,17 +149,6 @@
                 @change="handleEditImageUpload"
                 accept="image/*"
                 class="image-upload-input"
-              />
-            </div>
-
-            <div class="form-group">
-              <label for="editUrlAvatar">Hoặc nhập URL ảnh</label>
-              <input
-                id="editUrlAvatar"
-                v-model="editEventData.urlAvatar"
-                type="text"
-                placeholder="Nhập URL ảnh"
-                class="url-input"
               />
             </div>
 

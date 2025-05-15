@@ -35,7 +35,7 @@
           <span>
             <i class="fas fa-graduation-cap"></i>
             Khóa {{ selectedCourseIntake }} 
-            (20{{ selectedCourseIntake - 50 }} - 20{{ selectedCourseIntake - 46 }})
+            <!-- (20{{ selectedCourseIntake - 50 }} - 20{{ selectedCourseIntake - 46 }}) -->
           </span>
           <button class="change-course-btn" @click="showMemberList = false">
             <i class="fas fa-exchange-alt"></i>
