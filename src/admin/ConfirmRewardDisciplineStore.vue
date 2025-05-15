@@ -2,7 +2,7 @@
   <div class="container-dashboard">
     <Dashboard></Dashboard>
     <div class="main">
-      <h1>Phê duyệt đề xuất khen thưởng và kỷ luật</h1>
+      <h1>PHÊ DUYỆT ĐỀ XUẤT KHEN THƯỞNG KỶ LUẬT</h1>
       
       <div class="proposal-list-container">
         <!-- Thông báo lỗi nếu có -->
@@ -234,45 +234,6 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-.main {
-  padding: 2rem;
-  width: 100%;
-  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-  min-height: calc(100vh - 60px);
-  position: relative;
-}
-
-.main::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 8px;
-  background: linear-gradient(90deg, #007bff, #28a745, #ffc107, #dc3545);
-  z-index: 1;
-}
-
-h1 {
-  font-size: 2rem;
-  color: #212529;
-  margin-bottom: 1.5rem;
-  padding-bottom: 0.75rem;
-  position: relative;
-  font-weight: 700;
-}
-
-h1::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  height: 3px;
-  width: 100px;
-  background: linear-gradient(90deg, #007bff, #0062cc);
-  border-radius: 3px;
-}
-
 .proposal-list-container {
   width: 100%;
   background-color: #fff;

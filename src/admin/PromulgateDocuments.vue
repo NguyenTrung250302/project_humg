@@ -68,8 +68,8 @@
       <div class="message error" v-if="error">{{ error }}</div>
 
       <!-- 📢 Thông báo tài liệu -->
-      <div v-if="eventStore.documentList && eventStore.documentList.length > 0" class="document-banner-list">
-        <div v-for="(document, index) in eventStore.documentList" :key="index" class="document-banner">
+      <div v-if="promulgateDocumentsStore.documentList && promulgateDocumentsStore.documentList.length > 0" class="document-banner-list">
+        <div v-for="(document, index) in promulgateDocumentsStore.documentList" :key="index" class="document-banner">
           <div class="document-banner-inner">
             <img :src="document.urlAvatar" alt="Ảnh tài liệu" class="banner-image" />
             <div class="banner-text">
@@ -84,7 +84,27 @@
             </div>
           </div>
         </div>
+        <div class="document-pagination">
+          <button 
+            class="pagination-btn prev"
+            @click="goToPageDocument(documentStore.documentPagination.currentPage - 1)"
+            :disabled="documentStore.documentPagination.currentPage === 1"
+          >
+            <i class="fas fa-chevron-left"></i>
+          </button>
+          <span class="page-info">
+            Trang {{ documentStore.documentPagination.currentPage }} / {{ documentStore.documentPagination.totalPages }}
+          </span>
+          <button 
+            class="pagination-btn next"
+            @click="goToPageDocument(documentStore.documentPagination.currentPage + 1)"
+            :disabled="documentStore.documentPagination.currentPage === documentStore.documentPagination.totalPages"
+          >
+            <i class="fas fa-chevron-right"></i>
+          </button>
+        </div>
       </div>
+      
 
       <!-- Nếu không có tài liệu -->
       <div v-else>
@@ -97,7 +117,6 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { usePromulgateDocuments } from "../StoreAdmin/PromulgateDocuments";
-import { useEventStore } from "../store/EventStore"; 
 import Dashboard from "./Dashboard.vue";
 import "../assets/css/Dashboard.css";
 
@@ -106,8 +125,14 @@ const promulgateDocumentsStore = usePromulgateDocuments();
 const { addDocument, updateDocument, deleteDocument: deleteDoc, error, success } = promulgateDocumentsStore;
 
 // Lấy store chứa danh sách tài liệu
-const eventStore = useEventStore();
-const { getDocumentList, documentList } = eventStore;
+const documentStore = usePromulgateDocuments();
+const { getDocumentList, documentList } = documentStore;
+
+const goToPageDocument = async (page) => {
+  if (page >= 1 && page <= documentStore.documentPagination.totalPages) {
+    await documentStore.goToDocumentPage(page);
+  }
+};
 
 // Form state
 const documentTitle = ref("");
@@ -151,6 +176,15 @@ const submitAddDocument = async () => {
   }
 };
 
+// Hàm chỉnh sửa tài liệu
+const editDocument = (document) => {
+  selectedDocument.value = document;
+  editDocumentTitle.value = document.documentTitle;
+  editDocumentContent.value = document.documentContent;
+  editFile.value = null; // Reset file khi mở modal sửa
+  isEditModalOpen.value = true;
+};
+
 // Submit form - Sửa tài liệu
 const submitEditDocument = async () => {
   try {
@@ -186,14 +220,6 @@ const formatDate = (date) => {
   return formattedDate.toLocaleDateString(); 
 };
 
-// Hàm chỉnh sửa tài liệu
-const editDocument = (document) => {
-  selectedDocument.value = document;
-  editDocumentTitle.value = document.documentTitle;
-  editDocumentContent.value = document.documentContent;
-  editFile.value = null; // Reset file khi mở modal sửa
-  isEditModalOpen.value = true;
-};
 
 // Hàm xóa tài liệu
 const deleteDocument = async (documentId) => {
@@ -418,6 +444,9 @@ textarea {
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   transition: all 0.3s ease;
   border: 1px solid #e8eaf6;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: pre-wrap;
 }
 
 .document-banner:hover {
@@ -427,6 +456,8 @@ textarea {
 
 .document-banner-inner {
   display: flex;
+  justify-content: center;
+  align-items: center;
   padding: 30px;
   gap: 30px;
   position: relative;
@@ -445,6 +476,7 @@ textarea {
   display: flex;
   flex-direction: column;
   gap: 15px;
+  min-width: 0;
 }
 
 .banner-title {
@@ -529,6 +561,93 @@ textarea {
   .banner-actions {
     flex-direction: row;
     justify-content: flex-end;
+  }
+}
+
+/* Document Pagination */
+.document-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #e9ecef;
+}
+
+.document-pagination .pagination-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid #e9ecef;
+  background: white;
+  color: #495057;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.document-pagination .pagination-btn:hover:not(:disabled) {
+  background: #007bff;
+  color: white;
+  border-color: #007bff;
+  transform: translateY(-2px);
+}
+
+.document-pagination .pagination-btn:disabled {
+  background: #f8f9fa;
+  color: #adb5bd;
+  cursor: not-allowed;
+}
+
+.document-pagination .page-info {
+  font-size: 14px;
+  color: #6c757d;
+  font-weight: 500;
+}
+
+@media (max-width: 768px) {
+  .home-body {
+    padding: 20px;
+  }
+
+  .document-banner-inner {
+    flex-direction: column;
+  }
+
+  .banner-image {
+    width: 100%;
+    height: 200px;
+  }
+
+  .event-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .page-title {
+    font-size: 24px;
+    margin: 30px 0;
+  }
+
+  .pagination {
+    flex-wrap: wrap;
+  }
+
+  .pagination button,
+  .pagination span {
+    padding: 8px 16px;
+  }
+
+  .document-pagination {
+    gap: 15px;
+  }
+  
+  .document-pagination .pagination-btn {
+    width: 36px;
+    height: 36px;
   }
 }
 </style>

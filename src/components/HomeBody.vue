@@ -1,3 +1,41 @@
+<script setup>
+import { onMounted, ref } from "vue";
+import { useRouter } from "vue-router";
+import { useEventStore } from "../store/EventStore";
+
+const eventStore = useEventStore();
+const isLoading = ref(true);
+const router = useRouter();
+
+onMounted(async () => {
+  isLoading.value = true;
+  await eventStore.getEventList();
+  await eventStore.getDocumentList();
+  isLoading.value = false;
+});
+
+const formatDate = (dateStr) => {
+  const date = new Date(dateStr);
+  return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
+};
+
+const goToEventDetail = (id) => {
+  router.push(`/EventsDetail/${id}`);
+};
+
+// Chuyển trang
+const goToPageEvent = async (page) => {
+  if (page >= 1 && page <= eventStore.eventPagination.totalPages) {
+    await eventStore.goToEventPage(page);
+  }
+};
+const goToPageDocument = async (page) => {
+  if (page >= 1 && page <= eventStore.documentPagination.totalPages) {
+    await eventStore.goToDocumentPage(page);
+  }
+};
+</script>
+
 <template>
   <div class="home-body">
     <!-- 📢 Thông báo tài liệu -->
@@ -125,43 +163,6 @@
   </div>
 </template>
 
-<script setup>
-import { onMounted, ref } from "vue";
-import { useRouter } from "vue-router";
-import { useEventStore } from "../store/EventStore";
-
-const eventStore = useEventStore();
-const isLoading = ref(true);
-const router = useRouter();
-
-onMounted(async () => {
-  isLoading.value = true;
-  await eventStore.getEventList();
-  await eventStore.getDocumentList();
-  isLoading.value = false;
-});
-
-const formatDate = (dateStr) => {
-  const date = new Date(dateStr);
-  return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
-};
-
-const goToEventDetail = (id) => {
-  router.push(`/EventsDetail/${id}`);
-};
-
-// Chuyển trang
-const goToPageEvent = async (page) => {
-  if (page >= 1 && page <= eventStore.eventPagination.totalPages) {
-    await eventStore.goToEventPage(page);
-  }
-};
-const goToPageDocument = async (page) => {
-  if (page >= 1 && page <= eventStore.documentPagination.totalPages) {
-    await eventStore.goToDocumentPage(page);
-  }
-};
-</script>
 
 <style scoped>
 .home-body {

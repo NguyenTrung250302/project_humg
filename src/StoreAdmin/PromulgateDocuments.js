@@ -7,6 +7,14 @@ import { urlHost } from '../UrlApiHostStore/ApiHostStore';
 export const usePromulgateDocuments = defineStore("PromulgateDocuments", () => {
   const error = ref(null);
   const success = ref(null);
+  const documentList = ref([]);
+
+  // Pagination cho Document
+  const documentPagination = {
+    totalItems: ref(0),
+    totalPages: ref(0),
+    currentPage: ref(1),
+  };
 
   // Hàm lấy headers Authorization từ localStorage
   const getAuthHeaders = () => {
@@ -17,6 +25,54 @@ export const usePromulgateDocuments = defineStore("PromulgateDocuments", () => {
           accept: "*/*",
         }
       : null;
+  };
+
+  // Get danh sách tài liệu
+  const getDocumentList = async (pageNumber = 1) => {
+    try {
+      const headers = getAuthHeaders();
+
+      if (!headers) {
+        error.value = "🔒 Bạn cần đăng nhập để xem danh sách tài liệu.";
+        documentList.value = [];
+        return;
+      }
+
+      const response = await axios.get(
+        urlHost + `/api/Controller_Document/Get_List_Document?pageSize=10&pageNumber=${pageNumber}`,
+        { headers }
+      );
+
+      if (response.status === 200 && response.data.items) {
+        documentList.value = response.data.items;
+        documentPagination.totalItems.value = response.data.totalItems;
+        documentPagination.totalPages.value = response.data.totalPages;
+        documentPagination.currentPage.value = response.data.currentPage;
+        error.value = null;
+        console.log(response.data)
+      } else {
+        error.value = "⚠️ Không thể tải danh sách tài liệu từ máy chủ.";
+        console.error("Unexpected response:", response);
+      }
+    } catch (err) {
+      if (err.response && err.response.status === 401) {
+        error.value =
+          "❌ Phiên đăng nhập của bạn đã hết hạn. Vui lòng đăng nhập lại.";
+      } else if (err.response && err.response.status >= 500) {
+        error.value = "🔥 Lỗi máy chủ! Vui lòng thử lại sau.";
+      } else {
+        error.value = "🚫 Có lỗi xảy ra khi tải dữ liệu.";
+      }
+      console.error("Error while fetching document list:", err);
+      documentList.value = [];
+    }
+  };
+
+  // Chuyển trang cho Document
+  const goToDocumentPage = (page) => {
+    if (page >= 1 && page <= documentPagination.totalPages.value) {
+      getDocumentList(page);
+    }
   };
 
   // Hàm thêm tài liệu
@@ -166,5 +222,9 @@ export const usePromulgateDocuments = defineStore("PromulgateDocuments", () => {
     updateDocument, 
     error,
     success,
+    getDocumentList,
+    documentPagination,
+    documentList,
+    goToDocumentPage,
   };
 });

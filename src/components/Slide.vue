@@ -1,10 +1,10 @@
 <script setup>
 import { onMounted } from "vue";
 import img1 from '../assets/imgs/auth_imgs/thanhnienvietnam.jpg';
-import img2 from '../assets/imgs/auth_imgs/universitylogo.jpg';
+import img2 from '../assets/imgs/auth_imgs/university.jpg';
 import img3 from '../assets/imgs/auth_imgs/hoctapvalamtheoloibac.jpg';
 import img4 from '../assets/imgs/auth_imgs/universitylogo.jpg';
-import img5 from '../assets/imgs/auth_imgs/thanhnienvietnam.jpg';
+import img5 from '../assets/imgs/auth_imgs/codoan.gif';
 
 onMounted(() => {
   const panels = document.querySelectorAll(".panel");
@@ -35,100 +35,100 @@ onMounted(() => {
 });
 </script>
 
-
 <template>
   <section class="slideImg">
-        <div class="container">
-            <div class="panel" :style="{ backgroundImage: `url(${img1})` }">
-                <h3>Thanh Niên Việt Nam</h3>
-            </div>
-            <div class="panel" :style="{ backgroundImage: `url(${img2})` }">
-                <h3>HUMG</h3>
-            </div>
-            <div class="panel active" :style="{ backgroundImage: `url(${img3})` }">
-                <h3>HUMG University</h3>
-            </div>
-            <div class="panel" :style="{ backgroundImage: `url(${img4})` }">
-                <h3>HUMG</h3>
-            </div>
-            <div class="panel" :style="{ backgroundImage: `url(${img5})` }">
-                <h3>Thanh Niên Việt Nam</h3>
-            </div>
-        </div>
-    </section>
+    <div class="container">
+      <div class="panel" :style="{ backgroundImage: `url(${img1})` }">
+        <h3>Thanh Niên Việt Nam</h3>
+      </div>
+      <div class="panel" :style="{ backgroundImage: `url(${img2})` }">
+        <h3>HUMG</h3>
+      </div>
+      <div class="panel active" :style="{ backgroundImage: `url(${img3})` }">
+        <h3>HUMG University</h3>
+      </div>
+      <div class="panel" :style="{ backgroundImage: `url(${img4})` }">
+        <h3>HUMG</h3>
+      </div>
+      <div class="panel" :style="{ backgroundImage: `url(${img5})` }">
+        <h3>Thanh Niên Việt Nam</h3>
+      </div>
+    </div>
+  </section>
 </template>
 
 <style scoped>
-h1{
-    text-align: center;
-    background-color: aqua;
-    color: blue;
-    border-radius: 40px;
-    max-width: 80vw;
-    margin: 0 auto;
+.container {
+  display: flex;
+  width: 100%;
+  max-width: 100vw;
+  gap: 15px;
+  padding: 20px;
+  box-sizing: border-box;
 }
 
-body {
-    overflow-x: hidden;
+.panel {
+  position: relative;
+  height: 70vh;
+  flex: 1;
+  border-radius: 30px;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  transition: all 1s ease-in-out;
+  overflow: hidden;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  transform: scale(0.95);
 }
 
-.container{
-    display: flex;
-    width: 100%; 
-    max-width: 100vw; 
+.panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.6), transparent);
+  transition: opacity 0.5s;
+  opacity: 0.6;
+  z-index: 1;
 }
 
-@keyframes FadeIn{
-    from{
-        opacity: 0;
-    }
-    to{
-        opacity: 1;
-    }
+.panel h3 {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  z-index: 2;
+  font-size: 20px;
+  color: #fff;
+  margin: 0;
+  padding: 6px 12px;
+  background-color: rgba(0, 0, 0, 0.4);
+  border-radius: 12px;
+  opacity: 0;
+  transition: opacity 0.5s;
 }
 
-.panel{
-    position: relative;
-    height: 70vh;
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    border-radius: 50px;
-    color: white;
-    cursor: pointer;
-    flex: 1;
-    margin: 10px;
-    animation: FadeIn ease-out 1.7s;
-    transition: flex 0.8s;
+.panel.active {
+  flex: 6;
+  transform: scale(1);
+  box-shadow: 0 20px 35px rgba(0, 0, 0, 0.3);
 }
 
-
-.panel h3{
-    position: absolute;
-    margin: 0;
-    font-size: 24px;
-    bottom: 20px;
-    left: 20px;
-    opacity: 0;
-    background-color: rgba(0, 0, 0, 0.6);
-    border-radius: 20px;
-    padding: 0 8px;
+.panel.active h3 {
+  opacity: 1;
 }
 
-.panel.active{
-    flex: 10;
-}
+@media (max-width: 720px) {
+  .panel:nth-of-type(4),
+  .panel:nth-of-type(5) {
+    display: none;
+  }
 
-.panel.active h3{
-    opacity: 1;
-    transition: opacity 1s 0.8s;
-}
+  .panel h3 {
+    font-size: 16px;
+  }
 
-/* Ẩn bớt phần tử khi màn hình nhỏ */
-@media (max-width: 720px){
-    .panel:nth-of-type(4),
-    .panel:nth-of-type(5){
-        display: none;
-    }
+  .panel {
+    height: 50vh;
+  }
 }
 </style>

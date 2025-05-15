@@ -20,7 +20,6 @@
                 id="eventName"
                 v-model="newEvent.eventName"
                 placeholder="Nhập tên sự kiện"
-                required
               />
             </div>
 
@@ -30,7 +29,6 @@
                 id="eventStartDate"
                 v-model="newEvent.eventStartDate"
                 type="date"
-                required
               />
             </div>
 
@@ -40,7 +38,6 @@
                 id="eventEndDate"
                 v-model="newEvent.eventEndDate"
                 type="date"
-                required
               />
             </div>
 
@@ -50,7 +47,6 @@
                 id="eventLocation"
                 v-model="newEvent.eventLocation"
                 placeholder="Nhập địa điểm"
-                required
               />
             </div>
 
@@ -115,7 +111,6 @@
                 id="editEventName"
                 v-model="editEventData.eventName"
                 placeholder="Nhập tên sự kiện"
-                required
               />
             </div>
 
@@ -125,7 +120,6 @@
                 id="editEventStartDate"
                 v-model="editEventData.eventStartDate"
                 type="date"
-                required
               />
             </div>
 
@@ -135,7 +129,6 @@
                 id="editEventEndDate"
                 v-model="editEventData.eventEndDate"
                 type="date"
-                required
               />
             </div>
 
@@ -145,7 +138,6 @@
                 id="editEventLocation"
                 v-model="editEventData.eventLocation"
                 placeholder="Nhập địa điểm"
-                required
               />
             </div>
 
@@ -467,6 +459,7 @@ const handleEditImageUpload = (event) => {
   padding: 25px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   display: flex;
+  justify-content: center;
   gap: 25px;
   transition: all 0.3s ease;
   border: 1px solid #e8eaf6;
@@ -478,18 +471,20 @@ const handleEditImageUpload = (event) => {
 }
 
 .event-image {
-  width: 180px;
-  height: 180px;
+  width: 350px;
+  height: auto;
+  object-fit: contain; /* dùng contain để không bị che */
   border-radius: 12px;
-  object-fit: cover;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
+
 
 .event-content {
   flex: 1;
   display: flex;
   flex-direction: column;
   gap: 12px;
+  text-align: justify;
 }
 
 .event-content h3 {
