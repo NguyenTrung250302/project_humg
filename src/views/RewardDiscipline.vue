@@ -535,16 +535,6 @@ const retryLoading = () => {
   overflow: hidden;
 }
 
-.main-content::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 12px;
-  background: linear-gradient(90deg, #007bff, #28a745, #ffc107, #dc3545);
-}
-
 .section {
   width: 100%;
   margin-bottom: 2.5rem;

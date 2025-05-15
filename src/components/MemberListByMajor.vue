@@ -68,7 +68,8 @@
                 <th>Mã SV</th>
                 <th>Email</th>
                 <th>Lớp</th>
-                <th>Trạng thái</th>
+                <th>Giới tính</th>
+                <!-- <th>Trạng thái</th> -->
               </tr>
             </thead>
             <tbody>
@@ -81,11 +82,12 @@
                 <td>{{ member.maSV }}</td>
                 <td>{{ member.email }}</td>
                 <td>{{ member.class || 'Chưa cập nhật' }}</td>
-                <td>
+                <td>{{ member.gender || 'Chưa cập nhật' }}</td>
+                <!-- <td>
                   <span :class="['status-badge', member.isOutstandingMember ? 'outstanding' : 'normal']">
                     {{ member.isOutstandingMember ? 'Ưu tú' : 'Thường' }}
                   </span>
-                </td>
+                </td> -->
               </tr>
             </tbody>
           </table>
@@ -264,7 +266,7 @@ watch(searchQuery, () => {
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000;
+  z-index: 11000;
   backdrop-filter: blur(8px);
   animation: fadeIn 0.3s ease;
 }
@@ -278,8 +280,8 @@ watch(searchQuery, () => {
   background: white;
   border-radius: 16px;
   width: 90%;
-  max-width: 1000px;
-  max-height: 85vh;
+  max-width: 1400px;
+  max-height: 100vh;
   display: flex;
   flex-direction: column;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
