@@ -144,7 +144,7 @@ const logout = () => {
   userStore.logout();
   window.$dialog.success("Đăng xuất thành công!");
   setTimeout(() => {
-    router.push("/");
+    router.push("/Login");
   }, 1500);
 };
 </script>

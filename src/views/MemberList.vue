@@ -2,7 +2,6 @@
 import { onMounted, ref, watch } from "vue";
 import { useManagerStore } from "../store/managerStore";
 import { useUserStore } from "../store/userStore";
-import { useRewardDisciplineStore } from "../store/RewardDisciplineStore";
 import Header from "../components/Header.vue";
 import NavHeader from "../components/NavHeader.vue";
 import Footer from "../components/Footer.vue";
@@ -11,29 +10,10 @@ import Footer from "../components/Footer.vue";
 const userStore = useUserStore();
 const roleNamelogin = ref("");
 
-// update Reward and DisciplineStore
-const RewardDisciplineStore = useRewardDisciplineStore();
-
 // get list user member
 const store = useManagerStore();
 const memberList = ref([]);
 const searchQuery = ref("");
-
-const showDialog = ref(false);
-const dialogType = ref(""); // 'khen-thuong' hoặc 'ky-luat'
-const selectedMemberMSV = ref(null);
-const description = ref("");
-
-const openDialog = (type, id) => {
-  dialogType.value = type;
-  selectedMemberMSV.value = id;
-  showDialog.value = true;
-};
-
-const closeDialog = () => {
-  showDialog.value = false;
-  dialogType.value = "";
-};
 
 // Hàm định dạng ngày
 const formatDate = (dateString) => {
@@ -89,24 +69,6 @@ const goToPage = async (page) => {
   }
 };
 
-// Method to handle form submission
-const submitProposal = async () => {
-  if (dialogType.value === "khen-thuong") {
-    await RewardDisciplineStore.PostListReward(
-      description.value,
-      selectedMemberMSV.value
-    );
-    window.$dialog.success("✉ Gửi đề xuất khen thưởng thành công!");
-  } else if (dialogType.value === "ky-luat") {
-    await RewardDisciplineStore.PostListDiscipline(
-      description.value,
-      selectedMemberMSV.value
-    );
-    window.$dialog.success("✉ Gửi đề xuất kỷ luật thành công!");
-  }
-  closeDialog(); // Close the dialog after submission
-};
-
 // Khi component mount
 onMounted(async () => {
   await store.getMemberList(1);
@@ -147,7 +109,6 @@ onMounted(async () => {
             <th>Email</th>
             <th>Ưu tú</th>
             <th>Ngày sinh</th>
-            <th v-if="roleNamelogin === 'Bí thư đoàn viên'">Đề Xuất</th>
           </tr>
         </thead>
         <tbody>
@@ -179,44 +140,10 @@ onMounted(async () => {
                 ></i>
               </span>
             </td>
-
             <td>{{ formatDate(member.birthdate) }}</td>
-            <!-- form đề xuất khen thưởng - kỷ luật -->
-            <td v-if="roleNamelogin === 'Bí thư đoàn viên'">
-              <button
-                class="action-btn reward-btn"
-                @click="openDialog('khen-thuong', member.maSV)"
-                title="Khen thưởng"
-              >
-                <i class="fas fa-gift"></i>
-              </button>
-              \
-              <button
-                class="action-btn discipline-btn"
-                @click="openDialog('ky-luat', member.maSV)"
-                title="Kỷ luật"
-              >
-                <i class="fas fa-exclamation-triangle"></i>
-              </button>
-            </td>
           </tr>
         </tbody>
       </table>
-    </div>
-    <!-- Dialog hiển thị khi bấm khen thưởng hoặc kỷ luật -->
-    <div v-if="showDialog" class="dialog-overlay" @click.self="closeDialog">
-      <div class="dialog-box">
-        <h3>{{ dialogType === "khen-thuong" ? "Khen thưởng" : "Kỷ luật" }}</h3>
-        <textarea
-          v-model="description"
-          rows="4"
-          placeholder="Nhập mô tả..."
-        ></textarea>
-        <div class="dialog-buttons">
-          <button class="submit-btn" @click="submitProposal">Submit</button>
-          <button class="cancel-btn" @click="closeDialog">Cancel</button>
-        </div>
-      </div>
     </div>
 
     <div class="pagination">
@@ -324,14 +251,6 @@ th {
   font-size: 18px;
 }
 
-/* btn */
-.action-btn {
-  background: none;
-  border: none;
-  font-size: 18px;
-  cursor: pointer;
-}
-
 .pagination {
   margin: 20px 0;
   text-align: center;
@@ -369,90 +288,6 @@ th {
   font-weight: bold;
   color: #007bff;
   background-color: #e7f1ff;
-}
-
-.action-btn i {
-  font-size: 16px;
-}
-.reward-btn {
-  color: #28a745; /* xanh lá: khen thưởng */
-  transition: color 0.3s;
-}
-
-.reward-btn:hover {
-  color: #218838;
-}
-
-.discipline-btn {
-  color: #dc3545; /* đỏ: kỷ luật */
-  transition: color 0.3s;
-}
-
-.discipline-btn:hover {
-  color: #c82333;
-}
-
-/* dialog  */
-/* dialog  */
-.dialog-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.7); /* Tối hơn để rõ ràng */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 999;
-  pointer-events: none; /* Cho phép click vào overlay */
-}
-
-.dialog-box {
-  background: white;
-  padding: 20px;
-  border-radius: 12px;
-  width: 400px;
-  max-width: 90%;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-  pointer-events: auto; /* Cho phép click vào nội dung bên trong dialog */
-}
-
-.dialog-box h3 {
-  margin-top: 0;
-  color: #333;
-}
-
-.dialog-box textarea {
-  width: 100%;
-  margin: 10px 0;
-  padding: 10px;
-  font-size: 14px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-}
-
-.dialog-buttons {
-  text-align: right;
-}
-
-.dialog-buttons button {
-  padding: 8px 14px;
-  margin-left: 8px;
-  border: none;
-  border-radius: 5px;
-  font-size: 14px;
-  cursor: pointer;
-}
-
-.submit-btn {
-  background-color: #007bff;
-  color: white;
-}
-
-.cancel-btn {
-  background-color: #ccc;
-  color: #333;
 }
 
 .auth-error-box {

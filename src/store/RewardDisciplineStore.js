@@ -9,6 +9,7 @@ export const useRewardDisciplineStore = defineStore(
     const listReward = ref([]);
     const listDiscipline = ref([]);
     const listApprovalHistory = ref([]);
+    const listWaiting = ref([]);
     const error = ref(null);
     
     const rewardPagination = {
@@ -18,6 +19,12 @@ export const useRewardDisciplineStore = defineStore(
     };
     
     const disciplinePagination = {
+      totalItems: ref(0),
+      totalPages: ref(0),
+      currentPage: ref(1),
+    };
+    
+    const waitingPagination = {
       totalItems: ref(0),
       totalPages: ref(0),
       currentPage: ref(1),
@@ -44,7 +51,7 @@ export const useRewardDisciplineStore = defineStore(
 
       try {
         const response = await axios.get(
-          urlHost + `/api/Controller_RewardDiscipline/Get_List_Reward?pageSize=4&pageNumber=${pageNumber}`,
+          urlHost + `/api/Controller_RewardDiscipline/Get_List_Reward?pageSize=10&pageNumber=${pageNumber}`,
           { headers }
         );
 
@@ -71,7 +78,7 @@ export const useRewardDisciplineStore = defineStore(
 
       try {
         const response = await axios.get(
-          urlHost + `/api/Controller_RewardDiscipline/Get_List_Discipline?pageSize=4&pageNumber=${pageNumber}`,
+          urlHost + `/api/Controller_RewardDiscipline/Get_List_Discipline?pageSize=10&pageNumber=${pageNumber}`,
           { headers }
         );
 
@@ -85,9 +92,36 @@ export const useRewardDisciplineStore = defineStore(
         error.value = "❌ Lấy danh sách kỷ luật thất bại.";
       }
     };
+    
+    //Lấy danh sách đề xuất đang chờ phê duyệt
+    const GetListWaiting = async (pageNumber = 1, pageSize = 10) => {
+      const headers = getAuthHeaders();
+
+      if (!headers) {
+        error.value = "🔒 Bạn cần đăng nhập để xem danh sách đề xuất đang chờ.";
+        listWaiting.value = [];
+        return;
+      }
+
+      try {
+        const response = await axios.get(
+          urlHost + `/api/Controller_RewardDiscipline/Get_List_Waiting?pageSize=${pageSize}&pageNumber=${pageNumber}`,
+          { headers }
+        );
+
+        listWaiting.value = response.data.items;
+        waitingPagination.totalItems.value = response.data.totalItems;
+        waitingPagination.totalPages.value = response.data.totalPages;
+        waitingPagination.currentPage.value = response.data.currentPage;
+        console.log("✅ Lấy danh sách đề xuất đang chờ thành công:", response.data);
+      } catch (err) {
+        console.error("❌ Lỗi khi lấy danh sách đề xuất đang chờ:", err);
+        error.value = "❌ Lấy danh sách đề xuất đang chờ thất bại.";
+      }
+    };
 
     //Gửi đề xuất Khen thưởng
-    const PostListReward = async (description, recipientMaSV) => {
+    const PostListReward = async (description, recipientMaSV, classValue, excelFile) => {
       const headers = getAuthHeaders();
 
       if (!headers) {
@@ -95,27 +129,46 @@ export const useRewardDisciplineStore = defineStore(
         return;
       }
 
+      // Validate file is Excel
+      if (excelFile) {
+        if (!isExcelFile(excelFile)) {
+          error.value = "❌ Chỉ chấp nhận file Excel (.xlsx, .xls)";
+          return;
+        }
+      } else {
+        error.value = "❌ Vui lòng chọn file Excel";
+        return;
+      }
+
       try {
         const formData = new FormData();
         formData.append("Description", description);
-        formData.append("RecipientMaSV", recipientMaSV);
+        formData.append("RecipientMaSV", recipientMaSV || "");
+        formData.append("Class", classValue);
+        formData.append("Url", excelFile);
 
         const response = await axios.post(
           urlHost + "/api/Controller_RewardDiscipline/Propose_Reward",
           formData,
-          { headers }
+          { 
+            headers: {
+              ...headers,
+              'Content-Type': 'multipart/form-data',
+            }
+          }
         );
 
-        // alert("✅ Gửi đề xuất thành công!");
+        console.log("✅ Gửi đề xuất khen thưởng thành công:", response.data);
         return response.data;
       } catch (err) {
-        alert("❌ Lỗi khi gửi đề xuất:", err);
+        console.error("❌ Lỗi khi gửi đề xuất:", err);
         error.value = "❌ Gửi đề xuất thất bại.";
+        throw err;
       }
     };
 
     //Gửi đề xuất kỷ luật
-    const PostListDiscipline = async (description, recipientMaSV) => {
+    const PostListDiscipline = async (description, recipientMaSV, classValue, excelFile) => {
       const headers = getAuthHeaders();
 
       if (!headers) {
@@ -123,22 +176,41 @@ export const useRewardDisciplineStore = defineStore(
         return;
       }
 
+      // Validate file is Excel
+      if (excelFile) {
+        if (!isExcelFile(excelFile)) {
+          error.value = "❌ Chỉ chấp nhận file Excel (.xlsx, .xls)";
+          return;
+        }
+      } else {
+        error.value = "❌ Vui lòng chọn file Excel";
+        return;
+      }
+
       try {
         const formData = new FormData();
         formData.append("Description", description);
-        formData.append("RecipientMaSV", recipientMaSV);
+        formData.append("RecipientMaSV", recipientMaSV || "");
+        formData.append("Class", classValue);
+        formData.append("Url", excelFile);
 
         const response = await axios.post(
           urlHost + "/api/Controller_RewardDiscipline/Propose_Discipline",
           formData,
-          { headers }
+          { 
+            headers: {
+              ...headers,
+              'Content-Type': 'multipart/form-data',
+            }
+          }
         );
 
-        // alert("✅ Gửi đề xuất kỷ luật thành công!");
+        console.log("✅ Gửi đề xuất kỷ luật thành công:", response.data);
         return response.data;
       } catch (err) {
-        alert("❌ Lỗi khi gửi đề xuất kỷ luật:", err);
+        console.error("❌ Lỗi khi gửi đề xuất kỷ luật:", err);
         error.value = "❌ Gửi đề xuất kỷ luật thất bại.";
+        throw err;
       }
     };
 
@@ -166,6 +238,11 @@ export const useRewardDisciplineStore = defineStore(
       }
     };
 
+    // Lấy urlDecodeFile từ khen thưởng hoặc kỷ luật
+    const getUrlDecodeFile = (item) => {
+      return item.urlDecodeFile || "";
+    };
+
     // Chuyển trang
     const goToPageReward = (page) => {
       if (page >= 1 && page <= rewardPagination.totalPages.value) {
@@ -178,21 +255,47 @@ export const useRewardDisciplineStore = defineStore(
         GetListDiscipline(page);
       }
     };
+    
+    const goToPageWaiting = (page) => {
+      if (page >= 1 && page <= waitingPagination.totalPages.value) {
+        GetListWaiting(page);
+      }
+    };
+    
+    // Helper function to validate Excel files
+    const isExcelFile = (file) => {
+      if (!file) return false;
+      
+      // Check by file type
+      if (file.type === 'application/vnd.ms-excel' || 
+          file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') {
+        return true;
+      }
+      
+      // Check by file extension
+      const fileName = file.name || '';
+      return fileName.endsWith('.xlsx') || fileName.endsWith('.xls');
+    };
 
     return {
       GetListReward,
       GetListDiscipline,
+      GetListWaiting,
       PostListReward,
       PostListDiscipline,
       GetApprovalHistory,
+      getUrlDecodeFile,
       listReward,
       listDiscipline,
+      listWaiting,
       listApprovalHistory,
       error,
       rewardPagination,
       disciplinePagination,
+      waitingPagination,
       goToPageReward,
       goToPageDiscipline,
+      goToPageWaiting,
     };
   }
 );

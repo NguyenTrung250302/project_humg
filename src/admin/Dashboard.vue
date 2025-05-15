@@ -21,9 +21,9 @@ const toggleSidebar = () => {
     <RouterLink to="/EventManager" v-if="isSidebarOpen" class="sidebar-link">
       <i class="bx bx-user"></i> Quản lí sự kiện
     </RouterLink>
-    <RouterLink to="/EliteMember" v-if="isSidebarOpen" class="sidebar-link">
+    <RouterLink to="/ConfirmRewardDisciplineStore" v-if="isSidebarOpen" class="sidebar-link">
       <i class="bx bx-book"></i>
-      Đoàn viên ưu tú
+      Khen thưởng và kỷ luật
     </RouterLink>
     <!-- <RouterLink to="/Approve" v-if="isSidebarOpen" class="sidebar-link">
       <i class="bx bx-book"></i>

@@ -1,0 +1,820 @@
+<template>
+  <div class="container-dashboard">
+    <Dashboard></Dashboard>
+    <div class="main">
+      <h1>Phê duyệt đề xuất khen thưởng và kỷ luật</h1>
+      
+      <div class="proposal-list-container">
+        <!-- Thông báo lỗi nếu có -->
+        <div v-if="rewardDisciplineStore.error" class="error-message">
+          {{ rewardDisciplineStore.error }}
+        </div>
+        
+        <!-- Thông báo trống -->
+        <div v-else-if="rewardDisciplineStore.listWaiting.length === 0" class="empty-message">
+          Không có đề xuất nào đang chờ phê duyệt.
+        </div>
+        
+        <!-- Danh sách đề xuất -->
+        <div v-else class="proposal-list">
+          <div v-for="item in rewardDisciplineStore.listWaiting" :key="item.id" class="proposal-card" :class="{ 'reward': item.rewardOrDiscipline, 'discipline': !item.rewardOrDiscipline }">
+            <div class="proposal-header">
+              <h3>{{ item.rewardOrDiscipline ? 'Khen thưởng' : 'Kỷ luật' }}</h3>
+              <span class="proposal-date">{{ formatDate(item.createDate) }}</span>
+            </div>
+            
+            <div class="proposal-body">
+              <div class="proposal-info">
+                <p><strong>Người đề xuất:</strong> {{ item.proposerName }} ({{ item.proposerMaSV }})</p>
+                <p><strong>Lớp:</strong> {{ item.class }}</p>
+                <p><strong>Mô tả:</strong> {{ item.description }}</p>
+              </div>
+              
+              <div class="proposal-file">
+                <a href="#" class="view-document" @click.prevent="showDocumentModal(item.urlDecodeFile)">
+                  <i class="fas fa-file-excel"></i> Xem tài liệu Excel
+                </a>
+              </div>
+            </div>
+            
+            <div class="proposal-actions">
+              <button class="btn-approve" @click="confirmProposal(item.id, true)">
+                <i class="fas fa-check"></i> Phê duyệt
+              </button>
+              <button class="btn-reject" @click="showRejectModal(item.id)">
+                <i class="fas fa-times"></i> Từ chối & Xóa
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Phân trang -->
+        <div class="pagination" v-if="rewardDisciplineStore.waitingPagination.totalPages.value > 1">
+          <button 
+            :disabled="rewardDisciplineStore.waitingPagination.currentPage.value === 1"
+            @click="rewardDisciplineStore.goToPageWaiting(rewardDisciplineStore.waitingPagination.currentPage.value - 1)"
+          >
+            &laquo; Trước
+          </button>
+          
+          <span 
+            v-for="pageNum in rewardDisciplineStore.waitingPagination.totalPages.value" 
+            :key="pageNum"
+            :class="{ active: pageNum === rewardDisciplineStore.waitingPagination.currentPage.value }"
+            @click="rewardDisciplineStore.goToPageWaiting(pageNum)"
+          >
+            {{ pageNum }}
+          </span>
+          
+          <button 
+            :disabled="rewardDisciplineStore.waitingPagination.currentPage.value === rewardDisciplineStore.waitingPagination.totalPages.value"
+            @click="rewardDisciplineStore.goToPageWaiting(rewardDisciplineStore.waitingPagination.currentPage.value + 1)"
+          >
+            Sau &raquo;
+          </button>
+        </div>
+      </div>
+      
+      <!-- Modal từ chối -->
+      <div v-if="showRejectForm" class="modal-overlay">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h2>Từ chối và xóa đề xuất</h2>
+            <button class="close-button" @click="showRejectForm = false">&times;</button>
+          </div>
+          
+          <div class="form-group">
+            <label for="rejectReason">Lý do từ chối <span class="required">*</span></label>
+            <textarea 
+              id="rejectReason" 
+              v-model="rejectReason" 
+              rows="4" 
+              placeholder="Nhập lý do từ chối..."
+              required
+            ></textarea>
+          </div>
+          
+          <div class="form-actions">
+            <button class="cancel-button" @click="showRejectForm = false">Hủy</button>
+            <button class="submit-button" @click="confirmProposal(selectedProposalId, false)">Xác nhận từ chối và xóa</button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Modal xem tài liệu -->
+      <div v-if="showDocumentPreview" class="modal-overlay">
+        <div class="modal-content document-modal">
+          <div class="modal-header">
+            <h2>Xem tài liệu</h2>
+            <button class="close-button" @click="showDocumentPreview = false">&times;</button>
+          </div>
+          
+          <div class="document-preview-container">
+            <iframe 
+              :src="`https://docs.google.com/gview?url=${encodeURIComponent(previewUrl)}&embedded=true`"
+              frameborder="0"
+            ></iframe>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { ref, onMounted } from "vue";
+import Dashboard from "./Dashboard.vue";
+import "../assets/css/Dashboard.css";
+import { useRewardDisciplineStore } from "../store/RewardDisciplineStore";
+import { urlHost } from '../UrlApiHostStore/ApiHostStore';
+
+const rewardDisciplineStore = useRewardDisciplineStore();
+
+// Biến cho modal từ chối
+const showRejectForm = ref(false);
+const rejectReason = ref('');
+const selectedProposalId = ref(null);
+
+// Biến cho modal xem tài liệu
+const showDocumentPreview = ref(false);
+const previewUrl = ref('');
+
+// Format date
+const formatDate = (dateString) => {
+  const date = new Date(dateString);
+  return date.toLocaleDateString('vi-VN', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+};
+
+// Hiện modal từ chối
+const showRejectModal = (proposalId) => {
+  selectedProposalId.value = proposalId;
+  rejectReason.value = '';
+  showRejectForm.value = true;
+};
+
+// Hiện modal xem tài liệu
+const showDocumentModal = (url) => {
+  previewUrl.value = url;
+  showDocumentPreview.value = true;
+};
+
+// Xác nhận hoặc từ chối đề xuất
+const confirmProposal = async (proposalId, isApproved) => {
+  try {
+    const headers = {
+      'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
+      'accept': '*/*'
+    };
+
+    let response;
+    if (isApproved) {
+      // Gọi API chấp nhận đề xuất
+      const formData = new FormData();
+      formData.append('proposeId', proposalId);
+
+      response = await fetch(`${urlHost}/api/Controller_RewardDiscipline/Accept_Propose`, {
+        method: 'PUT',
+        headers,
+        body: formData
+      });
+    } else {
+      // Gọi API xóa đề xuất (từ chối)
+      if (!rejectReason.value.trim()) {
+        alert('Vui lòng nhập lý do từ chối.');
+        return;
+      }
+      
+      // Xác nhận trước khi xóa
+      if (!confirm('Bạn có chắc chắn muốn từ chối và xóa đề xuất này? Hành động này không thể hoàn tác.')) {
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('proposeId', proposalId);
+
+      response = await fetch(`${urlHost}/api/Controller_RewardDiscipline/Delete_Reward_Discipline`, {
+        method: 'DELETE',
+        headers,
+        body: formData
+      });
+    }
+
+    if (response.ok) {
+      // Reload danh sách sau khi xử lý thành công
+      await rewardDisciplineStore.GetListWaiting();
+      
+      // Đóng modal nếu đang mở
+      showRejectForm.value = false;
+      
+      // Reset form
+      rejectReason.value = '';
+      selectedProposalId.value = null;
+      
+      alert(isApproved ? 'Đã phê duyệt đề xuất thành công!' : 'Đã từ chối và xóa đề xuất thành công!');
+    } else {
+      const errorData = await response.json();
+      alert(`Có lỗi xảy ra: ${errorData.message || errorData.title || 'Vui lòng thử lại sau'}`);
+    }
+  } catch (error) {
+    console.error('Lỗi khi xử lý đề xuất:', error);
+    alert('Có lỗi xảy ra. Vui lòng thử lại sau!');
+  }
+};
+
+// Load dữ liệu khi component được tạo
+onMounted(async () => {
+  await rewardDisciplineStore.GetListWaiting();
+});
+</script>
+
+<style scoped>
+.main {
+  padding: 2rem;
+  width: 100%;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  min-height: calc(100vh - 60px);
+  position: relative;
+}
+
+.main::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 8px;
+  background: linear-gradient(90deg, #007bff, #28a745, #ffc107, #dc3545);
+  z-index: 1;
+}
+
+h1 {
+  font-size: 2rem;
+  color: #212529;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.75rem;
+  position: relative;
+  font-weight: 700;
+}
+
+h1::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  width: 100px;
+  background: linear-gradient(90deg, #007bff, #0062cc);
+  border-radius: 3px;
+}
+
+.proposal-list-container {
+  width: 100%;
+  background-color: #fff;
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  padding: 2rem;
+  margin-bottom: 2rem;
+  overflow: hidden;
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.error-message, .empty-message {
+  text-align: center;
+  padding: 2rem;
+  font-size: 1.1rem;
+  border-radius: 12px;
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+.error-message {
+  color: #721c24;
+  background: linear-gradient(135deg, rgba(248, 215, 218, 0.9) 0%, rgba(255, 230, 230, 0.9) 100%);
+  border-left: 4px solid #dc3545;
+  box-shadow: 0 5px 15px rgba(220, 53, 69, 0.1);
+}
+
+.empty-message {
+  color: #6c757d;
+  background-color: #f8f9fa;
+  box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.05);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.empty-message::before {
+  content: '📋';
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.proposal-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
+  gap: 1.5rem;
+  perspective: 1000px;
+}
+
+.proposal-card {
+  background-color: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  position: relative;
+  transform-style: preserve-3d;
+  border: none;
+}
+
+.proposal-card:hover {
+  transform: translateY(-10px) rotateX(3deg);
+  box-shadow: 0 20px 25px rgba(0, 0, 0, 0.15);
+}
+
+.proposal-card.reward {
+  border-top: 4px solid #28a745;
+}
+
+.proposal-card.discipline {
+  border-top: 4px solid #dc3545;
+}
+
+.proposal-header {
+  padding: 1.25rem;
+  background: linear-gradient(to right, #f8f9fa, #fff);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #f1f3f5;
+}
+
+.proposal-header h3 {
+  margin: 0;
+  color: #212529;
+  font-size: 1.2rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+}
+
+.proposal-card.reward .proposal-header h3::before {
+  content: '';
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  background-color: #28a745;
+  border-radius: 50%;
+  margin-right: 8px;
+}
+
+.proposal-card.discipline .proposal-header h3::before {
+  content: '';
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  background-color: #dc3545;
+  border-radius: 50%;
+  margin-right: 8px;
+}
+
+.proposal-date {
+  font-size: 0.9rem;
+  color: #6c757d;
+  background-color: #f8f9fa;
+  padding: 0.3rem 0.75rem;
+  border-radius: 20px;
+  display: inline-block;
+}
+
+.proposal-body {
+  padding: 1.5rem;
+}
+
+.proposal-info p {
+  margin: 0.75rem 0;
+  line-height: 1.6;
+  color: #495057;
+}
+
+.proposal-info p strong {
+  color: #212529;
+  font-weight: 600;
+}
+
+.proposal-file {
+  margin-top: 1.25rem;
+}
+
+.view-document {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.6rem 1.2rem;
+  background: linear-gradient(90deg, #007bff, #0056b3);
+  color: white;
+  text-decoration: none;
+  border-radius: 30px;
+  transition: all 0.3s ease;
+  font-weight: 500;
+  gap: 8px;
+  box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3);
+}
+
+.view-document:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 15px rgba(0, 123, 255, 0.4);
+}
+
+.proposal-actions {
+  display: flex;
+  padding: 1.25rem;
+  gap: 1rem;
+  border-top: 1px solid #f1f3f5;
+}
+
+.btn-approve, .btn-reject {
+  padding: 0.7rem 1.2rem;
+  border: none;
+  border-radius: 30px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex: 1;
+}
+
+.btn-approve {
+  background: linear-gradient(90deg, #28a745, #20c997);
+  color: white;
+  box-shadow: 0 4px 10px rgba(40, 167, 69, 0.25);
+}
+
+.btn-approve:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 15px rgba(40, 167, 69, 0.35);
+}
+
+.btn-reject {
+  background: linear-gradient(90deg, #dc3545, #c82333);
+  color: white;
+  box-shadow: 0 4px 10px rgba(220, 53, 69, 0.25);
+}
+
+.btn-reject:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 15px rgba(220, 53, 69, 0.35);
+}
+
+.pagination {
+  margin-top: 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.pagination button {
+  padding: 0.7rem 1.2rem;
+  border: none;
+  border-radius: 30px;
+  background: linear-gradient(90deg, #007bff, #0062cc);
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 500;
+  box-shadow: 0 4px 10px rgba(0, 123, 255, 0.25);
+  display: flex;
+  align-items: center;
+}
+
+.pagination button:disabled {
+  background: #e9ecef;
+  color: #adb5bd;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.pagination button:not(:disabled):hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 15px rgba(0, 123, 255, 0.35);
+}
+
+.pagination span {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border-radius: 50%;
+  background: #f8f9fa;
+  transition: all 0.3s ease;
+  font-weight: 500;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.pagination span:hover {
+  background: #e9ecef;
+  transform: scale(1.1);
+}
+
+.pagination .active {
+  font-weight: 700;
+  color: #fff;
+  background: linear-gradient(135deg, #007bff, #0056b3);
+  box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
+  transform: scale(1.1);
+}
+
+/* Document Preview Modal */
+.document-preview-container {
+  width: 100%;
+  height: calc(100% - 70px); /* Account for modal header */
+  border: none;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-top: 1rem;
+  position: relative;
+  background-color: #f8f9fa;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+}
+
+.document-preview-container iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  background-color: white;
+}
+
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.65);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(5px);
+  animation: fadeIn 0.3s ease;
+}
+
+.modal-content {
+  background-color: white;
+  border-radius: 16px;
+  width: 90%;
+  max-width: 550px;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 2rem;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
+  animation: slideUp 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+  background-image: 
+    radial-gradient(circle at top right, rgba(0, 123, 255, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at bottom left, rgba(40, 167, 69, 0.05) 0%, transparent 50%);
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(50px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.modal-content.document-modal {
+  max-width: 85%;
+  height: 85vh;
+  padding: 1.5rem;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #f1f3f5;
+  position: relative;
+}
+
+.modal-header::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 50px;
+  height: 2px;
+  background: linear-gradient(90deg, #007bff, #28a745);
+}
+
+.modal-header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: #212529;
+  font-weight: 700;
+  position: relative;
+  padding-left: 15px;
+}
+
+.modal-header h2::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 70%;
+  width: 3px;
+  background: linear-gradient(to bottom, #007bff, #28a745);
+  border-radius: 3px;
+}
+
+.close-button {
+  background: white;
+  border: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #495057;
+  font-size: 1.5rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.close-button:hover {
+  background-color: #f8f9fa;
+  color: #dc3545;
+  transform: rotate(90deg);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+  position: relative;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.75rem;
+  font-weight: 600;
+  color: #495057;
+  position: relative;
+  padding-left: 15px;
+}
+
+.form-group label::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 6px;
+  height: 6px;
+  background-color: #dc3545;
+  border-radius: 50%;
+}
+
+.required {
+  color: #dc3545;
+  margin-left: 3px;
+}
+
+textarea {
+  width: 100%;
+  padding: 1rem;
+  border: 2px solid #dee2e6;
+  border-radius: 10px;
+  font-size: 1rem;
+  resize: vertical;
+  transition: all 0.3s ease;
+  background-color: #f9fafb;
+  min-height: 120px;
+}
+
+textarea:focus {
+  border-color: #dc3545;
+  box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.15);
+  outline: none;
+  background-color: #fff;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.cancel-button {
+  padding: 0.8rem 1.5rem;
+  background-color: #f1f3f5;
+  border: none;
+  border-radius: 30px;
+  cursor: pointer;
+  color: #495057;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.cancel-button:hover {
+  background-color: #e9ecef;
+  transform: translateY(-2px);
+}
+
+.submit-button {
+  padding: 0.8rem 1.5rem;
+  background: linear-gradient(90deg, #dc3545, #c82333);
+  color: white;
+  border: none;
+  border-radius: 30px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 10px rgba(220, 53, 69, 0.25);
+}
+
+.submit-button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 15px rgba(220, 53, 69, 0.35);
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .main {
+    padding: 1.5rem;
+  }
+
+  .proposal-list {
+    grid-template-columns: 1fr;
+  }
+
+  .proposal-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .proposal-date {
+    align-self: flex-start;
+  }
+
+  .proposal-actions {
+    flex-direction: column;
+  }
+
+  .modal-content {
+    padding: 1.5rem;
+    width: 95%;
+  }
+
+  .modal-content.document-modal {
+    height: 80vh;
+  }
+
+  .pagination button {
+    padding: 0.6rem 1rem;
+  }
+
+  .form-actions {
+    flex-direction: column-reverse;
+  }
+
+  .submit-button, .cancel-button {
+    width: 100%;
+  }
+}
+
+/* Tablet responsive styles */
+@media (min-width: 769px) and (max-width: 1200px) {
+  .proposal-list {
+    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+  }
+}
+</style>

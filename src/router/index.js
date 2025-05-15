@@ -15,7 +15,7 @@ import AdminProfile from "../admin/AdminProfile.vue";
 import RewardDiscipline from "../views/RewardDiscipline.vue";
 import ApprovalHistory from "../views/ApprovalHistory.vue";
 import Approve from "../admin/Approve.vue";
-import EliteMember from "../admin/EliteMember.vue";
+import ConfirmRewardDisciplineStore from "../admin/ConfirmRewardDisciplineStore.vue";
 import PromulgateDocuments from "../admin/PromulgateDocuments.vue";
 import ListMajor from "../views/ListMajor.vue";
 
@@ -116,9 +116,9 @@ const routes = [
     component: Approve,
   },
   {
-    path: "/EliteMember",
-    name: "EliteMember",
-    component: EliteMember,
+    path: "/ConfirmRewardDisciplineStore",
+    name: "ConfirmRewardDisciplineStore",
+    component: ConfirmRewardDisciplineStore,
   },
   {
     path: "/Documents",
@@ -152,7 +152,7 @@ router.beforeEach(async (to, from, next) => {
     "/EventManager",
     "/AdminProfile",
     "/Approve",
-    "/EliteMember",
+    "/ConfirmRewardDisciplineStore",
     "/Documents"
   ];
   const isAdminRoute = adminRoutes.includes(to.path);
