@@ -386,17 +386,6 @@ const retryLoading = () => {
           ></textarea>
         </div>
         
-        <!-- <div class="form-group">
-          <label for="recipientMaSV">Mã sinh viên <span class="required">*</span></label>
-          <input 
-            type="text" 
-            id="recipientMaSV" 
-            v-model="recipientMaSV" 
-            placeholder="Nhập mã sinh viên..."
-            required
-          />
-        </div> -->
-        
         <div class="form-group">
           <label for="classValue">Lớp <span class="required">*</span></label>
           <input 
