@@ -108,12 +108,46 @@
             <h2>Xem tài liệu</h2>
             <button class="close-button" @click="showDocumentPreview = false">&times;</button>
           </div>
-          
           <div class="document-preview-container">
+            <div v-if="isDocLoading" class="doc-loading">
+              <div class="spinner"></div>
+              <p>Đang tải tài liệu...</p>
+            </div>
             <iframe 
-              :src="`https://docs.google.com/gview?url=${encodeURIComponent(previewUrl)}&embedded=true`"
+              :src="previewUrl"
               frameborder="0"
+              @load="handleIframeLoaded"
+              @error="handleIframeError"
+              sandbox="allow-scripts allow-same-origin allow-popups allow-forms allow-downloads"
+              referrerpolicy="no-referrer"
+              style="width:100%; height:calc(100% - 60px); margin-bottom: 60px; background-color: white;"
+              allow="fullscreen clipboard-read clipboard-write"
+              importance="high"
             ></iframe>
+            
+            <div v-if="isViewerFailed" class="fallback-content">
+              {{ fallbackContent }}
+              <p class="browser-tip">
+                <i class="fas fa-lightbulb"></i> Gợi ý: Hãy sử dụng nút "Mở trong Office Online" bên dưới để xem tài liệu trực tiếp từ Microsoft Office Online.
+              </p>
+            </div>
+            
+            <div class="preview-actions">
+              <button @click="retryLoading" class="preview-action-btn toggle-btn">
+                <i class="fas fa-sync-alt"></i> Tải lại
+              </button>
+              
+              <a v-if="previewUrl.includes('view.officeapps.live.com')" 
+                 :href="'https://view.officeapps.live.com/op/view.aspx?src=' + encodeURIComponent(originalUrl)" 
+                 target="_blank" 
+                 class="preview-action-btn office-btn">
+                <i class="fas fa-file-excel"></i> Mở trong Office Online
+              </a>
+              
+              <a :href="originalUrl" download class="preview-action-btn download-btn">
+                <i class="fas fa-download"></i> Tải xuống
+              </a>
+            </div>
           </div>
         </div>
       </div>
@@ -138,6 +172,10 @@ const selectedProposalId = ref(null);
 // Biến cho modal xem tài liệu
 const showDocumentPreview = ref(false);
 const previewUrl = ref('');
+const isDocLoading = ref(true);
+const isViewerFailed = ref(false);
+const fallbackContent = ref('');
+const originalUrl = ref('');
 
 // Format date
 const formatDate = (dateString) => {
@@ -160,7 +198,41 @@ const showRejectModal = (proposalId) => {
 
 // Hiện modal xem tài liệu
 const showDocumentModal = (url) => {
+  if (!url) {
+    alert('Không tìm thấy tài liệu để xem!');
+    return;
+  }
+  
+  // Kiểm tra và đảm bảo url là URL hợp lệ
+  try {
+    new URL(url);
+  } catch (e) {
+    console.error('URL không hợp lệ:', url);
+    alert('URL tài liệu không hợp lệ!');
+    return;
+  }
+  
   previewUrl.value = url;
+  
+  // Nếu là URL Office Online Viewer, lấy URL gốc cho nút tải xuống
+  if (url.includes('view.officeapps.live.com') && url.includes('src=')) {
+    try {
+      const srcParam = new URL(url).searchParams.get('src');
+      if (srcParam) {
+        originalUrl.value = decodeURIComponent(srcParam);
+      } else {
+        originalUrl.value = url;
+      }
+    } catch (e) {
+      originalUrl.value = url;
+    }
+  } else {
+    originalUrl.value = url;
+  }
+  
+  isDocLoading.value = true;
+  isViewerFailed.value = false;
+  fallbackContent.value = '';
   showDocumentPreview.value = true;
 };
 
@@ -231,6 +303,38 @@ const confirmProposal = async (proposalId, isApproved) => {
 onMounted(async () => {
   await rewardDisciplineStore.GetListWaiting();
 });
+
+// Handle iframe loaded event
+const handleIframeLoaded = () => {
+  isDocLoading.value = false;
+};
+
+// Handle iframe load error
+const handleIframeError = () => {
+  isDocLoading.value = false;
+  isViewerFailed.value = true;
+  console.error('Không thể tải tài liệu trong iframe:', previewUrl.value);
+  
+  if (previewUrl.value.includes('view.officeapps.live.com')) {
+    fallbackContent.value = 'Microsoft Office Viewer không thể hiển thị tài liệu trong khung này. Vui lòng sử dụng các tùy chọn bên dưới.';
+  } else {
+    fallbackContent.value = 'Không thể hiển thị tài liệu. Vui lòng sử dụng các tùy chọn xem khác bên dưới.';
+  }
+};
+
+// Retry loading if viewer fails
+const retryLoading = () => {
+  isDocLoading.value = true;
+  isViewerFailed.value = false;
+  
+  // Force reload iframe
+  const currentUrl = previewUrl.value;
+  previewUrl.value = '';
+  
+  setTimeout(() => {
+    previewUrl.value = currentUrl;
+  }, 500);
+};
 </script>
 
 <style scoped>
@@ -389,7 +493,7 @@ onMounted(async () => {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 0.6rem 1.2rem;
+  padding: 0.7rem 1.2rem;
   background: linear-gradient(90deg, #007bff, #0056b3);
   color: white;
   text-decoration: none;
@@ -398,11 +502,35 @@ onMounted(async () => {
   font-weight: 500;
   gap: 8px;
   box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3);
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.view-document::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, #0056b3, #007bff);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: -1;
 }
 
 .view-document:hover {
   transform: translateY(-3px);
   box-shadow: 0 6px 15px rgba(0, 123, 255, 0.4);
+}
+
+.view-document:hover::before {
+  opacity: 1;
+}
+
+.view-document i {
+  font-size: 1.1rem;
 }
 
 .proposal-actions {
@@ -510,7 +638,14 @@ onMounted(async () => {
   transform: scale(1.1);
 }
 
-/* Document Preview Modal */
+/* Document Preview Modal Styles */
+.document-modal {
+  max-width: 90%;
+  height: 90vh;
+  padding: 1.5rem;
+  background: #fff;
+}
+
 .document-preview-container {
   width: 100%;
   height: calc(100% - 70px); /* Account for modal header */
@@ -528,6 +663,136 @@ onMounted(async () => {
   height: 100%;
   border: none;
   background-color: white;
+  border-radius: 8px;
+}
+
+.doc-loading {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(255, 255, 255, 0.9);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  border-radius: 12px;
+}
+
+.spinner {
+  width: 60px;
+  height: 60px;
+  border: 4px solid rgba(0, 123, 255, 0.1);
+  border-top-color: #007bff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  box-shadow: 0 0 15px rgba(0, 123, 255, 0.1);
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.doc-loading p {
+  margin-top: 1rem;
+  color: #212529;
+  font-weight: 500;
+  font-size: 1.1rem;
+}
+
+.preview-actions {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 1.25rem;
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.08);
+  backdrop-filter: blur(5px);
+  border-radius: 0 0 12px 12px;
+  z-index: 5;
+}
+
+.preview-action-btn {
+  padding: 0.75rem 1.25rem;
+  background: linear-gradient(90deg, #007bff, #0062cc);
+  color: white;
+  text-decoration: none;
+  border-radius: 30px;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.95rem;
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+  box-shadow: 0 4px 10px rgba(0, 123, 255, 0.25);
+  min-width: 140px;
+  justify-content: center;
+}
+
+.preview-action-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 15px rgba(0, 123, 255, 0.35);
+}
+
+.download-btn {
+  background: linear-gradient(90deg, #28a745, #20c997);
+  box-shadow: 0 4px 10px rgba(40, 167, 69, 0.25);
+}
+
+.download-btn:hover {
+  box-shadow: 0 6px 15px rgba(40, 167, 69, 0.35);
+}
+
+.toggle-btn {
+  background: linear-gradient(90deg, #6c757d, #5a6268);
+  box-shadow: 0 4px 10px rgba(108, 117, 125, 0.25);
+}
+
+.toggle-btn:hover {
+  box-shadow: 0 6px 15px rgba(108, 117, 125, 0.35);
+}
+
+.office-btn {
+  background: linear-gradient(90deg, #0078d4, #106ebe);
+  box-shadow: 0 4px 10px rgba(0, 120, 212, 0.25);
+}
+
+.office-btn:hover {
+  box-shadow: 0 6px 15px rgba(0, 120, 212, 0.35);
+}
+
+.fallback-content {
+  text-align: center;
+  padding: 2rem;
+  background: linear-gradient(135deg, rgba(255, 243, 205, 0.9) 0%, rgba(255, 248, 225, 0.9) 100%);
+  border-radius: 12px;
+  color: #856404;
+  font-weight: 600;
+  margin: 2rem;
+  border-left: 4px solid #ffc107;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+}
+
+.browser-tip {
+  margin-top: 1.5rem;
+  font-size: 0.95rem;
+  color: #0c5460;
+  background: linear-gradient(135deg, rgba(209, 236, 241, 0.9) 0%, rgba(226, 246, 249, 0.9) 100%);
+  border-radius: 10px;
+  padding: 1rem;
+  display: inline-block;
+  font-weight: 500;
+  border-left: 4px solid #17a2b8;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
 }
 
 /* Modal Styles */
@@ -567,9 +832,10 @@ onMounted(async () => {
 }
 
 .modal-content.document-modal {
-  max-width: 85%;
-  height: 85vh;
+  max-width: 90%;
+  height: 90vh;
   padding: 1.5rem;
+  background: #fff;
 }
 
 .modal-header {
@@ -756,7 +1022,9 @@ textarea:focus {
   }
 
   .modal-content.document-modal {
-    height: 80vh;
+    height: 85vh;
+    max-width: 95%;
+    padding: 1rem;
   }
 
   .pagination button {
@@ -768,6 +1036,16 @@ textarea:focus {
   }
 
   .submit-button, .cancel-button {
+    width: 100%;
+  }
+
+  .preview-actions {
+    flex-direction: column;
+    padding: 0.75rem;
+    gap: 0.75rem;
+  }
+  
+  .preview-action-btn {
     width: 100%;
   }
 }

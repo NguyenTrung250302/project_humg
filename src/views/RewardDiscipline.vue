@@ -26,7 +26,6 @@ const originalUrl = ref('');
 const isDocLoading = ref(true);
 const isViewerFailed = ref(false);
 const fallbackContent = ref('');
-const viewerType = ref('office'); // 'office' or 'google'
 const isEdgeBrowser = ref(false);
 
 // Check if user is Bí thư đoàn viên
@@ -144,43 +143,34 @@ const openProposalForm = (type) => {
 };
 
 // Open document preview modal
-const openDocumentPreview = (url) => {
-  // Store original direct URL
-  originalUrl.value = url;
+const openDocumentPreview = (viewUrl, downloadUrl) => {
+  console.log('Opening document preview:', { viewUrl, downloadUrl });
   
-  // Since we're now receiving the direct URL (not Google Docs URL),
-  // we just need to format it for the appropriate viewer
-  
-  // Check if it's an Excel file
-  if (url && (url.endsWith('.xlsx') || url.endsWith('.xls'))) {
-    viewerType.value = 'office';
-    previewUrl.value = `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(url)}`;
-  } else {
-    // Fallback to Google Docs viewer for other file types
-    viewerType.value = 'google';
-    previewUrl.value = `https://docs.google.com/gview?url=${encodeURIComponent(url)}&embedded=true`;
+  // Kiểm tra nếu không có URL
+  if (!viewUrl && !downloadUrl) {
+    alert('Không tìm thấy tài liệu để xem!');
+    return;
   }
+  
+  // Kiểm tra và đảm bảo viewUrl là URL hợp lệ
+  try {
+    new URL(viewUrl);
+  } catch (e) {
+    console.error('URL không hợp lệ:', viewUrl);
+    alert('URL tài liệu không hợp lệ!');
+    return;
+  }
+  
+  // Sử dụng urlDecodeFile trực tiếp cho iframe - đã là URL Microsoft viewer
+  previewUrl.value = viewUrl || '';
+  
+  // Sử dụng urlFile cho tải xuống và xem bên ngoài
+  originalUrl.value = downloadUrl || viewUrl || '';
   
   isDocLoading.value = true;
   isViewerFailed.value = false;
   fallbackContent.value = '';
   showDocumentPreview.value = true;
-};
-
-// Toggle between viewer types
-const toggleViewer = () => {
-  isDocLoading.value = true;
-  
-  // We already have the direct file URL in originalUrl
-  const url = originalUrl.value;
-  
-  if (viewerType.value === 'google') {
-    viewerType.value = 'office';
-    previewUrl.value = `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(url)}`;
-  } else {
-    viewerType.value = 'google';
-    previewUrl.value = `https://docs.google.com/gview?url=${encodeURIComponent(url)}&embedded=true`;
-  }
 };
 
 // Handle iframe loaded event
@@ -192,7 +182,27 @@ const handleIframeLoaded = () => {
 const handleIframeError = () => {
   isDocLoading.value = false;
   isViewerFailed.value = true;
-  fallbackContent.value = 'Không thể hiển thị tài liệu. Vui lòng mở trong tab mới hoặc tải xuống để xem.';
+  console.error('Không thể tải tài liệu trong iframe:', previewUrl.value);
+  
+  if (previewUrl.value.includes('view.officeapps.live.com')) {
+    fallbackContent.value = 'Microsoft Office Viewer không thể hiển thị tài liệu trong khung này. Vui lòng sử dụng các tùy chọn bên dưới.';
+  } else {
+    fallbackContent.value = 'Không thể hiển thị tài liệu. Vui lòng sử dụng các tùy chọn xem khác bên dưới.';
+  }
+};
+
+// Retry loading if viewer fails
+const retryLoading = () => {
+  isDocLoading.value = true;
+  isViewerFailed.value = false;
+  
+  // Force reload iframe
+  const currentUrl = previewUrl.value;
+  previewUrl.value = '';
+  
+  setTimeout(() => {
+    previewUrl.value = currentUrl;
+  }, 500);
 };
 
 </script>
@@ -252,11 +262,11 @@ const handleIframeError = () => {
           <p v-if="reward.rejectReason"><strong>Lý do từ chối:</strong> {{ reward.rejectReason }}</p>
           <p><strong>Lớp:</strong> {{ reward.class || 'Không có' }}</p>
           
-          <!-- Document preview button if urlFile exists -->
+          <!-- Document preview button if file exists -->
           <a 
-            v-if="reward.urlFile" 
+            v-if="reward.urlDecodeFile" 
             href="#"
-            @click.prevent="openDocumentPreview(reward.urlFile)"
+            @click.prevent="openDocumentPreview(reward.urlDecodeFile, reward.urlFile)"
             class="view-document"
           >
             <i class="fas fa-file-excel"></i> Xem tài liệu
@@ -318,11 +328,11 @@ const handleIframeError = () => {
           <p v-if="discipline.rejectReason"><strong>Lý do từ chối:</strong> {{ discipline.rejectReason }}</p>
           <p><strong>Lớp:</strong> {{ discipline.class || 'Không có' }}</p>
           
-          <!-- Document preview button if urlFile exists -->
+          <!-- Document preview button if file exists -->
           <a 
-            v-if="discipline.urlFile" 
+            v-if="discipline.urlDecodeFile" 
             href="#"
-            @click.prevent="openDocumentPreview(discipline.urlFile)"
+            @click.prevent="openDocumentPreview(discipline.urlDecodeFile, discipline.urlFile)"
             class="view-document"
           >
             <i class="fas fa-file-excel"></i> Xem tài liệu
@@ -442,27 +452,33 @@ const handleIframeError = () => {
           frameborder="0"
           @load="handleIframeLoaded"
           @error="handleIframeError"
-          sandbox="allow-scripts allow-same-origin allow-popups"
+          sandbox="allow-scripts allow-same-origin allow-popups allow-forms allow-downloads"
           referrerpolicy="no-referrer"
+          style="width:100%; height:calc(100% - 60px); margin-bottom: 60px; background-color: white;"
+          allow="fullscreen clipboard-read clipboard-write"
+          importance="high"
         ></iframe>
         
         <div v-if="isViewerFailed" class="fallback-content">
           {{ fallbackContent }}
           <p v-if="isEdgeBrowser" class="browser-tip">
-            <i class="fas fa-lightbulb"></i> Gợi ý: Microsoft Edge có thể hiển thị file Excel trực tiếp. Hãy thử "Mở trong tab mới".
+            <i class="fas fa-lightbulb"></i> Gợi ý: Hãy sử dụng nút "Mở trong Office Online" bên dưới để xem tài liệu trực tiếp từ Microsoft Office Online.
           </p>
           <p v-else class="browser-tip">
-            <i class="fas fa-lightbulb"></i> Gợi ý: Tải xuống file và mở bằng phần mềm Excel hoặc dùng Microsoft Edge để xem trực tiếp.
+            <i class="fas fa-lightbulb"></i> Gợi ý: Bạn có thể tải xuống file hoặc sử dụng nút "Mở trong Office Online" bên dưới để xem trực tiếp.
           </p>
         </div>
         
         <div class="preview-actions">
-          <button @click="toggleViewer" class="preview-action-btn toggle-btn">
-            <i class="fas fa-sync-alt"></i> {{ viewerType === 'office' ? 'Dùng Google Viewer' : 'Dùng Office Viewer' }}
+          <button @click="retryLoading" class="preview-action-btn toggle-btn">
+            <i class="fas fa-sync-alt"></i> Tải lại
           </button>
           
-          <a :href="originalUrl" target="_blank" class="preview-action-btn">
-            <i class="fas fa-external-link-alt"></i> Mở trong tab mới{{ isEdgeBrowser ? ' (Tốt nhất trên Edge)' : '' }}
+          <a v-if="previewUrl.includes('view.officeapps.live.com')" 
+             :href="'https://view.officeapps.live.com/op/view.aspx?src=' + encodeURIComponent(originalUrl)" 
+             target="_blank" 
+             class="preview-action-btn office-btn">
+            <i class="fas fa-file-excel"></i> Mở trong Office Online
           </a>
           
           <a :href="originalUrl" download class="preview-action-btn download-btn">
@@ -1170,9 +1186,10 @@ textarea {
 
 /* Document Preview Modal Styles */
 .document-modal {
-  max-width: 85%;
-  height: 85vh;
+  max-width: 90%;
+  height: 90vh;
   padding: 1.5rem;
+  background: #fff;
 }
 
 .document-preview-container {
@@ -1192,6 +1209,7 @@ textarea {
   height: 100%;
   border: none;
   background-color: white;
+  border-radius: 8px;
 }
 
 .doc-loading {
@@ -1206,6 +1224,7 @@ textarea {
   align-items: center;
   justify-content: center;
   z-index: 10;
+  border-radius: 12px;
 }
 
 .spinner {
@@ -1236,13 +1255,14 @@ textarea {
   left: 0;
   right: 0;
   background: rgba(255, 255, 255, 0.95);
-  padding: 1rem;
+  padding: 1.25rem;
   display: flex;
   justify-content: center;
-  gap: 1rem;
+  gap: 1.5rem;
   box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.08);
   backdrop-filter: blur(5px);
   border-radius: 0 0 12px 12px;
+  z-index: 5;
 }
 
 .preview-action-btn {
@@ -1260,7 +1280,7 @@ textarea {
   cursor: pointer;
   font-weight: 500;
   box-shadow: 0 4px 10px rgba(0, 123, 255, 0.25);
-  min-width: 120px;
+  min-width: 140px;
   justify-content: center;
 }
 
@@ -1287,6 +1307,15 @@ textarea {
   box-shadow: 0 6px 15px rgba(108, 117, 125, 0.35);
 }
 
+.office-btn {
+  background: linear-gradient(90deg, #0078d4, #106ebe);
+  box-shadow: 0 4px 10px rgba(0, 120, 212, 0.25);
+}
+
+.office-btn:hover {
+  box-shadow: 0 6px 15px rgba(0, 120, 212, 0.35);
+}
+
 .fallback-content {
   text-align: center;
   padding: 2rem;
@@ -1294,13 +1323,13 @@ textarea {
   border-radius: 12px;
   color: #856404;
   font-weight: 600;
-  margin: 1.5rem;
+  margin: 2rem;
   border-left: 4px solid #ffc107;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
 }
 
 .browser-tip {
-  margin-top: 1rem;
+  margin-top: 1.5rem;
   font-size: 0.95rem;
   color: #0c5460;
   background: linear-gradient(135deg, rgba(209, 236, 241, 0.9) 0%, rgba(226, 246, 249, 0.9) 100%);
