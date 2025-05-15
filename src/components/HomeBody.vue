@@ -1,6 +1,7 @@
 <template>
   <div class="home-body">
     <!-- 📢 Thông báo tài liệu -->
+    <h1 class="page-title">🔔 THÔNG BÁO CHUNG</h1>
     <div
       v-if="eventStore.documentList && eventStore.documentList.length > 0"
       class="document-banner-list"

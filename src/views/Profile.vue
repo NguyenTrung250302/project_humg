@@ -187,6 +187,18 @@ const logout = () => {
               <i class="fas fa-check"></i> Xác nhận
             </button>
           </div>
+          <div class="profile-actions">  
+            <div class="secondary-actions">
+              <button @click="togglePasswordForm" class="btn-change-password">
+                <i class="fas fa-key"></i> Đổi mật khẩu
+              </button>
+            </div>
+            <div class="secondary-actions">
+              <button @click="logout" class="btn-logout">
+                <i class="fas fa-sign-out-alt"></i> Đăng xuất
+              </button>
+            </div>
+          </div>
         </div>
         <div class="profile-details">
           <h2 class="profile-title">{{userInfo.roleName}}: {{ userInfo.fullName }}</h2>
@@ -325,15 +337,6 @@ const logout = () => {
             <button @click="updateProfile" class="btn-update">
               <i class="fas fa-save"></i> Cập nhật thông tin
             </button>
-            
-            <div class="secondary-actions">
-              <button @click="togglePasswordForm" class="btn-change-password">
-                <i class="fas fa-key"></i> Đổi mật khẩu
-              </button>
-              <button @click="logout" class="btn-logout">
-                <i class="fas fa-sign-out-alt"></i> Đăng xuất
-              </button>
-            </div>
           </div>
 
           <div v-if="showPasswordForm" class="dialog-overlay" @click="togglePasswordForm">
@@ -780,9 +783,10 @@ const logout = () => {
 }
 
 .input-container {
-  position: relative;
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  gap: 6px;
+  position: relative;
 }
 
 .input-field {
@@ -806,7 +810,7 @@ const logout = () => {
 .btn-toggle-password {
   position: absolute;
   right: 12px;
-  top: 50%;
+  top: 70%;
   transform: translateY(-50%);
   border: none;
   background: none;

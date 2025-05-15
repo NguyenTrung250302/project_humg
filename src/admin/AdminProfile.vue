@@ -155,7 +155,7 @@ const logout = () => {
     <div class="main">
       <h1>THÔNG TIN QUẢN TRỊ VIÊN</h1>
         <div class="profile-layout">
-          <div class="profile-container">
+          <div class="profile-cer">
             <div class="profile-info">
               <div class="profile-avatar">
                 <input
@@ -182,14 +182,24 @@ const logout = () => {
                     <i class="fas fa-check"></i> Xác nhận
                   </button>
                 </div>
+                <div class="profile-actions">
+                  <div class="secondary-actions">
+                    <button @click="togglePasswordForm" class="btn-change-password">
+                      <i class="fas fa-key"></i> Đổi mật khẩu
+                    </button>
+                  </div>
+                  <div class="secondary-actions">
+                    <button @click="logout" class="btn-logout">
+                      <i class="fas fa-sign-out-alt"></i> Đăng xuất
+                    </button>
+                  </div>
+                </div>
               </div>
 
               <div class="profile-details">
-                <h2 class="profile-title">
-                  {{ userInfo.roleName }}: {{ userInfo.fullName }}
-                </h2>
-
+                <h2 class="profile-title">{{userInfo.roleName}}: {{ userInfo.fullName }}</h2>
                 <div class="profile-fields">
+
                   <div class="profile-item">
                     <div class="profile-row">
                       <div class="profile-field">
@@ -214,7 +224,6 @@ const logout = () => {
                         <label class="profile-label">Số điện thoại:</label>
                         <input
                           v-model="userInfo.phoneNumber"
-                          type="text"
                           class="profile-input"
                         />
                       </div>
@@ -222,7 +231,6 @@ const logout = () => {
                         <label class="profile-label">Ngày sinh:</label>
                         <input
                           v-model="userInfo.birthdate"
-                          type="text"
                           class="profile-input"
                         />
                       </div>
@@ -235,17 +243,12 @@ const logout = () => {
                         <label class="profile-label">Giới tính:</label>
                         <input
                           v-model="userInfo.gender"
-                          type="text"
                           class="profile-input"
                         />
                       </div>
                       <div class="profile-field">
                         <label class="profile-label">Quốc tịch:</label>
-                        <input
-                          v-model="userInfo.nation"
-                          type="text"
-                          class="profile-input"
-                        />
+                        <input v-model="userInfo.nation" class="profile-input" />
                       </div>
                     </div>
                   </div>
@@ -256,7 +259,6 @@ const logout = () => {
                         <label class="profile-label">Dân tộc:</label>
                         <input
                           v-model="userInfo.religion"
-                          type="text"
                           class="profile-input"
                         />
                       </div>
@@ -264,7 +266,6 @@ const logout = () => {
                         <label class="profile-label">Chức vụ:</label>
                         <input
                           v-model="userInfo.roleName"
-                          type="text"
                           class="profile-input"
                           disabled
                         />
@@ -278,7 +279,6 @@ const logout = () => {
                         <label class="profile-label">Ngày gia nhập đoàn:</label>
                         <input
                           v-model="userInfo.dateOfJoining"
-                          type="text"
                           class="profile-input"
                         />
                       </div>
@@ -286,7 +286,6 @@ const logout = () => {
                         <label class="profile-label">Nơi gia nhập đoàn:</label>
                         <input
                           v-model="userInfo.placeOfJoining"
-                          type="text"
                           class="profile-input"
                         />
                       </div>
@@ -299,78 +298,91 @@ const logout = () => {
                         <label class="profile-label">Chính trị:</label>
                         <input
                           v-model="userInfo.politicalTheory"
-                          type="text"
                           class="profile-input"
                         />
                       </div>
                     </div>
                   </div>
+
                 </div>
 
                 <div class="profile-actions">
                   <button @click="updateProfile" class="btn-update">
                     <i class="fas fa-save"></i> Cập nhật thông tin
                   </button>
-
-                  <div class="secondary-actions">
-                    <button @click="togglePasswordForm" class="btn-change-password">
-                      <i class="fas fa-key"></i> Đổi mật khẩu
-                    </button>
-                    <button @click="logout" class="btn-logout">
-                      <i class="fas fa-sign-out-alt"></i> Đăng xuất
-                    </button>
-                  </div>
                 </div>
 
-                <div v-if="showPasswordForm" class="password-form">
-                  <h3 class="password-title">Đổi mật khẩu</h3>
-                  <div class="input-group">
-                    <div class="input-container">
-                      <input
-                        v-model="oldPassword"
-                        :type="isOldPasswordVisible ? 'text' : 'password'"
-                        placeholder="Mật khẩu cũ"
-                        class="input-field"
-                      />
-                      <button
-                        @click="toggleOldPasswordVisibility"
-                        class="btn-toggle-password"
-                      >
-                        <i :class="isOldPasswordVisible ? 'far fa-eye-slash' : 'far fa-eye'"></i>
+                <!-- Phần đổi mật khẩu giữ nguyên -->
+                <div v-if="showPasswordForm" class="dialog-overlay" @click="togglePasswordForm">
+                  <div class="dialog-content" @click.stop>
+                    <div class="dialog-header">
+                      <h3 class="dialog-title">
+                        <i class="fas fa-lock"></i>
+                        Đổi mật khẩu
+                      </h3>
+                      <button class="btn-close" @click="togglePasswordForm">
+                        <i class="fas fa-times"></i>
                       </button>
                     </div>
-                    <div class="input-container">
-                      <input
-                        v-model="newPassword"
-                        :type="isNewPasswordVisible ? 'text' : 'password'"
-                        placeholder="Mật khẩu mới"
-                        class="input-field"
-                      />
-                      <button
-                        @click="toggleNewPasswordVisibility"
-                        class="btn-toggle-password"
-                      >
-                        <i :class="isNewPasswordVisible ? 'far fa-eye-slash' : 'far fa-eye'"></i>
-                      </button>
+                    <div class="dialog-body">
+                      <div class="input-group">
+                        <div class="input-container">
+                          <label class="input-label">Mật khẩu cũ</label>
+                          <input
+                            v-model="oldPassword"
+                            :type="isOldPasswordVisible ? 'text' : 'password'"
+                            placeholder="Nhập mật khẩu cũ"
+                            class="input-field"
+                          />
+                          <button
+                            @click="toggleOldPasswordVisibility"
+                            class="btn-toggle-password"
+                            :title="isOldPasswordVisible ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'"
+                          >
+                            <i :class="isOldPasswordVisible ? 'far fa-eye-slash' : 'far fa-eye'"></i>
+                          </button>
+                        </div>
+                        <div class="input-container">
+                          <label class="input-label">Mật khẩu mới</label>
+                          <input
+                            v-model="newPassword"
+                            :type="isNewPasswordVisible ? 'text' : 'password'"
+                            placeholder="Nhập mật khẩu mới"
+                            class="input-field"
+                          />
+                          <button
+                            @click="toggleNewPasswordVisibility"
+                            class="btn-toggle-password"
+                            :title="isNewPasswordVisible ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'"
+                          >
+                            <i :class="isNewPasswordVisible ? 'far fa-eye-slash' : 'far fa-eye'"></i>
+                          </button>
+                        </div>
+                        <div class="input-container">
+                          <label class="input-label">Xác nhận mật khẩu mới</label>
+                          <input
+                            v-model="confirmPassword"
+                            :type="isConfirmPasswordVisible ? 'text' : 'password'"
+                            placeholder="Nhập lại mật khẩu mới"
+                            class="input-field"
+                          />
+                          <button
+                            @click="toggleConfirmPasswordVisibility"
+                            class="btn-toggle-password"
+                            :title="isConfirmPasswordVisible ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'"
+                          >
+                            <i :class="isConfirmPasswordVisible ? 'far fa-eye-slash' : 'far fa-eye'"></i>
+                          </button>
+                        </div>
+                      </div>
                     </div>
-                    <div class="input-container">
-                      <input
-                        v-model="confirmPassword"
-                        :type="isConfirmPasswordVisible ? 'text' : 'password'"
-                        placeholder="Nhập lại mật khẩu mới"
-                        class="input-field"
-                      />
-                      <button
-                        @click="toggleConfirmPasswordVisibility"
-                        class="btn-toggle-password"
-                      >
-                        <i :class="isConfirmPasswordVisible ? 'far fa-eye-slash' : 'far fa-eye'"></i>
+                    <div class="dialog-footer">
+                      <button class="btn-cancel" @click="togglePasswordForm">Hủy</button>
+                      <button class="btn-submit" @click="submitPasswordChange">
+                        <i class="fas fa-check-circle"></i> Xác nhận
                       </button>
                     </div>
                   </div>
-                  <button @click="submitPasswordChange" class="btn-submit">
-                    <i class="fas fa-check-circle"></i> Xác nhận
-                  </button>
                 </div>
               </div>
             </div>
@@ -384,14 +396,14 @@ const logout = () => {
 .profile-layout {
   display: flex;
   justify-content: center;
-  background-color: #FFFFFF;
+  background-color: #ffffff;
   padding: 30px 20px;
   min-height: calc(100vh - 120px);
 }
 
 .profile-container {
   width: 100%;
-  max-width: 100%;
+  max-width: 1200px;
 }
 
 .profile-info {
@@ -636,81 +648,217 @@ const logout = () => {
   margin-right: 8px;
 }
 
-.password-form {
-  margin-top: 30px;
-  padding: 25px;
-  background-color: #f8f9fc;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+.dialog-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease;
 }
 
-.password-title {
+.dialog-content {
+  background: white;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 500px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+  animation: slideUp 0.3s ease;
+}
+
+.dialog-header {
+  padding: 20px 25px;
+  border-bottom: 1px solid #e3e6f0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.dialog-title {
   color: #2e384d;
+  font-size: 20px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+}
+
+.dialog-title i {
+  color: #4e73df;
+}
+
+.btn-close {
+  background: none;
+  border: none;
+  color: #6e707e;
   font-size: 18px;
-  margin-bottom: 20px;
-  text-align: center;
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+
+.btn-close:hover {
+  background-color: #f8f9fc;
+  color: #4e73df;
+  transform: rotate(90deg);
+}
+
+.dialog-body {
+  padding: 25px;
+}
+
+.dialog-footer {
+  padding: 20px 25px;
+  border-top: 1px solid #e3e6f0;
+  display: flex;
+  gap: 15px;
+  justify-content: flex-end;
+}
+
+.btn-cancel {
+  padding: 10px 20px;
+  background: #f8f9fc;
+  color: #6e707e;
+  border: 1px solid #e3e6f0;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-cancel:hover {
+  background: #eaecf4;
+  color: #4e73df;
+}
+
+.input-label {
+  display: block;
+  margin-bottom: 8px;
+  color: #5a5c69;
+  font-weight: 600;
+  font-size: 14px;
 }
 
 .input-group {
   display: grid;
-  gap: 15px;
-  margin-bottom: 20px;
+  gap: 20px;
+  margin-bottom: 25px;
 }
 
 .input-container {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
   position: relative;
 }
 
 .input-field {
   width: 100%;
-  padding: 12px 40px 12px 15px;
-  border: 1px solid #d1d3e2;
-  border-radius: 6px;
+  padding: 14px 45px 14px 16px;
+  border: 2px solid #e3e6f0;
+  border-radius: 8px;
   font-size: 14px;
-  transition: all 0.3s;
+  transition: all 0.3s ease;
+  background-color: #f8f9fc;
+  height: 48px;
 }
 
 .input-field:focus {
-  border-color: #bac8f3;
+  border-color: #4e73df;
   outline: none;
-  box-shadow: 0 0 0 3px rgba(78, 115, 223, 0.15);
+  box-shadow: 0 0 0 4px rgba(78, 115, 223, 0.1);
+  background-color: white;
 }
 
 .btn-toggle-password {
   position: absolute;
-  right: 10px;
-  top: 50%;
+  right: 12px;
+  top: 70%;
   transform: translateY(-50%);
   border: none;
+  background: none;
   cursor: pointer;
   color: #6e707e;
   font-size: 16px;
-  padding: 5px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+  padding: 0;
 }
 
 .btn-toggle-password:hover {
+  background-color: #f8f9fc;
   color: #4e73df;
+}
+
+.btn-toggle-password:active {
+  transform: translateY(-50%) scale(0.95);
+}
+
+.btn-toggle-password i {
+  transition: all 0.3s ease;
+}
+
+.btn-toggle-password:hover i {
+  transform: scale(1.1);
 }
 
 .btn-submit {
   width: 100%;
-  padding: 12px;
+  padding: 14px;
   background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
   color: white;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(78, 115, 223, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
 }
 
 .btn-submit:hover {
   background: linear-gradient(135deg, #3b5ab8 0%, #1a3a8f 100%);
-  transform: translateY(-1px);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(78, 115, 223, 0.3);
 }
 
-.btn-submit i {
-  margin-right: 8px;
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
 @media (max-width: 768px) {
