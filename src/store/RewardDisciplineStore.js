@@ -226,7 +226,7 @@ export const useRewardDisciplineStore = defineStore(
 
       try {
         const response = await axios.get(
-          urlHost + "/api/Controller_ApprovalHistory/Get_List_ApprovalHistories?pageSize=10&pageNumber=1",
+          urlHost + "/api/Controller_ApprovalHistory/Get_List_ApprovalHistories?pageSize=100&pageNumber=1",
           { headers }
         );
 

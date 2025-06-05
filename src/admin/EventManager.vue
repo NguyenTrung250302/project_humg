@@ -168,6 +168,11 @@
         </div>
       </div>
 
+      <!-- Thông báo thành công -->
+      <div v-if="eventAdminStore.success" class="success-message">
+        {{ eventAdminStore.success }}
+      </div>
+
       <!-- Danh sách sự kiện -->
       <div v-if="eventAdminStore.error" class="error-message">
         {{ eventAdminStore.error }}
@@ -239,6 +244,8 @@ const addEvent = async () => {
   await eventAdminStore.AddNewEvent(newEvent.value, imageFile); // Truyền file ảnh vào hàm
   eventStore.getEventList(); // Cập nhật lại danh sách sự kiện
   showForm.value = false;
+
+  // window.$dialog.success("Thêm sự kiện thành công!");
 
   // Reset form
   newEvent.value = {
@@ -527,6 +534,19 @@ const handleEditImageUpload = (event) => {
 .error-message {
   background: linear-gradient(135deg, #ffebee, #ffcdd2);
   color: #b71c1c;
+  padding: 16px;
+  border-radius: 12px;
+  font-weight: 600;
+  margin: 20px 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.success-message {
+  background: linear-gradient(135deg, #f5f5f5, #adffc6);
+  color: #0cd86b;
   padding: 16px;
   border-radius: 12px;
   font-weight: 600;

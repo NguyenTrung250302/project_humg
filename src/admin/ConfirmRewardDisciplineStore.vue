@@ -303,6 +303,11 @@ const showConfirmDialog = () => {
 // Xử lý khi xác nhận xóa
 const handleConfirmDelete = async () => {
   try {
+    if (!rejectReason.value.trim()) {
+      window.$dialog.fail('Vui lòng nhập lý do từ chối.');
+      return;
+    }
+
     const headers = {
       'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
       'accept': '*/*'
@@ -311,22 +316,23 @@ const handleConfirmDelete = async () => {
     const formData = new FormData();
     formData.append('proposeId', selectedProposalId.value);
 
-    const response = await fetch(`${urlHost}/api/Controller_RewardDiscipline/Delete_Reward_Discipline`, {
-      method: 'DELETE',
+    const response = await fetch(`${urlHost}/api/Controller_RewardDiscipline/Reject_Propose?reject=${encodeURIComponent(rejectReason.value)}`, {
+      method: 'PUT',
       headers,
       body: formData
     });
 
-    if (response.ok) {
+    const result = await response.json();
+
+    if (response.ok && result.status === 200) {
       await rewardDisciplineStore.GetListWaiting();
       showRejectForm.value = false;
       showConfirmDelete.value = false;
       rejectReason.value = '';
       selectedProposalId.value = null;
-      window.$dialog.success('Đã từ chối và xóa đề xuất thành công!');
+      window.$dialog.success(result.message);
     } else {
-      const errorData = await response.json();
-      window.$dialog.fail(`Có lỗi xảy ra: ${errorData.message || errorData.title || 'Vui lòng thử lại sau'}`);
+      window.$dialog.fail(result.message || 'Có lỗi xảy ra. Vui lòng thử lại sau!');
     }
   } catch (error) {
     console.error('Lỗi khi xử lý đề xuất:', error);
