@@ -7,6 +7,14 @@
       <!-- Nút để mở form modal thêm tài liệu -->
       <button @click="openAddModal" class="open-modal-button">Ban hành văn bản</button>
 
+      <!-- Hiển thị thông báo -->
+      <transition name="fade">
+        <div v-if="notification.show" 
+             :class="['message', { error: notification.type === 'error' }]">
+          {{ notification.message }}
+        </div>
+      </transition>
+
       <!-- Form Modal thêm tài liệu -->
       <div v-if="isAddModalOpen" class="modal-overlay" @click.self="closeAddModal">
         <div class="modal-container">
@@ -60,12 +68,6 @@
           </form>
         </div>
       </div>
-
-      <!-- Hiển thị thông báo thành công -->
-      <div class="message" v-if="success">{{ success }}</div>
-
-      <!-- Hiển thị thông báo lỗi -->
-      <div class="message error" v-if="error">{{ error }}</div>
 
       <!-- 📢 Thông báo tài liệu -->
       <div v-if="promulgateDocumentsStore.documentList && promulgateDocumentsStore.documentList.length > 0" class="document-banner-list">
@@ -122,11 +124,32 @@ import "../assets/css/Dashboard.css";
 
 // Gọi store
 const promulgateDocumentsStore = usePromulgateDocuments(); 
-const { addDocument, updateDocument, deleteDocument: deleteDoc, error, success } = promulgateDocumentsStore;
+const { addDocument, updateDocument, deleteDocument: deleteDoc } = promulgateDocumentsStore;
 
 // Lấy store chứa danh sách tài liệu
 const documentStore = usePromulgateDocuments();
 const { getDocumentList, documentList } = documentStore;
+
+// Notification state
+const notification = ref({
+  message: '',
+  type: '', // 'success' or 'error'
+  show: false
+});
+
+// Show notification function
+const showNotification = (message, type = 'success') => {
+  notification.value = {
+    message,
+    type,
+    show: true
+  };
+  
+  // Auto hide after 3 seconds
+  setTimeout(() => {
+    notification.value.show = false;
+  }, 3000);
+};
 
 const goToPageDocument = async (page) => {
   if (page >= 1 && page <= documentStore.documentPagination.totalPages) {
@@ -162,17 +185,23 @@ const handleEditFileUpload = (e) => {
 
 // Submit form - Thêm tài liệu
 const submitAddDocument = async () => {
-  const documentData = {
-    documentTitle: documentTitle.value,
-    documentContent: documentContent.value,
-  };
+  try {
+    const documentData = {
+      documentTitle: documentTitle.value,
+      documentContent: documentContent.value,
+    };
 
-  await addDocument(documentData, file.value); 
-
-  if (!promulgateDocumentsStore.error) {
-    resetAddForm();
-    closeAddModal();
-    getDocumentList();
+    const result = await addDocument(documentData, file.value);
+    
+    if (result) {
+      showNotification('Thêm văn bản thành công!', 'success');
+      resetAddForm();
+      closeAddModal();
+      getDocumentList();
+    }
+  } catch (err) {
+    console.error('Lỗi khi thêm tài liệu:', err);
+    showNotification('Có lỗi xảy ra khi thêm văn bản!', 'error');
   }
 };
 
@@ -194,18 +223,17 @@ const submitEditDocument = async () => {
       documentContent: editDocumentContent.value,
     };
 
-    await updateDocument(documentData, editFile.value);
-
-    if (!promulgateDocumentsStore.error) {
+    const result = await updateDocument(documentData, editFile.value);
+    
+    if (result) {
+      showNotification('Cập nhật văn bản thành công!', 'success');
       resetEditForm();
       closeEditModal();
-      // Sử dụng setTimeout để tránh block UI
-      setTimeout(() => {
-        getDocumentList();
-      }, 0);
+      getDocumentList();
     }
   } catch (err) {
     console.error('Lỗi khi cập nhật tài liệu:', err);
+    showNotification('Có lỗi xảy ra khi cập nhật văn bản!', 'error');
   }
 };
 
@@ -228,15 +256,14 @@ const deleteDocument = async (documentId) => {
   }
 
   try {
-    await deleteDoc(documentId);
-    if (!promulgateDocumentsStore.error) {
-      // Sử dụng setTimeout để tránh block UI
-      setTimeout(() => {
-        getDocumentList();
-      }, 0);
+    const result = await deleteDoc(documentId);
+    if (result) {
+      showNotification('Xóa văn bản thành công!', 'success');
+      getDocumentList();
     }
   } catch (err) {
     console.error('Lỗi khi xóa tài liệu:', err);
+    showNotification('Có lỗi xảy ra khi xóa văn bản!', 'error');
   }
 };
 
@@ -413,11 +440,12 @@ textarea {
   border-radius: 12px;
   font-size: 15px;
   font-weight: 600;
-  margin-bottom: 25px;
+  margin: 25px 0;
   display: flex;
   align-items: center;
   gap: 10px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  animation: fadeIn 0.3s ease;
 }
 
 .message:not(.error) {
@@ -428,6 +456,17 @@ textarea {
 .message.error {
   background: linear-gradient(135deg, #ffebee, #ffcdd2);
   color: #b71c1c;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* Document List */
@@ -649,5 +688,49 @@ textarea {
     width: 36px;
     height: 36px;
   }
+}
+
+/* Notification Styles */
+.notification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 15px 25px;
+  border-radius: 8px;
+  font-weight: 600;
+  z-index: 9999;
+  animation: slideIn 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.notification.success {
+  background: #4caf50;
+  color: white;
+}
+
+.notification.error {
+  background: #f44336;
+  color: white;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>
