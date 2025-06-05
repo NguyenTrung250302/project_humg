@@ -19,6 +19,30 @@
       </div>
       <div class="header-decoration"></div>
     </div>
+
+    <!-- Filter Section -->
+    <div class="filters-section">
+      <div class="filter-group">
+        <label>Loại đề xuất:</label>
+        <select v-model="filters.historyType">
+          <option value="">Tất cả</option>
+          <option value="reward">Khen thưởng</option>
+          <option value="discipline">Kỷ luật</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>Trạng thái:</label>
+        <select v-model="filters.status">
+          <option value="">Tất cả</option>
+          <option value="accept">Đã chấp nhận</option>
+          <option value="reject">Đã từ chối</option>
+        </select>
+      </div>
+      <button class="reset-filters" @click="resetFilters">
+        🔄 Đặt lại bộ lọc
+      </button>
+    </div>
+
     <div class="history-list">
       <div
         class="history-item"
@@ -26,7 +50,7 @@
           reward: history.historyType === 'reward',
           discipline: history.historyType === 'discipline',
         }"
-        v-for="(history, index) in approvalHistory"
+        v-for="(history, index) in filteredHistory"
         :key="index"
       >
         <div class="history-header">
@@ -77,11 +101,16 @@
 import Header from "../components/Header.vue";
 import NavHeader from "../components/NavHeader.vue";
 import Footer from "../components/Footer.vue";
-import { onMounted, ref } from "vue";
+import { onMounted, ref, watch } from "vue";
 import { useRewardDisciplineStore } from "../store/RewardDisciplineStore";
 
 const RewardDisciplineStore = useRewardDisciplineStore();
 const approvalHistory = ref([]);
+const filteredHistory = ref([]);
+const filters = ref({
+  historyType: '',
+  status: '',
+});
 
 onMounted(async () => {
   await RewardDisciplineStore.GetApprovalHistory();
@@ -92,7 +121,27 @@ onMounted(async () => {
       timestamp: new Date(item.approvedDate).getTime(),
     }))
     .sort((a, b) => b.timestamp - a.timestamp);
+  filteredHistory.value = approvalHistory.value;
 });
+
+const resetFilters = () => {
+  filters.value.historyType = '';
+  filters.value.status = '';
+};
+
+const applyFilters = () => {
+  filteredHistory.value = approvalHistory.value.filter((history) => {
+    const typeMatch = filters.value.historyType === '' || history.historyType === filters.value.historyType;
+    const statusMatch = filters.value.status === '' || 
+      (filters.value.status === 'accept' ? history.isAccept : !history.isAccept);
+    return typeMatch && statusMatch;
+  });
+};
+
+// Watch for changes in filters
+watch(filters, () => {
+  applyFilters();
+}, { deep: true });
 </script>
 
 <style scoped>
@@ -411,5 +460,94 @@ onMounted(async () => {
 
 .history-item {
   animation: fadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.filters-section {
+  max-width: 1200px;
+  margin: 0 auto 32px;
+  padding: 24px;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  display: flex;
+  gap: 24px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.filter-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.filter-group label {
+  font-size: 14px;
+  color: #666;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.filter-group select {
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1px solid #d9d9d9;
+  background: #fff;
+  font-size: 14px;
+  color: #262626;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 160px;
+}
+
+.filter-group select:hover {
+  border-color: #1890ff;
+}
+
+.filter-group select:focus {
+  outline: none;
+  border-color: #1890ff;
+  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+}
+
+.reset-filters {
+  padding: 8px 16px;
+  border-radius: 8px;
+  background: #f0f2f5;
+  border: 1px solid #d9d9d9;
+  color: #595959;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.reset-filters:hover {
+  background: #e6e8eb;
+  border-color: #8c8c8c;
+}
+
+@media (max-width: 768px) {
+  .filters-section {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 16px;
+  }
+
+  .filter-group {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filter-group select {
+    width: 100%;
+  }
+
+  .reset-filters {
+    width: 100%;
+    justify-content: center;
+  }
 }
 </style>
