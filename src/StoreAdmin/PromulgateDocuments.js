@@ -39,7 +39,7 @@ export const usePromulgateDocuments = defineStore("PromulgateDocuments", () => {
       }
 
       const response = await axios.get(
-        urlHost + `/api/Controller_Document/Get_List_Document?pageSize=10&pageNumber=${pageNumber}`,
+        urlHost + `/api/Controller_Document/Get_List_Document?pageSize=100&pageNumber=${pageNumber}`,
         { headers }
       );
 

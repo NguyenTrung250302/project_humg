@@ -44,7 +44,7 @@ export const useEventStore = defineStore("event", () => {
       }
 
       const response = await axios.get(
-        urlHost + `/api/Controller_Event/Get_List_Event?pageSize=10&pageNumber=${pageNumber}`,
+        urlHost + `/api/Controller_Event/Get_List_Event?pageSize=100&pageNumber=${pageNumber}`,
         { headers }
       );
 

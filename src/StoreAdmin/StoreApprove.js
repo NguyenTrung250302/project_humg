@@ -28,7 +28,7 @@ export const useApproveStore = defineStore("approveAdmin", () => {
       }
 
       const response = await axios.get(
-        urlHost + "/api/Controller_RewardDiscipline/Get_List_Waiting?pageSize=10&pageNumber=1",
+        urlHost + "/api/Controller_RewardDiscipline/Get_List_Waiting?pageSize=100&pageNumber=1",
         { headers }
       );
 

@@ -51,7 +51,7 @@ export const useRewardDisciplineStore = defineStore(
 
       try {
         const response = await axios.get(
-          urlHost + `/api/Controller_RewardDiscipline/Get_List_Reward?pageSize=10&pageNumber=${pageNumber}`,
+          urlHost + `/api/Controller_RewardDiscipline/Get_List_Reward?pageSize=100&pageNumber=${pageNumber}`,
           { headers }
         );
 
@@ -78,7 +78,7 @@ export const useRewardDisciplineStore = defineStore(
 
       try {
         const response = await axios.get(
-          urlHost + `/api/Controller_RewardDiscipline/Get_List_Discipline?pageSize=10&pageNumber=${pageNumber}`,
+          urlHost + `/api/Controller_RewardDiscipline/Get_List_Discipline?pageSize=100&pageNumber=${pageNumber}`,
           { headers }
         );
 
@@ -94,7 +94,7 @@ export const useRewardDisciplineStore = defineStore(
     };
     
     //Lấy danh sách đề xuất đang chờ phê duyệt
-    const GetListWaiting = async (pageNumber = 1, pageSize = 10) => {
+    const GetListWaiting = async (pageNumber = 1, pageSize = 100) => {
       const headers = getAuthHeaders();
 
       if (!headers) {

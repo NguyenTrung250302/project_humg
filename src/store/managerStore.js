@@ -21,7 +21,7 @@ export const useManagerStore = defineStore("manager", () => {
       : null;
   };
 
-  // get danh sách member
+  // get danh sách đoàn viên
   const getMemberList = async (pageNumber = 1) => {
     loading.value = true;
     error.value = null;
@@ -36,7 +36,7 @@ export const useManagerStore = defineStore("manager", () => {
       }
 
       const response = await axios.get(
-        urlHost + `/api/Controller_MemberInfo/Get_List_Menber_Info?pageSize=12&pageNumber=${pageNumber}`,
+        urlHost + `/api/Controller_MemberInfo/Get_List_Menber_Info?pageSize=100&pageNumber=${pageNumber}`,
         { headers }
       );
 
