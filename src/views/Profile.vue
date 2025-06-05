@@ -271,6 +271,7 @@ const logout = () => {
                     <option value="TinHocTracDia">Tin Học Trắc Địa</option>
                     <option value="MangMayTinh">Mạng Máy Tính</option>
                     <option value="HeThongThongTinVaTriThuc">Hệ Thống Thông Tin Và Tri Thức</option>
+                    <option value="KhoaHocMayTinh">Khoa Học Máy Tính</option>
                   </select>
                 </div>
               </div>
